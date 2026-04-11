@@ -46,7 +46,7 @@ Phase 1 established and validated the core dual-model architecture: a computer v
 **Dataset — the Superset strategy:**
 Rather than relying on a single controlled dataset, we aggregated data from multiple open-source repositories — PlantVillage, PlantWild (V1 & V2), PlantDoc, PaddyDoctor, ASDID, and Kaggle competition datasets — to cover **34 disease classes across 7 major crops**: Rice, Corn, Tomato, Soybean, Cassava, Banana, and Cucumber. A strict 300–700 filtering rule was applied to address severe class imbalance, followed by augmentation using Albumentations (geometric transforms, brightness contrast, RGB shift, Gaussian blur) to simulate real-world field conditions. The final dataset comprises **20,400 training/validation samples** and **4,089 test samples**.
 
-**Model selection — ablation study:**
+**Model selection — comparison study:**
 Three architectures were trained and compared under identical conditions:
 
 | Model | Best Validation Accuracy | Training Time |
