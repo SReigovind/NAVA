@@ -319,32 +319,32 @@ On reconnect:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    USER LAYER                        │
+│                    USER LAYER                       │
 │  Flutter App (Android / iOS)                        │
 │  Diagnose · Chat · Monitor · Dashboard              │
 └──────────────┬──────────────────────────────────────┘
                │ HTTPS / local network
 ┌──────────────▼──────────────────────────────────────┐
-│                APPLICATION LAYER                     │
+│                APPLICATION LAYER                    │
 │  FastAPI Backend                                    │
 │  /diagnose  /chat  /rag  /vnir-upload  /iot-ingest  │
 │  Ollama (Llama 3.1 8B — M4 Pro unified memory)      │
 │  Confidence threshold gate · Rule-based triage      │
-└──┬──────────┬───────────┬───────────┬───────────────┘
-   │          │           │           │
+└──┬─────────┬───────────┬──────────┬─────────────────┘
+   │         │           │          │
 ┌──▼──┐  ┌───▼───┐  ┌────▼───┐  ┌───▼────┐
 │MIZHI│  │THANAL │  │YUKTHI  │  │ MOZHI  │
 │ B4  │  │ ONNX  │  │  RAG   │  │ Memory │
 │ CV  │  │ VNIR  │  │Grad-CAM│  │Bhashini│
 └──┬──┘  └───┬───┘  └────┬───┘  └───┬────┘
-   │          │           │           │
-┌──▼──────────▼───────────▼───────────▼────────────────┐
-│                    DATA LAYER                         │
+   │         │           │          │
+┌──▼─────────▼───────────▼──────────▼──────────────────┐
+│                    DATA LAYER                        │
 │  Superset Dataset (20,400 samples)                   │
 │  ChromaDB (vector store — RAG knowledge base)        │
 │  SQLite (VNIR scans · checkpoints · chat memory)     │
 │  Bhashini API · IoT ingest endpoint                  │
-└───────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────┘
 
 Edge (offline):
   TFLite EfficientNet-B0 + ONNX Thanal → bundled in Flutter APK
