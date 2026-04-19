@@ -255,10 +255,10 @@ The following directions are identified as meaningful extensions to NAVA beyond 
 
 ## Project Information
 
-**Degree:** M.Sc. Artificial Intelligence and Machine Learning (2024–2026)
-**Institution:** School of Artificial Intelligence and Robotics, Mahatma Gandhi University, Kottayam, Kerala
-**Team:** Dhanus VS (MG24C3135006) · Sreegovind S (MG24C3135011)
-**Internal Guide:** Ms. Mintu Movi, Assistant Professor, School of AI & Robotics, MGU
-**External Guide:** Dr. Hsing-Kuo Pao, Professor, Department of Computer Science and Information Engineering, National Taiwan University of Science and Technology
+- **Degree:** M.Sc. Artificial Intelligence and Machine Learning (2024–2026)
+- **Institution:** School of Artificial Intelligence and Robotics, Mahatma Gandhi University, Kottayam, Kerala
+- **Team:** Dhanus VS (MG24C3135006) · Sreegovind S (MG24C3135011)
+- **Internal Guide:** Ms. Mintu Movi, Assistant Professor, School of AI & Robotics, MGU
+- **External Guide:** Dr. Hsing-Kuo Pao, Professor, Department of Computer Science and Information Engineering, National Taiwan University of Science and Technology
 
 ---
