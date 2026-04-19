@@ -44,7 +44,7 @@ NAVA remembers a farm's history across an entire growing season. It speaks to fa
 Phase 1 established and validated the core dual-model architecture: a computer vision (CV) module for disease identification paired with a natural language processing (NLP) module for treatment prescription generation.
 
 **Dataset — the Superset strategy:**
-Rather than relying on a single controlled dataset, we aggregated data from multiple open-source repositories — PlantVillage, PlantWild (V1 & V2), PlantDoc, PaddyDoctor, ASDID, and Kaggle competition datasets — to cover **34 disease classes across 7 major crops**: Rice, Corn, Tomato, Soybean, Cassava, Banana, and Cucumber. A strict 300–700 filtering rule was applied to address severe class imbalance, followed by augmentation using Albumentations (geometric transforms, brightness contrast, RGB shift, Gaussian blur) to simulate real-world field conditions. The final dataset comprises **20,400 training/validation samples** and **4,089 test samples**.
+Rather than relying on a single controlled dataset, we aggregated data from multiple open-source repositories — PlantVillage, PlantWild (V1 & V2), PlantDoc, PaddyDoctor, ASDID, and Kaggle competition datasets — to cover **34 disease classes across 7 major crops**: Rice, Corn, Tomato, Soybean, Cassava, Banana, and Cucumber (including healthy class variants for each crop). A strict 300–700 filtering rule was applied to address severe class imbalance, followed by augmentation using Albumentations (geometric transforms, brightness contrast, RGB shift, Gaussian blur) to simulate real-world field conditions. The final dataset comprises **20,400 training/validation samples** and **4,089 test samples**.
 
 **Model selection — comparison study:**
 Three architectures were trained and compared under identical conditions:
@@ -98,284 +98,158 @@ Phase 2 transforms NAVA from a validated diagnostic pipeline into a proactive, i
 
 | Layer | Technology | Rationale |
 |---|---|---|
-| CV training | PyTorch + `timm` (EfficientNet-B4) | Best-in-class accuracy, compound scaling |
-| Augmentation | Albumentations | Fastest, most flexible augmentation library |
+| CV model | EfficientNet-B0 (PyTorch → ONNX) | Phase 1 production model, converted for cross-platform serving |
 | XAI | `pytorch-grad-cam` | Minimal overhead, direct EfficientNet compatibility |
 | VNIR engine | Thanal (ONNX runtime) | Already built, Pi-validated, cross-platform |
-| VNIR storage | SQLite | Zero-cost, zero-server, adequate for per-plant scan history |
+| VNIR + memory storage | SQLite | Zero-cost, zero-server, sufficient for per-plant scan history |
 | RAG orchestration | LangChain | Most mature, best community support |
 | Vector store | ChromaDB (local) | No server required, fully free, persistent |
 | Embeddings | `BAAI/bge-m3` | Best free multilingual embedding model, runs locally |
 | Doc ingestion | PyMuPDF / pdfplumber | For parsing agricultural extension PDFs |
 | LLM serving | Ollama + Llama 3.1 8B | Local inference, zero API cost, strong reasoning |
-| Summarisation LLM | Ollama + Qwen2.5-1.5B | Fast, cheap, for memory cron jobs |
+| Summarisation LLM | Ollama + Qwen2.5-1.5B | Fast, lightweight, for memory cron summarisation jobs |
 | Multilingual | Bhashini API | Free, Government of India, Malayalam/Tamil/Hindi |
 | Backend | FastAPI (Python) | Async, Python-native, minimal overhead |
 | Task scheduling | APScheduler | Lightweight cron, no Redis/Celery required |
 | Mobile app | Flutter (Dart) | Single codebase, Android + iOS |
-| Edge inference | `tflite_flutter` + `onnxruntime_flutter` | On-device CV and VNIR with zero connectivity |
+| Edge inference | `onnxruntime_flutter` | On-device CV and VNIR with zero connectivity |
 | Training hardware | NVIDIA A100 (JupyterHub) | Remote access for model training runs |
-| Inference hardware | Mac M4 Pro (Ollama) | Unified memory, efficient LLM serving |
-| Dev hardware | Debian Linux, GTX 1650 Ti | FastAPI development and integration |
+| Inference hardware | Mac M4 Pro (Ollama) | Unified memory, efficient local LLM serving |
+| Dev hardware | Debian Linux, GTX 1650 Ti | FastAPI development and integration work |
 
 ---
 
-### Module 1 — Mizhi: Multi-Disease Detection & VNIR Monitoring
+### Module 1 — Mizhi: Disease Detection & VNIR Monitoring
 
-**What it solves:** Phase 1 EfficientNet-B0 performs single-label classification — it predicts one disease per image. Real crops frequently present multiple concurrent pathologies. Additionally, RGB-only detection is inherently reactive, identifying disease only after visible lesions appear.
+**What it addresses:** Phase 1 established a strong disease classifier and Thanal validated VNIR-based stress estimation independently. Mizhi brings both together in a unified module — converting the existing EfficientNet-B0 model to ONNX for cross-platform serving, adding Grad-CAM visual explainability to every diagnosis, and integrating Thanal for proactive early stress monitoring through a practical smartphone-based workflow.
 
-**Component A — Multi-label disease classifier:**
-- Backbone upgraded from EfficientNet-B0 to **EfficientNet-B4** via `timm` for higher capacity
-- Output head changed from softmax (single-label) to **sigmoid with BCEWithLogitsLoss** — each disease class gets an independent probability score, enabling simultaneous detection of multiple conditions
-- Superset dataset extended with multi-label annotations for co-occurring disease pairs, with synthetic co-occurrence augmentation
-- Confidence threshold logic retained from Phase 1, now applied per-class
+**Component A — EfficientNet-B0 in ONNX:**
+The Phase 1 EfficientNet-B0 model (34 classes across 7 crops, 94.54% validation accuracy) is converted from its `.pth` PyTorch checkpoint to ONNX format. This single conversion enables the model to be served by the FastAPI backend via ONNX Runtime and bundled directly in the Flutter app for offline edge inference — without maintaining two separate model codebases. The confidence threshold safety gate (≥ 0.85) and rule-based prescription dictionary from Phase 1 are retained unchanged.
 
 **Component B — Thanal VNIR integration:**
-Thanal is integrated as a named sub-system within Mizhi, with two distinct entry points into the same pipeline:
+Thanal is integrated into the module with two natural entry points into the same underlying pipeline:
 
-*Direct monitoring flow:* The user creates a Plant ID for each plant they wish to monitor. Flutter sends three scheduled local notifications daily (morning / afternoon / evening — suggested times aligned with natural light consistency). The user taps the notification, photographs the plant, and Thanal processes the image. No automated camera hardware is required.
+*Direct monitoring flow:* The user creates a named Plant ID for each plant they wish to monitor. The Flutter app schedules three local notifications daily — morning, afternoon, and evening — prompting the user to photograph that plant. Tapping a notification opens the camera directly to that plant's monitoring view. No automated camera hardware is required. The VNIR monitoring screen displays each plant's ratio timeline, current checkpoint progress (e.g. "3 of 5 scans for next checkpoint"), and any active stress alerts.
 
-*Disease detection cross-feed:* When a user photographs a leaf for disease detection, they are prompted — "Add this scan to [Plant Name]'s VNIR history?" — allowing disease detection sessions to contribute bonus scans to the monitoring timeline without any additional action.
-
-Both paths write to the same SQLite schema with a `source` field (`direct` | `disease_detection_crossfeed`), keeping the pipeline unified.
-
-**SQLite schema (VNIR):**
-```sql
-CREATE TABLE plants (
-    plant_id    TEXT PRIMARY KEY,
-    name        TEXT,
-    created_at  INTEGER
-);
-
-CREATE TABLE vnir_scans (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    plant_id        TEXT,
-    timestamp       INTEGER,
-    nir_green_ratio REAL,
-    source          TEXT,       -- 'direct' | 'disease_detection_crossfeed'
-    checkpoint_id   INTEGER     -- null until assigned to a checkpoint
-);
-
-CREATE TABLE vnir_checkpoints (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    plant_id        TEXT,
-    timestamp       INTEGER,
-    avg_ratio       REAL,
-    scan_count      INTEGER,
-    alert_triggered INTEGER DEFAULT 0
-);
-```
-
-**Checkpoint logic:**
-```python
-scans = get_scans_since_last_checkpoint(plant_id)
-if len(scans) >= 5:
-    new_checkpoint_ratio = mean([s.nir_green_ratio for s in scans])
-    delta = previous_checkpoint.avg_ratio - new_checkpoint_ratio
-    if delta > ALERT_THRESHOLD:
-        trigger_stress_alert(plant_id)
-    save_checkpoint(plant_id, new_checkpoint_ratio, scans)
-```
-
-If the user misses a scan, the checkpoint simply takes longer to form. No broken state, no error — the UI shows "4/5 scans collected for next checkpoint."
+*Disease detection cross-feed:* When a user photographs a leaf for disease detection, they are prompted — "Add this scan to [Plant Name]'s VNIR history?" — allowing disease detection sessions to contribute bonus scans to the monitoring timeline as a natural side effect of normal app use. Both flows write to the same data store and are processed by the same Thanal pipeline.
 
 ---
 
 ### Module 2 — Mozhi: Multilingual Chatbot & Contextual Memory
 
-**What it solves:** Phase 1 has no memory — every session starts fresh. The LLM has no knowledge of what disease this farm had last week, what treatment was applied, or whether it worked. For NAVA to function as a real agronomist it must remember.
+**What it addresses:** Phase 1 has no conversational memory — every session starts fresh. A genuine digital agronomist must remember what disease appeared last week, what treatment was applied, and whether it resolved. Mozhi adds persistent contextual memory and regional language accessibility on top of the existing LLM pipeline.
 
 **Hierarchical memory architecture:**
-Rather than keeping raw chat logs in the LLM context window (which would exhaust the context limit within days), Mozhi uses a four-level compression strategy:
+Rather than keeping raw chat logs in the LLM context window — which would exhaust the context limit within days of active use — Mozhi uses a four-level compression strategy to preserve farm history across an entire growing season while keeping active token usage minimal:
 
-```
-Level 1 — Live context window
-  Current session raw messages (~8K tokens, Llama 3.1 native context)
+- **Level 1 — Live context window:** Current session raw messages, held in memory for the duration of the session
+- **Level 2 — Daily summary:** A background cron job runs at midnight via APScheduler, passing the past 24 hours of raw messages to a small, fast model (Qwen2.5-1.5B via Ollama) for summarisation. The compressed daily digest is stored persistently and the raw log is cleared
+- **Level 3 — Weekly digest:** Daily summaries are aggregated weekly into a concise chronicle, targeting under 500 tokens per plant per week
+- **Level 4 — Season chronicle:** The full growing-season record — diseases encountered, treatments applied, outcomes observed — stored persistently and injected into every LLM system prompt
 
-Level 2 — Daily summary  [cron job, runs at midnight]
-  APScheduler triggers a Qwen2.5-1.5B summarisation of the past 24h
-  Raw messages → compressed daily digest → stored in SQLite
-  Raw logs cleared after summarisation
-
-Level 3 — Weekly digest  [cron job, runs Sunday midnight]
-  Daily summaries for the week → aggregated weekly chronicle
-  Target: < 500 tokens per week per plant
-
-Level 4 — Season chronicle  [persistent]
-  Full growing-season history: diseases encountered, treatments
-  applied, outcomes observed — injected into every LLM system prompt
-```
-
-**Context injection (assembled per request):**
-```
-[Season chronicle for this plant]
-[This week's daily summaries]
-[Last 5 raw messages from current session]
-[RAG-retrieved context chunks for this query]
-[User message]
-```
-
-**SQLite schema (memory):**
-```sql
-CREATE TABLE sessions (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    plant_id    TEXT,
-    timestamp   INTEGER,
-    role        TEXT,   -- 'user' | 'assistant'
-    content     TEXT
-);
-
-CREATE TABLE daily_summaries (
-    date        TEXT,
-    plant_id    TEXT,
-    summary     TEXT,
-    PRIMARY KEY (date, plant_id)
-);
-
-CREATE TABLE season_chronicle (
-    plant_id    TEXT,
-    week        TEXT,
-    digest      TEXT,
-    PRIMARY KEY (plant_id, week)
-);
-```
+When a new message arrives, the system prompt assembled for Llama 3.1 contains the season chronicle, recent daily summaries, the last few raw messages from the current session, and any RAG-retrieved context for the current query. The LLM receives a rich, compressed history of the farm without ever exceeding its context window.
 
 **Multilingual strategy — Bhashini translation bridge:**
-Rather than using a natively multilingual LLM (which tends to have weak agricultural domain vocabulary in Indian languages), Mozhi uses Bhashini as a translation layer:
+Rather than using a natively multilingual LLM (which tends to have weak agricultural domain vocabulary in Indian regional languages), Mozhi uses Bhashini as a translation layer around the English-language Llama 3.1 pipeline:
+
 ```
 Regional language input → Bhashini → English → Llama 3.1 → English response → Bhashini → Regional language output
 ```
-This preserves the full reasoning capability of Llama 3.1 while delivering responses in Malayalam, Tamil, Hindi, and other supported languages. Agricultural entities (pesticide names, disease terms) that must not be translated remain in their standard form.
+
+This preserves the full reasoning and domain capability of Llama 3.1 while delivering responses in Malayalam, Tamil, Hindi, and other Bhashini-supported languages. Agricultural entities — pesticide names, disease identifiers, chemical compounds — that must not be mistranslated are handled through term-level protection in the translation pipeline.
 
 ---
 
-### Module 3 — Yukthi: RAG Pipeline, Explainable AI & IoT Fusion
+### Module 3 — Yukthi: RAG Pipeline & Explainable AI
 
-**What it solves:** LLM hallucination of chemical dosages is the most critical safety risk in agricultural AI. Yukthi grounds every prescription in verified source documents, makes the model's visual reasoning transparent to the farmer, and integrates real-world environmental data to make advice hyper-local.
+**What it addresses:** LLM hallucination of chemical dosages is the most critical safety risk in agricultural AI advisory. Yukthi grounds every prescription in verified source documents and makes the model's visual reasoning transparent to the farmer — two measures that together address both safety and trust.
 
-**RAG pipeline:**
+**RAG-grounded advisory pipeline:**
 ```
 User query
   → BAAI/bge-m3 embedding
   → ChromaDB top-5 similarity search
-  → Retrieved chunks injected into Llama system prompt
-  → Response generated with mandatory source citation
-  → Citations displayed alongside prescription in UI
+  → Retrieved chunks injected into Llama 3.1 system prompt
+  → Response generated with source attribution
+  → Citations displayed alongside prescription in the app UI
 ```
 
-Knowledge base sources: Kerala Agricultural University extension bulletins, ICAR crop disease management guidelines, state-level pesticide regulation documents. All ingested as PDFs via PyMuPDF, chunked at 512 tokens with 64-token overlap (preserves context around chemical names), embedded with `BAAI/bge-m3`, stored in a persistent local ChromaDB instance.
-
-Keyword-weighted loss (KAIT-inspired): agricultural entities — pesticide names, disease identifiers, dosage values — are flagged as high-precision tokens during fine-tuning, reducing the probability of factual errors on the terms that matter most.
+The knowledge base is populated from freely available, authoritative sources: Kerala Agricultural University extension bulletins, ICAR crop disease management guidelines, and state-level pesticide regulation documents. All documents are ingested as PDFs, chunked at 512 tokens with 64-token overlap (preserving context around chemical names and dosage values), embedded with `BAAI/bge-m3`, and stored in a persistent local ChromaDB instance. No cloud vector database is required.
 
 **Explainable AI — Grad-CAM:**
-`pytorch-grad-cam` generates heatmap overlays on the final convolutional layer of the EfficientNet backbone. The output is an annotated image showing precisely which leaf regions — lesion patterns, colour changes, texture anomalies — contributed most to the diagnosis. This is returned alongside every disease detection result. For environmental-factor-based advice (humidity, temperature), SHAP values provide a text justification: "High humidity (>85%) in the past 48h increases blast risk by X."
-
-**IoT sensor fusion:**
-A single agnostic endpoint `/api/iot-ingest` accepts JSON-formatted readings from any sensor node — ESP32-CAM, weather station, soil moisture probe, or external weather API. The latest reading for a given location is retrieved and injected into the LLM system prompt before inference, so disease likelihood advice dynamically reflects current field conditions.
-
-Virtual sensor fallback: if physical IoT data is unavailable, a gradient boosting model infers missing environmental parameters (soil moisture, leaf wetness duration) from basic weather API data (temperature, humidity, rainfall) — ensuring hyper-local advice even for farms with no sensor hardware.
+`pytorch-grad-cam` generates heatmap overlays on the final convolutional layer of EfficientNet-B0 after every disease detection. The output is an annotated image highlighting precisely which regions of the leaf — lesion patterns, colour changes, texture anomalies — contributed most to the diagnosis. This overlay is returned alongside every detection result in the app, giving the farmer a visual justification for the AI's conclusion rather than a black-box label.
 
 ---
 
-### Module 4 — Gathi: Flutter App, FastAPI Backend & Edge Deployment
+### Module 4 — Gathi: Mobile App & Backend Orchestration
 
-**What it solves:** Phase 1 is a Gradio web interface — functional for demonstration but not deployable for a Kerala farmer with an Android phone and intermittent connectivity. Gathi delivers NAVA as a real mobile application with offline fallback.
+**What it addresses:** Phase 1 is a Gradio web interface — adequate for demonstration but not deployable for a farmer in the field. Gathi is the integration and delivery layer that brings all of NAVA's capabilities together through a single mobile application, orchestrates communication between all modules via a FastAPI backend, and ensures the system remains functional under low or no connectivity.
 
 **Backend — FastAPI:**
+FastAPI serves as the central orchestration layer, routing requests between the Flutter app and the underlying modules:
+
 ```
-POST /api/diagnose       →  CV inference + Grad-CAM overlay
-POST /api/chat           →  Mozhi memory assembly + Llama 3.1
-POST /api/rag            →  Yukthi RAG retrieval
-POST /api/vnir-upload    →  Thanal processing + checkpoint logic
-POST /api/iot-ingest     →  Sensor data ingestion
+POST /api/diagnose       →  ONNX EfficientNet inference + Grad-CAM overlay
+POST /api/chat           →  Mozhi memory assembly + Llama 3.1 via Ollama
+POST /api/rag            →  Yukthi ChromaDB retrieval + augmented generation
+POST /api/vnir-upload    →  Thanal ONNX processing + checkpoint logic
 ```
-Ollama serves Llama 3.1 8B locally on the M4 Pro using unified memory — no recurring API costs. FastAPI handles async orchestration, routing each request to the appropriate module and aggregating the response.
+
+Ollama serves Llama 3.1 8B locally on the M4 Pro using unified memory — no recurring API costs. APScheduler manages the Mozhi memory cron jobs within the same process.
 
 **Mobile app — Flutter:**
-Core screens:
-- **Diagnose** — camera capture, disease result with Grad-CAM overlay, confidence score, short prescription, detailed LLM treatment plan
-- **Chat** — conversational interface with farm history context, multilingual toggle
-- **Monitor** — VNIR plant list, individual plant timeline, checkpoint history, stress alerts
-- **Dashboard** — IoT sensor readings, weather context, environmental risk summary
+A single Flutter codebase targeting Android and iOS. Core screens:
+- **Diagnose** — camera capture, disease result with Grad-CAM overlay, confidence score, short rule-based prescription, full LLM-generated treatment plan
+- **Chat** — conversational interface with full farm history context, regional language toggle via Bhashini
+- **Monitor** — VNIR plant list, individual plant ratio timeline, checkpoint progress, stress alerts
+- **Settings** — plant ID management, notification preferences, language selection
 
 **Edge deployment — offline fallback:**
-EfficientNet-B0 (Phase 1 model, kept for edge use due to size) exported via `torch → ONNX → TensorFlow Lite`. The `.tflite` file is bundled in the Flutter app. `tflite_flutter` runs inference entirely on-device. Thanal's ONNX model is also bundled via `onnxruntime_flutter`.
+Both the EfficientNet-B0 and Thanal models are in ONNX format, allowing them to be bundled directly in the Flutter app via `onnxruntime_flutter`. When connectivity is unavailable, the app runs both models entirely on-device:
 
-When connectivity is unavailable:
 ```
 Offline mode:
-  Camera → TFLite EfficientNet-B0 → disease class + static prescription
+  Camera → ONNX EfficientNet → disease class + static rule-based prescription
   Camera → ONNX Thanal → NIR/Green ratio → local SQLite checkpoint update
-  [No LLM, no RAG, no Bhashini — core functionality preserved]
 
 On reconnect:
-  Queued scans sync to backend
   Full RAG + LLM pipeline resumes
+  Any scans taken offline are synced and processed
 ```
 
----
-
-## System Architecture — Full Stack
-
-```
-┌─────────────────────────────────────────────────────┐
-│                    USER LAYER                       │
-│  Flutter App (Android / iOS)                        │
-│  Diagnose · Chat · Monitor · Dashboard              │
-└──────────────┬──────────────────────────────────────┘
-               │ HTTPS / local network
-┌──────────────▼──────────────────────────────────────┐
-│                APPLICATION LAYER                    │
-│  FastAPI Backend                                    │
-│  /diagnose  /chat  /rag  /vnir-upload  /iot-ingest  │
-│  Ollama (Llama 3.1 8B — M4 Pro unified memory)      │
-│  Confidence threshold gate · Rule-based triage      │
-└──┬─────────┬───────────┬──────────┬─────────────────┘
-   │         │           │          │
-┌──▼──┐  ┌───▼───┐  ┌────▼───┐  ┌───▼────┐
-│MIZHI│  │THANAL │  │YUKTHI  │  │ MOZHI  │
-│ B4  │  │ ONNX  │  │  RAG   │  │ Memory │
-│ CV  │  │ VNIR  │  │Grad-CAM│  │Bhashini│
-└──┬──┘  └───┬───┘  └────┬───┘  └───┬────┘
-   │         │           │          │
-┌──▼─────────▼───────────▼──────────▼──────────────────┐
-│                    DATA LAYER                        │
-│  Superset Dataset (20,400 samples)                   │
-│  ChromaDB (vector store — RAG knowledge base)        │
-│  SQLite (VNIR scans · checkpoints · chat memory)     │
-│  Bhashini API · IoT ingest endpoint                  │
-└──────────────────────────────────────────────────────┘
-
-Edge (offline):
-  TFLite EfficientNet-B0 + ONNX Thanal → bundled in Flutter APK
-```
+This ensures that the two most critical capabilities — disease identification and VNIR stress monitoring — remain available regardless of network conditions.
 
 ---
 
 ## Development Roadmap
 
 ### April (current)
-- Finalise confirmed architecture and tech stack
-- Set up FastAPI project skeleton with stub endpoints
-- Integrate Thanal ONNX into Python backend (`/api/vnir-upload`)
-- Define SQLite schemas for VNIR and memory storage
+- Finalise architecture and confirmed tech stack
+- Set up FastAPI project skeleton with all endpoints as stubs
+- Convert EfficientNet-B0 `.pth` checkpoint to ONNX format
+- Integrate Thanal ONNX into the FastAPI backend
+- Mizhi: wire ONNX EfficientNet inference into `/api/diagnose`
+- Yukthi: ingest KAU and ICAR extension documents into ChromaDB
+- Yukthi: implement Grad-CAM overlay and return annotated image via API
 
-### May — Weeks 1–2
-- Mizhi: multi-label dataset annotation + EfficientNet-B4 training on A100
-- Yukthi: RAG pipeline — ingest KAU/ICAR extension documents into ChromaDB
-- Yukthi: implement Grad-CAM overlay endpoint
+### May
+- Mozhi: build hierarchical memory layer and APScheduler cron summarisation
+- Mozhi: integrate Bhashini API translation bridge
+- Gathi: Flutter UI — all core screens scaffolded and connected to the API
+- Gathi: bundle ONNX models into Flutter for offline edge fallback
+- End-to-end integration testing across all modules
+- Performance benchmarking, report finalisation, demonstration preparation
 
-### May — Weeks 3–4
-- Mozhi: hierarchical memory layer + APScheduler cron jobs
-- Mozhi: Bhashini API integration and translation bridge
-- Yukthi: IoT ingest endpoint + virtual sensor fallback model
-- Gathi: Flutter UI scaffolding — all core screens
+---
 
-### June 1–15
-- Gathi: TFLite + ONNX export for offline edge fallback
-- Gathi: end-to-end integration — all modules connected through app
-- Performance benchmarking across all modules
-- Report finalisation and demonstration preparation
+## Future Work
+
+The following directions are identified as meaningful extensions to NAVA beyond the current project scope:
+
+- **IoT sensor fusion:** A hardware-agnostic ingestion endpoint that accepts real-time readings from field sensor nodes (soil moisture probes, weather stations, ESP32-based cameras) and injects environmental context into LLM advisory — making disease likelihood assessment hyper-local and dynamic
+- **Multi-label disease detection:** Upgrading the classifier to detect multiple concurrent pathologies per image, requiring a larger annotated dataset with co-occurrence labels and a sigmoid multi-label output head replacing the current softmax
+- **Expanded crop coverage:** Extending the Superset dataset to include additional regional crops relevant to Kerala and broader South Asian farming contexts
+- **On-device LLM:** Deploying a quantised small language model (4-bit) directly on the mobile device for fully offline advisory generation, removing the dependency on a local inference server
 
 ---
 
