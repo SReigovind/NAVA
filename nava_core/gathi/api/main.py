@@ -9,7 +9,18 @@ from fastapi.responses import HTMLResponse
 from nava_core.mizhi.detection import EfficientNetB0Predictor
 from nava_core.mizhi.vnir import VNIRPipeline
 from nava_core.shared.config import get_settings
-from nava_core.shared.schemas import DiagnoseResponse, VNIRPlantsResponse, VNIRResponse
+from nava_core.mozhi.chat import ChatService
+from nava_core.shared.schemas import (
+    ChatClearRequest,
+    ChatClearResponse,
+    ChatRequest,
+    ChatResponse,
+    ChatSummaryRequest,
+    ChatSummaryResponse,
+    DiagnoseResponse,
+    VNIRPlantsResponse,
+    VNIRResponse,
+)
 from nava_core.shared.utils import image_to_base64, load_image_from_bytes
 
 app = FastAPI(title="NAVA API", version="0.1.0")
@@ -35,6 +46,11 @@ def _vnir_pipeline() -> VNIRPipeline:
         model_path=settings.vnir_model_path,
         stress_threshold_pct=settings.vnir_stress_threshold_pct,
     )
+
+
+@lru_cache
+def _chat_service() -> ChatService:
+    return ChatService.from_settings()
 
 
 @app.get("/api/health")
@@ -127,3 +143,28 @@ async def vnir_upload(
         hsv_image_base64=image_to_base64(hsv_image),
         vnir_image_base64=image_to_base64(vnir_image),
     )
+
+
+@app.post("/api/chat", response_model=ChatResponse)
+def chat(request: ChatRequest) -> ChatResponse:
+    service = _chat_service()
+    result = service.chat(request.message, request.session_id)
+    return ChatResponse(
+        session_id=result.session_id,
+        reply=result.reply,
+        error=result.error,
+    )
+
+
+@app.post("/api/chat/clear", response_model=ChatClearResponse)
+def chat_clear(request: ChatClearRequest) -> ChatClearResponse:
+    service = _chat_service()
+    service.clear_session(request.session_id)
+    return ChatClearResponse(session_id=request.session_id, status="cleared")
+
+
+@app.post("/api/chat/summary", response_model=ChatSummaryResponse)
+def chat_summary(request: ChatSummaryRequest) -> ChatSummaryResponse:
+    service = _chat_service()
+    summary = service.get_summary_display(request.session_id)
+    return ChatSummaryResponse(session_id=request.session_id, summary=summary)

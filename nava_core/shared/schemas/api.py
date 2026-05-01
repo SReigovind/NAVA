@@ -14,6 +14,35 @@ class DiagnoseResponse(BaseModel):
     gradcam_image_base64: Optional[str] = None
 
 
+class ChatRequest(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+
+
+class ChatResponse(BaseModel):
+    session_id: str
+    reply: str
+    error: Optional[str] = None
+
+
+class ChatClearRequest(BaseModel):
+    session_id: str
+
+
+class ChatClearResponse(BaseModel):
+    session_id: str
+    status: str
+
+
+class ChatSummaryRequest(BaseModel):
+    session_id: str
+
+
+class ChatSummaryResponse(BaseModel):
+    session_id: str
+    summary: Optional[str] = None
+
+
 class VNIRResponse(BaseModel):
     plant_id: str
     leaf_state: str

@@ -148,6 +148,104 @@
         border-radius: 16px;
       }
 
+      .chat-window {
+        min-height: 260px;
+        max-height: 360px;
+        overflow-y: auto;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: #fbfaf7;
+        display: grid;
+        gap: 12px;
+      }
+
+      .chat-bubble {
+        max-width: 80%;
+        padding: 12px 14px;
+        border-radius: 16px;
+        line-height: 1.5;
+        font-size: 14px;
+      }
+
+      .chat-bubble.user {
+        justify-self: end;
+        background: rgba(15, 118, 110, 0.18);
+      }
+
+      .chat-bubble.assistant {
+        justify-self: start;
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .chat-bubble.loading {
+        background: rgba(0, 0, 0, 0.04);
+        color: var(--muted);
+      }
+
+      .loading-dots {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .loading-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--muted);
+        opacity: 0.3;
+        animation: dotPulse 1s infinite ease-in-out;
+      }
+
+      .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      .chat-role {
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .chat-input-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .chat-input-row input {
+        flex: 1;
+      }
+
+      .summary-panel {
+        border-radius: 16px;
+        border: 1px dashed rgba(0, 0, 0, 0.15);
+        background: rgba(0, 0, 0, 0.03);
+        padding: 12px 14px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .summary-title {
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+
+      .summary-text {
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+
       .results span {
         font-weight: 600;
       }
@@ -190,6 +288,19 @@
           transform: translateY(0);
         }
       }
+
+      @keyframes dotPulse {
+        0%,
+        80%,
+        100% {
+          transform: scale(0.6);
+          opacity: 0.3;
+        }
+        40% {
+          transform: scale(1);
+          opacity: 0.9;
+        }
+      }
     </style>
   </head>
   <body>
@@ -201,6 +312,7 @@
 
       <div class="tabs">
         <button class="tab active" data-tab="diagnose">Diagnose</button>
+        <button class="tab" data-tab="chat">Chat</button>
         <button class="tab" data-tab="vnir">VNIR Monitor</button>
       </div>
 
@@ -239,6 +351,37 @@
               src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
             />
           </div>
+        </div>
+      </section>
+
+      <section id="chat" class="card grid hidden">
+        <div class="grid two">
+          <div>
+            <label>Session Label</label>
+            <input id="chatLabel" type="text" placeholder="e.g., Greenhouse cucumbers" />
+          </div>
+          <div>
+            <label>Session ID (auto)</label>
+            <input id="chatSession" type="text" placeholder="auto" readonly />
+          </div>
+        </div>
+        <div class="grid two">
+          <div>
+            <label>&nbsp;</label>
+            <div class="button-row">
+              <button id="chatClearSession">Clear Session</button>
+              <button id="chatClear">Clear Log</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-window" id="chatLog"></div>
+        <div class="chat-input-row">
+          <input id="chatInput" type="text" placeholder="Ask about crop care..." />
+          <button id="chatSend">Send</button>
+        </div>
+        <div class="summary-panel">
+          <div class="summary-title">Conversation Summary</div>
+          <div id="chatSummaryText" class="summary-text muted">No summary yet.</div>
         </div>
       </section>
 
@@ -305,6 +448,7 @@
       const tabs = document.querySelectorAll(".tab");
       const sections = {
         diagnose: document.getElementById("diagnose"),
+        chat: document.getElementById("chat"),
         vnir: document.getElementById("vnir"),
       };
 
@@ -316,6 +460,9 @@
           sections[tab.dataset.tab].classList.remove("hidden");
           if (tab.dataset.tab === "diagnose") {
             document.getElementById("diagImages").classList.remove("hidden");
+          }
+          if (tab.dataset.tab === "chat") {
+            refreshChatSummary();
           }
         });
       });
@@ -479,6 +626,262 @@
         alert(`Cleared history for ${plantId}`);
       });
 
+      const chatLog = document.getElementById("chatLog");
+      const chatLabelInput = document.getElementById("chatLabel");
+      const chatSessionInput = document.getElementById("chatSession");
+      const chatSendBtn = document.getElementById("chatSend");
+      const chatInput = document.getElementById("chatInput");
+      const chatSummaryText = document.getElementById("chatSummaryText");
+      let chatSessionId = "";
+
+      const SESSION_STORE_KEY = "nava_chat_sessions";
+      const LAST_LABEL_KEY = "nava_chat_last_label";
+      const LAST_SESSION_ID_KEY = "nava_chat_last_session_id";
+
+      const loadSessionStore = () => {
+        try {
+          return JSON.parse(localStorage.getItem(SESSION_STORE_KEY)) || {};
+        } catch (error) {
+          return {};
+        }
+      };
+
+      const saveSessionStore = (store) => {
+        localStorage.setItem(SESSION_STORE_KEY, JSON.stringify(store));
+      };
+
+      const setActiveSession = (sessionId) => {
+        chatSessionId = sessionId || "";
+        chatSessionInput.value = chatSessionId || "";
+        if (chatSessionId) {
+          localStorage.setItem(LAST_SESSION_ID_KEY, chatSessionId);
+        } else {
+          localStorage.removeItem(LAST_SESSION_ID_KEY);
+        }
+      };
+
+      const hydrateSessionFromLabel = () => {
+        const label = chatLabelInput.value.trim();
+        const store = loadSessionStore();
+        if (label && store[label]) {
+          setActiveSession(store[label]);
+        } else if (!label) {
+          setActiveSession(localStorage.getItem(LAST_SESSION_ID_KEY) || "");
+        } else {
+          setActiveSession("");
+        }
+      };
+
+      const escapeHtml = (text) =>
+        text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+
+      const renderMarkdown = (text) => {
+        const escaped = escapeHtml(text);
+        const bolded = escaped.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        const italic = bolded.replace(/\*(.+?)\*/g, "<em>$1</em>");
+        return italic.replace(/\n/g, "<br>");
+      };
+
+      const appendChatLine = (role, text) => {
+        const bubble = document.createElement("div");
+        bubble.className = `chat-bubble ${role === "You" ? "user" : "assistant"}`;
+        bubble.innerHTML = `
+          <div class="chat-role">${role}</div>
+          <div class="chat-text">${renderMarkdown(text)}</div>
+        `;
+        chatLog.appendChild(bubble);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      };
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const appendChatLineTyped = async (role, text) => {
+        const bubble = document.createElement("div");
+        bubble.className = `chat-bubble ${role === "You" ? "user" : "assistant"}`;
+        bubble.innerHTML = `
+          <div class="chat-role">${role}</div>
+          <div class="chat-text"></div>
+        `;
+        const textNode = bubble.querySelector(".chat-text");
+        chatLog.appendChild(bubble);
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        const tokens = text.match(/\S+\s*/g) || [];
+        let current = "";
+        const groupSize = 6;
+        for (let i = 0; i < tokens.length; i += groupSize) {
+          current += tokens.slice(i, i + groupSize).join("");
+          textNode.innerHTML = renderMarkdown(current);
+          chatLog.scrollTop = chatLog.scrollHeight;
+          await sleep(50);
+        }
+      };
+
+      const appendLoadingBubble = () => {
+        const bubble = document.createElement("div");
+        bubble.className = "chat-bubble assistant loading";
+        bubble.innerHTML = `
+          <div class="chat-role">NAVA</div>
+          <div class="chat-text">
+            <span class="loading-dots"><span></span><span></span><span></span></span>
+          </div>
+        `;
+        chatLog.appendChild(bubble);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return bubble;
+      };
+
+      const setChatPending = (isPending) => {
+        chatSendBtn.disabled = isPending;
+        chatInput.disabled = isPending;
+      };
+
+      const refreshChatSummary = async () => {
+        const session = chatSessionId || chatSessionInput.value.trim();
+        if (!session) {
+          chatSummaryText.textContent = "No summary yet.";
+          return;
+        }
+        const response = await fetch("/api/chat/summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: session }),
+        });
+        if (!response.ok) {
+          chatSummaryText.textContent = "Summary unavailable.";
+          return;
+        }
+        const data = await response.json();
+        chatSummaryText.textContent = data.summary || "No summary yet.";
+      };
+
+      chatSendBtn.addEventListener("click", async () => {
+        const message = chatInput.value.trim();
+        if (!message) {
+          alert("Enter a message.");
+          return;
+        }
+
+        appendChatLine("You", message);
+        chatInput.value = "";
+
+        const payload = {
+          message,
+          session_id: chatSessionId || chatSessionInput.value.trim() || null,
+        };
+
+        const loadingBubble = appendLoadingBubble();
+        setChatPending(true);
+
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            if (loadingBubble.isConnected) {
+              loadingBubble.remove();
+            }
+            appendChatLine("NAVA", "Chat failed.");
+            return;
+          }
+
+          const data = await response.json();
+          if (data.session_id) {
+            setActiveSession(data.session_id);
+            const label = chatLabelInput.value.trim();
+            if (label) {
+              const store = loadSessionStore();
+              store[label] = data.session_id;
+              saveSessionStore(store);
+              localStorage.setItem(LAST_LABEL_KEY, label);
+            }
+          }
+
+          if (data.error) {
+            if (loadingBubble.isConnected) {
+              loadingBubble.remove();
+            }
+            appendChatLine("NAVA", data.error);
+            return;
+          }
+
+          if (loadingBubble.isConnected) {
+            loadingBubble.remove();
+          }
+          await appendChatLineTyped("NAVA", data.reply || "(empty response)");
+          await refreshChatSummary();
+        } catch (error) {
+          if (loadingBubble.isConnected) {
+            loadingBubble.remove();
+          }
+          appendChatLine("NAVA", "Network error.");
+        } finally {
+          setChatPending(false);
+        }
+      });
+
+      chatInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          chatSendBtn.click();
+        }
+      });
+
+      chatLabelInput.addEventListener("change", () => {
+        const label = chatLabelInput.value.trim();
+        if (label) {
+          localStorage.setItem(LAST_LABEL_KEY, label);
+        } else {
+          localStorage.removeItem(LAST_LABEL_KEY);
+        }
+        hydrateSessionFromLabel();
+        refreshChatSummary();
+      });
+
+      document.getElementById("chatClear").addEventListener("click", () => {
+        chatLog.innerHTML = "";
+      });
+
+      document.getElementById("chatClearSession").addEventListener("click", async () => {
+        const currentSession = chatSessionId || chatSessionInput.value.trim();
+        if (!currentSession) {
+          chatLog.innerHTML = "";
+          chatSummaryText.textContent = "No summary yet.";
+          return;
+        }
+        const response = await fetch("/api/chat/clear", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: currentSession }),
+        });
+        if (!response.ok) {
+          alert("Failed to clear session.");
+          return;
+        }
+        const label = chatLabelInput.value.trim();
+        if (label) {
+          const store = loadSessionStore();
+          delete store[label];
+          saveSessionStore(store);
+        }
+        setActiveSession("");
+        chatLog.innerHTML = "";
+        chatSummaryText.textContent = "No summary yet.";
+      });
+
+      const storedLabel = localStorage.getItem(LAST_LABEL_KEY);
+      if (storedLabel) {
+        chatLabelInput.value = storedLabel;
+      }
+      hydrateSessionFromLabel();
       refreshPlantList();
 
     </script>
