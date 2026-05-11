@@ -46,45 +46,8 @@ const [pendingWords, setPendingWords] = useState([]);
 
 ---
 
-## Phase 2 — Landing Page Redesign (~2 hours)
 
-### Goals
-- First impression: feels like a professional agri-tech product, not a student project.
-- Animated hero section — subtle floating elements, not distracting.
-- Clear information hierarchy.
-
-### Sections
-
-#### Hero
-- Full-viewport height.
-- Left: NAVA logo + tag + headline + subheadline + single "Get Started →" CTA.
-- Right: animated visual — a stylized crop health dashboard mockup (CSS-only, no images needed) OR a subtle animated background grid.
-- Entrance animation: headline fades up, CTA slides in after 300ms delay.
-
-#### Feature Strip
-- 3 cards in a row (already exists, redesign the card style).
-- Each card: icon (SVG or styled div, not emoji), title, one-liner.
-- Subtle hover: card lifts with box shadow.
-
-#### How It Works
-- 3-step numbered flow: "Create a field → Add crops → Run scans & ask NAVA".
-- Horizontal on desktop, connected by a dashed line.
-
-#### Footer (new)
-- Project name: **NAVA — Neural Agricultural Virtual Assistant**
-- Institution: Kerala Agricultural University / MSc AI & ML
-- Year: 2026
-- Brief: "An AI-powered crop health and advisory platform."
-- Links: none needed for now (no live site).
-
-### Animations
-- CSS `@keyframes fadeInUp` for hero content on load.
-- Feature cards: `transition: transform 0.2s, box-shadow 0.2s` on hover.
-- Background: subtle animated gradient shift on hero (slow, 8s cycle).
-
----
-
-## Phase 3 — Post-Login User Dashboard (~2 hours)
+## Phase 2 — Post-Login User Dashboard (~2 hours)
 
 Currently the `/fields` route is a plain list. Replace with a dashboard layout.
 
@@ -132,7 +95,7 @@ Currently the `/fields` route is a plain list. Replace with a dashboard layout.
 
 ---
 
-## Phase 4 — Field-Level Dashboard (~1.5 hours)
+## Phase 3 — Field-Level Dashboard (~1.5 hours)
 
 `FieldDetail.jsx` currently shows just metadata + crop grid. Upgrade to a dashboard layout.
 
@@ -165,7 +128,7 @@ Currently the `/fields` route is a plain list. Replace with a dashboard layout.
 
 ---
 
-## Phase 5 — Micro-Animations Polish (~1 hour)
+## Phase 4 — Micro-Animations Polish (~1 hour)
 
 Subtle animations that feel alive without being distracting.
 
@@ -192,7 +155,7 @@ Subtle animations that feel alive without being distracting.
 ## Execution Order
 
 ```
-[TODAY]  Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
+[TODAY]  Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4
 ```
 
 Start with Phase 0 (bugs) first — they are already implemented during planning.

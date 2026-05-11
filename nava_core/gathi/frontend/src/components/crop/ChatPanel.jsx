@@ -6,7 +6,7 @@ const createSessionId = () =>
 
 const formatTimestamp = (value) => {
   if (!value) return "";
-  const d = new Date(value.replace(" ", "T"));
+  const d = new Date(value.replace(" ", "T") + (value.endsWith("Z") ? "" : "Z"));
   return Number.isNaN(d.getTime()) ? value : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 
@@ -83,6 +83,11 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [showSummary, setShowSummary] = useState(false);
+  
+  const [animating, setAnimating] = useState(false);
+  const [revealedText, setRevealedText] = useState("");
+  const [pendingWords, setPendingWords] = useState([]);
+  
   const messagesEnd = useRef(null);
   const inputRef = useRef(null);
 
@@ -146,8 +151,32 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
   }, [cropId]);
 
   useEffect(() => {
+    if (!animating) return;
+    if (pendingWords.length === 0) {
+      setAnimating(false);
+      setHistory(prev => {
+        const newHist = [...prev];
+        const last = newHist[newHist.length - 1];
+        if (last && last.isAnimating) {
+          last.isAnimating = false;
+          last.content = last.fullContent;
+        }
+        return newHist;
+      });
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setRevealedText(prev => prev + (prev ? " " : "") + pendingWords[0]);
+      setPendingWords(prev => prev.slice(1));
+    }, 40);
+
+    return () => clearTimeout(timer);
+  }, [animating, pendingWords]);
+
+  useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history]);
+  }, [history, revealedText]);
 
   const switchSession = (sid) => {
     setActiveSession(sid);
@@ -162,6 +191,21 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
     const sid = activeSession || ensureSession();
     const userMsg = message.trim();
     setMessage("");
+
+    if (animating) {
+      setAnimating(false);
+      setPendingWords([]);
+      setHistory(prev => {
+        const newHist = [...prev];
+        const last = newHist[newHist.length - 1];
+        if (last && last.isAnimating) {
+          last.isAnimating = false;
+          last.content = last.fullContent;
+        }
+        return newHist;
+      });
+    }
+
     setHistory((prev) => [...prev, { role: "user", content: userMsg, created_at: new Date().toISOString() }]);
     setBusy(true);
     try {
@@ -171,7 +215,11 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
         body: JSON.stringify({ message: userMsg, session_id: sid, field_id: Number(fieldId), crop_id: Number(cropId) }),
       });
       if (data.reply) {
-        setHistory((prev) => [...prev, { role: "assistant", content: data.reply, created_at: new Date().toISOString() }]);
+        const wordsArr = data.reply.split(" ");
+        setPendingWords(wordsArr);
+        setRevealedText("");
+        setAnimating(true);
+        setHistory((prev) => [...prev, { role: "assistant", content: "", fullContent: data.reply, isAnimating: true, created_at: new Date().toISOString() }]);
       }
       refreshSummary(sid);
     } catch (err) {
@@ -310,7 +358,11 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
           {history.map((item, i) => (
             <div key={`${item.created_at}-${i}`} className={`chat-bubble ${item.role}`}>
               <div className="bubble-content">
-                {item.role === "assistant" ? renderMarkdown(item.content) : item.content}
+                {item.isAnimating ? (
+                  <>{revealedText}<span style={{ animation: "blink 1.2s ease infinite", marginLeft: "2px" }}>▍</span></>
+                ) : (
+                  item.role === "assistant" ? renderMarkdown(item.content) : item.content
+                )}
               </div>
               <div className="bubble-time">{formatTimestamp(item.created_at)}</div>
             </div>

@@ -78,6 +78,14 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
   const [savingNotes, setSavingNotes] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const formatLocalDate = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr.replace(" ", "T") + "Z");
+    if (isNaN(d)) return dateStr.slice(0, 10);
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  };
+
   const load = async () => {
     setLoading(true);
     try {
@@ -210,7 +218,7 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
                     <div key={i} className="ov-activity-row">
                       <div className="ov-activity-body">
                         <span className="ov-activity-label">{isDiag ? "Disease Detection" : "VNIR Monitoring"}</span>
-                        <span className="ov-activity-meta">{label || "Scan"} · {e.payload?.plant_name} · {(e.created_at || "").slice(0, 10)}</span>
+                        <span className="ov-activity-meta">{label || "Scan"} · {e.payload?.plant_name} · {formatLocalDate(e.created_at)}</span>
                       </div>
                       <div className={`health-dot ${dotCls}`} style={{ width: 8, height: 8 }} title={label} />
                     </div>

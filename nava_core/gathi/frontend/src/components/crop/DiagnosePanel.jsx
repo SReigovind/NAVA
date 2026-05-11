@@ -8,6 +8,14 @@ function HistorySection({ plantId, onDeleted }) {
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(null);
 
+  const formatLocalTime = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr.replace(" ", "T") + "Z");
+    if (isNaN(d)) return dateStr.slice(0, 16);
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
   const load = async () => {
     setLoading(true);
     try {
@@ -46,7 +54,7 @@ function HistorySection({ plantId, onDeleted }) {
                 <div className={`health-dot ${healthy ? "dot-green" : "dot-red"}`} style={{ flexShrink: 0 }} />
                 <div className="history-item-body">
                   <span className="history-item-label">{p.class_label?.replace(/_/g, " ")}</span>
-                  <span className="history-item-meta">{conf != null && `${conf}% · `}{p.reliability} · {(e.created_at || "").slice(0, 16)}</span>
+                  <span className="history-item-meta">{conf != null && `${conf}% · `}{p.reliability} · {formatLocalTime(e.created_at)}</span>
                 </div>
                 <button className="history-del-btn" onClick={() => deleteEvent(e.id)} disabled={deleting === e.id}>×</button>
               </div>

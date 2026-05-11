@@ -1863,6 +1863,21 @@ h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 }
 .history-del-btn:hover { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
 
+/* Sleek custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
 /* ── Markdown in chat ───────────────────────────────────────── */
 .md-h1 { font-size: 1rem; font-weight: 700; margin: 6px 0 2px; }
 .md-h2 { font-size: 0.9375rem; font-weight: 700; margin: 4px 0 2px; }
