@@ -1,0 +1,31 @@
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple
+
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-multipart
+requests
+python-dotenv
+
+numpy
+pandas
+pillow
+opencv-python
+
+torch
+torchvision
+grad-cam
+
+onnx
+onnxruntime
+
+langchain
+langchain-community
+chromadb
+sentence-transformers
+pymupdf
+apscheduler
+
+gradio

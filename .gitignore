@@ -1,0 +1,76 @@
+# Environments and Secrets
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+env/
+ENV/
+.nava/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Node.js / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+nava_core/gathi/frontend/dist/
+nava_core/gathi/frontend/build/
+.parcel-cache/
+
+# Databases and Logs
+logs/
+*.sqlite
+*.db
+*.db-journal
+*.log
+
+# Models and Large Data
+models/*.pth
+models/*.pt
+models/*.onnx
+models/*.onnx.data
+models/*.h5
+models/*.bin
+models/*.safetensors
+data/
+models/
+*.jpg
+*.JPG
+*.png
+*.PNG
+*.jpeg
+*.JPEG
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.pytest_cache/
+.coverage
+htmlcov/
