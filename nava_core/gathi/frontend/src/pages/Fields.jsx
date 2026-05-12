@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api.js";
 
@@ -37,6 +37,25 @@ export default function Fields() {
   const navigate = useNavigate();
 
   const [activeTabId, setActiveTabId] = useState(null);
+  const [hoverField, setHoverField] = useState(null);
+  const [hoverCropIndex, setHoverCropIndex] = useState(0);
+  const [tooltipPos, setTooltipPos] = useState(null);
+  const [hoverGlobalConcerns, setHoverGlobalConcerns] = useState(false);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMouseEnterTooltip = (fieldId, e) => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    setHoverField(fieldId);
+    setHoverCropIndex(0);
+  };
+
+  const handleMouseLeaveTooltip = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoverField(null);
+    }, 150);
+  };
 
   const loadDashboard = async () => {
     try {
@@ -130,11 +149,38 @@ export default function Fields() {
     return false;
   };
 
-  const activeConcerns = scanEvents.filter(isConcern).length;
-
-  const getFieldConcerns = (fieldId) => {
-    return scanEvents.filter(e => e.field_id === fieldId && isConcern(e)).length;
+  const checkCropConcern = (cropId) => {
+    const cropEvents = scanEvents.filter(e => e.crop_id === cropId);
+    const diagEvents = cropEvents.filter(e => e.event_type === "diagnose").sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+    const vnirEvents = cropEvents.filter(e => e.event_type === "vnir").sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+    
+    const hasDiag = diagEvents.some(isConcern);
+    const hasVnir = vnirEvents.some(isConcern);
+    
+    if (!hasDiag && !hasVnir) return null;
+    
+    let reasons = [];
+    if (hasDiag) reasons.push("Disease");
+    if (hasVnir) reasons.push("Stress");
+    
+    return { hasConcern: true, reason: reasons.join(" & ") };
   };
+
+  const getConcernedCropsForField = (fieldId) => {
+    const crops = cropsByField[fieldId] || [];
+    const concerned = [];
+    for (const c of crops) {
+      const concern = checkCropConcern(c.id);
+      if (concern) {
+        concerned.push({ ...c, concernReason: concern.reason });
+      }
+    }
+    return concerned;
+  };
+
+  const allCropsList = Object.values(cropsByField).flat();
+  const activeConcernsCrops = allCropsList.filter(c => checkCropConcern(c.id) !== null);
+  const activeConcerns = activeConcernsCrops.length;
 
   const getCropName = (cropId) => {
     for (const cropList of Object.values(cropsByField)) {
@@ -179,7 +225,7 @@ export default function Fields() {
             </div>
             <div className="card" style={{ padding: "12px 16px" }}>
               <div className="text-sm text-muted mb-xs">Concerns</div>
-              <div style={{ fontSize: "1.75rem", fontWeight: 700, color: activeConcerns > 0 ? "var(--red-400)" : "inherit" }}>
+              <div style={{ fontSize: "1.75rem", fontWeight: 700, color: activeConcerns > 0 ? "var(--red-400)" : "var(--green-400)" }}>
                 {activeConcerns}
               </div>
             </div>
@@ -190,7 +236,7 @@ export default function Fields() {
             <div className="row row-between" style={{ padding: "12px 16px", borderBottom: "1px solid var(--border-default)" }}>
               <h2 style={{ fontSize: "1.125rem", color: "var(--text-secondary)", margin: 0 }}>YOUR FIELDS</h2>
             </div>
-            <div className="custom-scrollbar" style={{ flex: 1, overflowY: "auto", padding: "16px" }}>
+            <div className="custom-scrollbar" style={{ flex: 1, overflowY: "auto", padding: "16px" }} onScroll={() => setHoverField(null)}>
               {fields.length === 0 ? (
                 <div className="empty-state" style={{ margin: 0 }}>
                   <p className="text-muted">No fields yet.</p>
@@ -199,9 +245,11 @@ export default function Fields() {
                 <div className="grid-2">
                   {fields.map((field) => {
                     const cropCount = (cropsByField[field.id] || []).length;
-                    const concerns = getFieldConcerns(field.id);
+                    const concernedCrops = getConcernedCropsForField(field.id);
+                    const concerns = concernedCrops.length;
                     return (
-                      <div key={field.id} className="card card-interactive" style={{ padding: "12px 16px", display: "flex", flexDirection: "column" }} onClick={() => navigate(`/fields/${field.id}`)}>
+                      <div key={field.id} className="card card-interactive" style={{ padding: "12px 16px", display: "flex", flexDirection: "column", position: "relative" }}
+                           onClick={() => navigate(`/fields/${field.id}`)}>
                         <div className="row row-between mb-xs">
                           <h3 style={{ fontSize: "1.125rem", margin: 0 }}>{field.name}</h3>
                           <button
@@ -214,9 +262,16 @@ export default function Fields() {
                         <div className="stack stack-xs mb-sm">
                           <span className="text-xs text-muted">{cropCount} crop{cropCount !== 1 && "s"} · {field.soil_type || "Unknown Soil"}</span>
                         </div>
-                        <div className="row" style={{ alignItems: "center", gap: 8, marginTop: "auto" }}>
+                        <div className="row" style={{ alignItems: "center", gap: 8, marginTop: "auto" }}
+                             onMouseEnter={(e) => handleMouseEnterTooltip(field.id, e)}
+                             onMouseLeave={handleMouseLeaveTooltip}>
                           {concerns > 0 ? (
-                            <><span className="dot dot-red" style={{ width: 8, height: 8 }}></span><span className="text-xs" style={{ color: "var(--red-400)", fontWeight: 500 }}>{concerns} concern{concerns !== 1 ? "s" : ""}</span></>
+                            <>
+                              <span className="dot dot-red" style={{ width: 8, height: 8 }}></span>
+                              <span className="text-xs" style={{ color: "var(--red-400)", fontWeight: 500 }}>{concerns} crop{concerns !== 1 ? "s" : ""} in danger</span>
+                              
+                              {/* Tooltip extracted to global root */}
+                            </>
                           ) : (
                             <><span className="dot dot-green" style={{ width: 8, height: 8 }}></span><span className="text-xs" style={{ color: "var(--green-400)", fontWeight: 500 }}>All clear</span></>
                           )}
@@ -355,6 +410,50 @@ export default function Fields() {
           </div>
         </div>
       )}
+
+      {/* Global Fixed Hover Tooltip */}
+      {hoverField && tooltipPos && (() => {
+        const concernedCrops = getConcernedCropsForField(hoverField);
+        if (concernedCrops.length === 0) return null;
+        return (
+          <div style={{ position: "fixed", top: tooltipPos.top, left: tooltipPos.left, minWidth: "200px", zIndex: 9999, pointerEvents: "auto" }}
+               onMouseEnter={() => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current); setHoverField(hoverField); }}
+               onMouseLeave={handleMouseLeaveTooltip}>
+            <div className="card shadow-lg" style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-default)", borderRadius: "8px", padding: "8px 12px" }}>
+              <div className="stack stack-xs">
+                <div className="row row-between" style={{ alignItems: "center", marginBottom: "2px" }}>
+                  <div className="text-xs text-muted">Action Required</div>
+                  <div className="text-xs text-muted" style={{ fontWeight: 600 }}>{hoverCropIndex + 1} / {concernedCrops.length}</div>
+                </div>
+                <div className="row" style={{ alignItems: "center", gap: "4px" }}>
+                  <button className="btn btn-ghost btn-sm" style={{ padding: "2px 6px", minWidth: 0, opacity: concernedCrops.length === 1 ? 0 : 1 }} 
+                          onClick={(e) => { e.stopPropagation(); setHoverCropIndex(i => Math.max(0, i - 1)); }}
+                          disabled={hoverCropIndex === 0}>
+                    {"<"}
+                  </button>
+                  <div style={{ flex: 1, overflow: "hidden" }}>
+                    <div style={{ display: "flex", transition: "transform 0.3s ease-in-out", transform: `translateX(-${hoverCropIndex * 100}%)` }}>
+                      {concernedCrops.map(c => (
+                        <div key={c.id} style={{ minWidth: "100%", textAlign: "center" }}>
+                          <div className="text-sm hover-text-primary" style={{ color: "var(--red-400)", cursor: "pointer", whiteSpace: "nowrap", fontWeight: 500 }}
+                               onClick={(e) => { e.stopPropagation(); navigate(`/fields/${hoverField}/crops/${c.id}`); }}>
+                             {c.name} - {c.concernReason.toLowerCase()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <button className="btn btn-ghost btn-sm" style={{ padding: "2px 6px", minWidth: 0, opacity: concernedCrops.length === 1 ? 0 : 1 }} 
+                          onClick={(e) => { e.stopPropagation(); setHoverCropIndex(i => Math.min(concernedCrops.length - 1, i + 1)); }}
+                          disabled={hoverCropIndex === concernedCrops.length - 1}>
+                    {">"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

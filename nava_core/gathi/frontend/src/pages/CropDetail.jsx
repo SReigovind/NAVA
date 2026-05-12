@@ -78,11 +78,7 @@ export default function CropDetail() {
           <button className="sidebar-collapse-btn" onClick={() => setSidebarOpen(v => !v)} title={sidebarOpen ? "Collapse" : "Expand"}>
             {sidebarOpen ? "◀" : "▶"}
           </button>
-          {sidebarOpen && (
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/fields/${field.id}`)}>
-              ← {field.name}
-            </button>
-          )}
+
         </div>
 
         {sidebarOpen && (
@@ -100,6 +96,16 @@ export default function CropDetail() {
         )}
 
         <nav className="sidebar-nav">
+          <button
+            className="sidebar-nav-item"
+            style={{ marginBottom: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-default)" }}
+            onClick={() => navigate(`/fields/${field.id}`)}
+            title={!sidebarOpen ? `Back to ${field.name}` : ""}
+          >
+            <span className="sidebar-nav-icon">←</span>
+            {sidebarOpen && <span className="sidebar-nav-label">Back to {field.name}</span>}
+          </button>
+
           {NAV_ITEMS.map(item => (
             <button
               key={item.id}
@@ -113,13 +119,11 @@ export default function CropDetail() {
           ))}
         </nav>
 
-        {sidebarOpen && (
-          <div className="sidebar-footer">
-            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(true)} title="Edit crop details">
-              ✏️ Edit Crop
-            </button>
-          </div>
-        )}
+        <div className="sidebar-footer">
+          <button className="btn btn-ghost btn-sm" onClick={() => setEditing(true)} title="Edit crop details" style={{ justifyContent: sidebarOpen ? "flex-start" : "center", padding: sidebarOpen ? "8px 16px" : "8px" }}>
+            ✏️ {sidebarOpen && "Edit Crop"}
+          </button>
+        </div>
       </aside>
 
       {/* ── Main content ─────────────────────────── */}
@@ -140,7 +144,7 @@ export default function CropDetail() {
 
         {error && <div className="notice notice-danger" style={{ marginBottom: 16 }}>{error}</div>}
 
-        <div className="crop-tool-body">
+        <div className="crop-tool-body" style={{ display: "flex", flexDirection: "column" }}>
           {activeTool === "overview" && (
             <OverviewPanel fieldId={fieldId} cropId={cropId} crop={crop} field={field} onNavigate={setActiveTool} />
           )}

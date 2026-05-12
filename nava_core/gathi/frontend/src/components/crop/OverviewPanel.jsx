@@ -127,7 +127,7 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
   if (loading) return <div className="page-center" style={{ minHeight: 200 }}><div className="spinner" /></div>;
 
   return (
-    <div className="ov-layout">
+    <div className="ov-layout" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* Stats row */}
       <div className="ov-stats">
         <StatCard icon="🌱" label="Plants Tracked" value={plants.length} />
@@ -138,9 +138,9 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
         <StatCard icon="🌾" label="Growth Stage" value={crop?.stage || "Unknown"} sub={crop?.season || ""} />
       </div>
 
-      <div className="ov-main">
+      <div className="ov-main" style={{ flex: 1, minHeight: 0, alignItems: "stretch" }}>
         {/* Plant health */}
-        <div className="ov-card">
+        <div className="ov-card" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <div className="ov-card-header">
             <div>
               <h3 className="ov-card-title">Plant Health</h3>
@@ -153,13 +153,13 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
               <p>No plants tracked yet. Start from Disease Detection or Stress Monitor.</p>
             </div>
           ) : (
-            <div className="ov-plant-list">
+            <div className="ov-plant-list custom-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: "auto", paddingRight: "8px" }}>
               {plants.map(p => <PlantHealthRow key={p.id} plant={p} events={events} />)}
             </div>
           )}
         </div>
 
-        <div className="ov-side">
+        <div className="ov-side" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
           {/* Crop notes (manual only) */}
           <div className="ov-card">
             <div className="ov-card-header">
@@ -190,7 +190,7 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
           </div>
 
           {/* Recent activity */}
-          <div className="ov-card">
+          <div className="ov-card" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
             <div className="ov-card-header">
               <h3 className="ov-card-title">Recent Activity</h3>
               <button className="btn btn-ghost btn-sm" onClick={load} title="Refresh">↻</button>
@@ -198,7 +198,7 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
             {recentEvents.length === 0 ? (
               <p className="text-sm text-muted">No activity yet.</p>
             ) : (
-              <div className="ov-activity-list">
+              <div className="ov-activity-list custom-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: "auto", paddingRight: "8px" }}>
                 {recentEvents.map((e, i) => {
                   const isDiag = e.event_type === "diagnose";
                   const label = isDiag ? e.payload?.class_label?.replace(/_/g, " ") : e.payload?.status;
