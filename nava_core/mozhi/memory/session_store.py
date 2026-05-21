@@ -26,9 +26,16 @@ class SessionStore:
                     session_id TEXT NOT NULL,
                     role TEXT NOT NULL,
                     content TEXT NOT NULL,
+                    metadata TEXT DEFAULT NULL,
                     created_at TEXT DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            # Migrate existing DBs that don't have the metadata column yet.
+            # try/except is more reliable than PRAGMA in all SQLite transaction modes.
+            try:
+                conn.execute("ALTER TABLE chat_messages ADD COLUMN metadata TEXT DEFAULT NULL")
+            except Exception:
+                pass  # Column already exists — safe to ignore
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS chat_state (
                     session_id TEXT PRIMARY KEY,
@@ -66,12 +73,21 @@ class SessionStore:
             )
             conn.commit()
 
-    def append_message(self, session_id: str, role: str, content: str) -> None:
+    def append_message(
+        self,
+        session_id: str,
+        role: str,
+        content: str,
+        metadata: Optional[dict] = None,
+    ) -> None:
+        """Append a message. Metadata (e.g. RAG chunk info) is stored as JSON."""
+        import json
         self._ensure_state(session_id)
+        meta_json = json.dumps(metadata) if metadata else None
         with _connect(self.db_path) as conn:
             conn.execute(
-                "INSERT INTO chat_messages (session_id, role, content) VALUES (?, ?, ?)",
-                (session_id, role, content),
+                "INSERT INTO chat_messages (session_id, role, content, metadata) VALUES (?, ?, ?, ?)",
+                (session_id, role, content, meta_json),
             )
             conn.commit()
 
@@ -98,21 +114,32 @@ class SessionStore:
             ).fetchall()
 
     def fetch_message_history(self, session_id: str, limit: Optional[int] = None) -> List[dict]:
+        import json
         self._ensure_state(session_id)
         with _connect(self.db_path) as conn:
             if limit is None:
                 rows = conn.execute(
-                    """SELECT role, content, created_at FROM chat_messages
+                    """SELECT role, content, created_at, metadata FROM chat_messages
                        WHERE session_id = ? ORDER BY id ASC""",
                     (session_id,),
                 ).fetchall()
             else:
                 rows = conn.execute(
-                    """SELECT role, content, created_at FROM chat_messages
+                    """SELECT role, content, created_at, metadata FROM chat_messages
                        WHERE session_id = ? ORDER BY id ASC LIMIT ?""",
                     (session_id, limit),
                 ).fetchall()
-        return [{"role": r, "content": c, "created_at": t} for r, c, t in rows]
+
+        result = []
+        for r, c, t, meta_json in rows:
+            item = {"role": r, "content": c, "created_at": t}
+            if meta_json:
+                try:
+                    item["metadata"] = json.loads(meta_json)
+                except Exception:
+                    item["metadata"] = None
+            result.append(item)
+        return result
 
     def count_messages_after(self, session_id: str, after_id: int) -> int:
         self._ensure_state(session_id)

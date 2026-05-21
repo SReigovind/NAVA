@@ -19,6 +19,40 @@ const makeLabel = () => {
   return `${day} ${mon} · ${hh}:${mm}`;
 };
 
+/** RAG chunk carousel — self-contained, stable re-renders */
+function RagCarousel({ chunks, chunkCount }) {
+  const [idx, setIdx] = useState(0);
+  if (!chunks || chunks.length === 0) return null;
+  const chunk = chunks[idx];
+  return (
+    <div className="rag-indicator">
+      <div className="rag-badge">
+        <span className="rag-badge-dot" />
+        Knowledge base · {chunkCount} {chunkCount === 1 ? "chunk" : "chunks"}
+      </div>
+      <div className="rag-carousel">
+        <button
+          className="rag-carousel-arrow"
+          disabled={idx === 0}
+          onClick={() => setIdx(i => i - 1)}
+        >‹</button>
+        <div className="rag-carousel-body">
+          <div className="rag-carousel-header">
+            <span className="rag-carousel-source">{chunk.source}</span>
+            <span className="rag-carousel-nav">{idx + 1} / {chunks.length}</span>
+          </div>
+          <div className="rag-carousel-section">{chunk.section}</div>
+          <div className="rag-carousel-snippet">{chunk.snippet}</div>
+        </div>
+        <button
+          className="rag-carousel-arrow"
+          disabled={idx === chunks.length - 1}
+          onClick={() => setIdx(i => i + 1)}
+        >›</button>
+      </div>
+    </div>
+  );
+}
 
 /** Minimal markdown → JSX: bold, italic, inline code, bullet lines */
 function renderMarkdown(text) {
@@ -140,7 +174,14 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sid }),
       });
-      setHistory(data.messages || []);
+      // Unpack RAG metadata from message.metadata if present
+      const msgs = (data.messages || []).map(m => ({
+        ...m,
+        rag_used: m.metadata?.rag_used || false,
+        rag_chunk_count: m.metadata?.rag_chunk_count || 0,
+        rag_chunks: m.metadata?.rag_chunks || [],
+      }));
+      setHistory(msgs);
     } catch { setHistory([]); }
   };
 
@@ -219,7 +260,16 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
         setPendingWords(wordsArr);
         setRevealedText("");
         setAnimating(true);
-        setHistory((prev) => [...prev, { role: "assistant", content: "", fullContent: data.reply, isAnimating: true, created_at: new Date().toISOString() }]);
+        setHistory((prev) => [...prev, {
+          role: "assistant",
+          content: "",
+          fullContent: data.reply,
+          isAnimating: true,
+          rag_used: data.rag_used || false,
+          rag_chunk_count: data.rag_chunk_count || 0,
+          rag_chunks: data.rag_chunks || [],
+          created_at: new Date().toISOString(),
+        }]);
       }
       refreshSummary(sid);
     } catch (err) {
@@ -364,6 +414,9 @@ export default function ChatPanel({ fieldId, cropId, userId }) {
                   item.role === "assistant" ? renderMarkdown(item.content) : item.content
                 )}
               </div>
+              {item.role === "assistant" && item.rag_used && (
+                <RagCarousel chunks={item.rag_chunks} chunkCount={item.rag_chunk_count} />
+              )}
               <div className="bubble-time">{formatTimestamp(item.created_at)}</div>
             </div>
           ))}

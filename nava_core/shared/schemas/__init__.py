@@ -1,6 +1,6 @@
 """Pydantic schemas — split by domain for maintainability."""
 
-from .auth import AuthLoginRequest, AuthRegisterRequest, AuthResponse, UserResponse
+from .auth import AuthLoginRequest, AuthRegisterRequest, AuthResponse, UserResponse, UpdateUserRequest, UpdatePasswordRequest
 from .chat import (
     ChatClearRequest, ChatClearResponse, ChatHistoryMessage,
     ChatHistoryRequest, ChatHistoryResponse, ChatRequest,
@@ -28,4 +28,5 @@ __all__ = [
     "FieldListResponse", "FieldResponse", "FieldUpdateRequest",
     "PlantCreateRequest", "PlantListResponse", "PlantResponse",
     "UserResponse", "VNIRPlantsResponse", "VNIRResponse",
+    "UpdateUserRequest", "UpdatePasswordRequest",
 ]

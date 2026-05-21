@@ -31,3 +31,10 @@ class UserResponse(BaseModel):
 class AuthResponse(BaseModel):
     token: str
     user: UserResponse
+
+class UpdateUserRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+
+class UpdatePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=128)

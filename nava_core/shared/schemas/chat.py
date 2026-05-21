@@ -18,6 +18,9 @@ class ChatResponse(BaseModel):
     session_id: str
     reply: str
     error: Optional[str] = None
+    rag_used: bool = False
+    rag_chunk_count: int = 0
+    rag_chunks: list = []  # [{source, section, snippet}, ...]
 
 
 class ChatClearRequest(BaseModel):
@@ -38,6 +41,7 @@ class ChatHistoryMessage(BaseModel):
     role: str
     content: str
     created_at: str
+    metadata: Optional[dict] = None  # RAG chunk info for assistant messages
 
 
 class ChatHistoryResponse(BaseModel):

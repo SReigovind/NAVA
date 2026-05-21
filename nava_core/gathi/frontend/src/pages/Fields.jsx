@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api.js";
+import { useAuth } from "../components/AuthProvider.jsx";
 
 const SOIL_TYPES = [
   "Alluvial", "Black / Regur", "Red", "Laterite", "Desert / Arid",
@@ -35,6 +36,7 @@ export default function Fields() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [activeTabId, setActiveTabId] = useState(null);
   const [hoverField, setHoverField] = useState(null);
@@ -195,7 +197,7 @@ export default function Fields() {
       {/* Header */}
       <div className="row row-between">
         <div>
-          <h1 style={{ fontSize: "2rem", marginBottom: 0 }}>Welcome back</h1>
+          <h1 style={{ fontSize: "2rem", marginBottom: 0 }}>Welcome back{user?.name ? `, ${user.name}` : ""}</h1>
         </div>
         <button id="btn-add-field" className="btn btn-primary" onClick={() => setShowCreate(true)}>
           + New Field

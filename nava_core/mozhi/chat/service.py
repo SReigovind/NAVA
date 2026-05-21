@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from .client import ChatClient
 from nava_core.mozhi.memory.session_store import SessionStore
 from nava_core.shared.config import get_settings
 from nava_core.shared.storage.field_store import FieldStore
+
+if TYPE_CHECKING:
+    from nava_core.yukthi.router import QueryRouter
+    from nava_core.yukthi.retriever import RAGRetriever, RAGChunk
 
 DEFAULT_SYSTEM_PROMPT = (
     "You are NAVA, a digital agronomist. Use the structured context provided in system messages "
@@ -25,6 +29,13 @@ class ChatResult:
     session_id: str
     reply: str
     error: Optional[str] = None
+    rag_used: bool = False
+    rag_chunk_count: int = 0
+    rag_chunks: list = None  # list of dicts: {source, section, snippet}
+
+    def __post_init__(self):
+        if self.rag_chunks is None:
+            self.rag_chunks = []
 
 
 class ChatService:
@@ -40,6 +51,8 @@ class ChatService:
         summary_temperature: float = 0.2,
         summary_max_new_tokens: int = 200,
         system_prompt: str = DEFAULT_SYSTEM_PROMPT,
+        rag_retriever: Optional[RAGRetriever] = None,
+        rag_router: Optional[QueryRouter] = None,
     ) -> None:
         self.client = client
         self.store = store
@@ -51,6 +64,8 @@ class ChatService:
         self.summary_temperature = summary_temperature
         self.summary_max_new_tokens = summary_max_new_tokens
         self.system_prompt = system_prompt
+        self.rag_retriever = rag_retriever
+        self.rag_router = rag_router
 
     @classmethod
     def from_settings(cls) -> "ChatService":
@@ -58,30 +73,74 @@ class ChatService:
         return cls(
             client=ChatClient.from_settings(),
             store=SessionStore(s.users_db_path.parent / "mozhi_sessions.db"),
-            max_history=12, # 6 interactions
-            summary_batch=12, # 6 interactions triggers summary
+            max_history=12,
+            summary_batch=12,
             summary_rollup=s.mozhi_summary_rollup,
             summary_model=s.hf_summary_model,
             summary_temperature=s.hf_summary_temperature,
             summary_max_new_tokens=s.hf_summary_max_new_tokens,
+            # RAG not wired in from_settings() — use from_settings_with_store() for full setup
         )
 
     @classmethod
     def from_settings_with_store(
-        cls, store: SessionStore, field_store: Optional[FieldStore] = None
+        cls,
+        store: SessionStore,
+        field_store: Optional[FieldStore] = None,
+        rag_retriever: Optional["RAGRetriever"] = None,
+        rag_router: Optional["QueryRouter"] = None,
     ) -> "ChatService":
+        """Build a ChatService, optionally accepting pre-built RAG singletons.
+
+        When rag_retriever and rag_router are provided (from app.state, preloaded
+        at startup), they are used directly. If not provided and yukthi is enabled,
+        new instances are created — but this path is only used outside of the
+        normal server context (e.g. tests, CLI tools).
+        """
         s = get_settings()
+        client = ChatClient.from_settings()
+
+        # Use injected singletons if provided (normal server path)
+        if rag_retriever is None and s.yukthi_enabled:
+            # Fallback: create fresh instances (test/CLI path only)
+            try:
+                from nava_core.yukthi.store import YukthiStore
+                from nava_core.yukthi.retriever import RAGRetriever as _Ret
+                yukthi_store = YukthiStore(s.yukthi_chroma_dir)
+                rag_retriever = _Ret(
+                    store=yukthi_store,
+                    embed_model=s.yukthi_embed_model,
+                    top_k=s.yukthi_top_k,
+                    distance_threshold=s.yukthi_distance_threshold,
+                )
+            except Exception as e:
+                import logging
+                logging.getLogger("mozhi.service").warning(
+                    "Yukthi RAG fallback init failed: %s", e
+                )
+
+        if rag_router is None and rag_retriever is not None:
+            try:
+                from nava_core.yukthi.router import QueryRouter as _Router
+                rag_router = _Router(client=client, model=s.hf_summary_model)
+            except Exception as e:
+                import logging
+                logging.getLogger("mozhi.service").warning("QueryRouter init failed: %s", e)
+
         return cls(
-            client=ChatClient.from_settings(),
+            client=client,
             store=store,
             field_store=field_store,
-            max_history=12, # 6 interactions
-            summary_batch=12, # 6 interactions triggers summary
+            max_history=12,
+            summary_batch=12,
             summary_rollup=s.mozhi_summary_rollup,
             summary_model=s.hf_summary_model,
             summary_temperature=s.hf_summary_temperature,
             summary_max_new_tokens=s.hf_summary_max_new_tokens,
+            rag_retriever=rag_retriever,
+            rag_router=rag_router,
         )
+
 
     # ── Context building ────────────────────────────────────────────
 
@@ -206,6 +265,52 @@ class ChatService:
             "\n\n".join(sections)
         )
 
+    def _build_retrieval_query(
+        self,
+        message: str,
+        crop_name: str,
+        crop_id: int,
+    ) -> str:
+        """Build an enriched retrieval query for ChromaDB similarity search.
+
+        Combines the user's message with available agronomic context:
+          - Crop name (always included — anchors the embedding)
+          - Latest detected disease label (if any) — critical for follow-up
+            queries like "how do I treat this?" where 'this' needs anchoring
+          - VNIR stress status (if recently detected)
+
+        This produces a richer embedding that retrieves more relevant chunks
+        than the raw user message alone.
+        """
+        parts = [f"Crop: {crop_name}."]
+
+        if self.field_store:
+            try:
+                # Get the latest disease detection event for this crop
+                diag_events = self.field_store.list_events(
+                    crop_id=crop_id, event_type="diagnose", limit=1
+                )
+                if diag_events:
+                    payload = diag_events[0].get("payload") or {}
+                    label = payload.get("class_label", "")
+                    if label and label.lower() not in ("healthy", "no scan", ""):
+                        parts.append(f"Detected condition: {label}.")
+
+                # VNIR stress if present
+                vnir_events = self.field_store.list_events(
+                    crop_id=crop_id, event_type="vnir", limit=1
+                )
+                if vnir_events:
+                    vpayload = vnir_events[0].get("payload") or {}
+                    vstatus = vpayload.get("status", "")
+                    if vstatus and vstatus.lower() not in ("healthy", "no scan", ""):
+                        parts.append(f"Stress monitoring status: {vstatus}.")
+            except Exception:
+                pass  # context enrichment is best-effort
+
+        parts.append(message)
+        return " ".join(parts)
+
     # ── Public API ──────────────────────────────────────────────────
 
     def get_summary_display(self, session_id: str) -> Optional[str]:
@@ -245,17 +350,76 @@ class ChatService:
         summary = self._summary_context(session)
         if summary:
             messages.append({"role": "system", "content": summary})
+
+        # RAG: route first, then retrieve if warranted
+        rag_used = False
+        rag_chunk_count = 0
+        rag_chunks: list[dict] = []
+        if self.rag_router and self.rag_retriever and self.field_store and crop_id is not None:
+            if self.rag_router.should_retrieve(message):
+                crop = self.field_store.get_crop(crop_id)
+                crop_name = (crop.get("name") or "").lower().strip() if crop else ""
+                if crop_name:
+                    retrieval_query = self._build_retrieval_query(
+                        message=message,
+                        crop_name=crop_name,
+                        crop_id=crop_id,
+                    )
+                    chunks = self.rag_retriever.query(retrieval_query, crop=crop_name)
+                    if chunks:
+                        rag_used = True
+                        rag_chunk_count = len(chunks)
+                        rag_chunks = [
+                            {
+                                "source": c.source,
+                                "section": c.section,
+                                # Send a 300-char snippet for the UI tooltip
+                                "snippet": c.text[:300].rstrip() + ("…" if len(c.text) > 300 else ""),
+                            }
+                            for c in chunks
+                        ]
+                        rag_block = (
+                            "AGRONOMIC REFERENCE — VERIFIED SOURCE MATERIAL\n"
+                            "The following passages are extracted from authoritative, peer-reviewed agricultural "
+                            "sources and official crop management guidelines. This information is factually reliable. "
+                            "Use it confidently and directly to ground your answer — do not hedge, qualify, or hold "
+                            "back information from it. Do not tell the user you are consulting a reference.\n\n"
+                        )
+                        for chunk in chunks:
+                            rag_block += f"[{chunk.source} — {chunk.section}]\n{chunk.text}\n\n"
+                        messages.append({"role": "system", "content": rag_block.strip()})
+
+
         messages.extend(history)
         messages.append({"role": "user", "content": message})
 
         reply, error = self.client.send(messages)
         self.store.append_message(session, "user", message)
         if reply:
-            self.store.append_message(session, "assistant", reply)
+            # Persist RAG metadata alongside the assistant message so it
+            # survives page refreshes and is returned by /api/chat/history
+            rag_meta = (
+                {
+                    "rag_used": rag_used,
+                    "rag_chunk_count": rag_chunk_count,
+                    "rag_chunks": rag_chunks,
+                }
+                if rag_used
+                else None
+            )
+            self.store.append_message(session, "assistant", reply, metadata=rag_meta)
         if error:
             return ChatResult(session_id=session, reply="", error=error)
 
-        return ChatResult(session_id=session, reply=reply or "")
+        return ChatResult(
+            session_id=session,
+            reply=reply or "",
+            rag_used=rag_used,
+            rag_chunk_count=rag_chunk_count,
+            rag_chunks=rag_chunks,
+        )
+
+
 
     def clear_session(self, session_id: str) -> None:
         self.store.delete_session(session_id)

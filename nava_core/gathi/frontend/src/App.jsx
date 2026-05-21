@@ -7,6 +7,7 @@ import Auth from "./pages/Auth.jsx";
 import Fields from "./pages/Fields.jsx";
 import FieldDetail from "./pages/FieldDetail.jsx";
 import CropDetail from "./pages/CropDetail.jsx";
+import Profile from "./pages/Profile.jsx";
 
 const RequireAuth = ({ children }) => {
   const { user, loading } = useAuth();
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/fields" element={<RequireAuth><Layout><Fields /></Layout></RequireAuth>} />
         <Route path="/fields/:fieldId" element={<RequireAuth><Layout><FieldDetail /></Layout></RequireAuth>} />
         <Route path="/fields/:fieldId/crops/:cropId" element={<RequireAuth><CropLayout><CropDetail /></CropLayout></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth><Layout><Profile /></Layout></RequireAuth>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>

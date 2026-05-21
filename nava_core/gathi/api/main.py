@@ -15,9 +15,10 @@ if _nava_dir not in sys.path:
     sys.path.insert(0, _nava_dir)
 
 from nava_core.gathi.api.routers import auth, chat, diagnose, fields, vnir
+from nava_core.gathi.api.startup import lifespan
 from nava_core.shared.utils.paths import project_root
 
-app = FastAPI(title="NAVA API", version="0.2.0")
+app = FastAPI(title="NAVA API", version="0.2.0", lifespan=lifespan)
 
 # CORS — allow the Vite dev server and any localhost origin
 app.add_middleware(

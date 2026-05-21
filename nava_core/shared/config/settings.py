@@ -18,6 +18,13 @@ from nava_core.shared.utils.paths import models_dir, logs_dir, project_root
 # Load .env from nava/ project root
 load_dotenv(project_root() / ".env")
 
+# Forward HF_API_KEY as HF_TOKEN so sentence-transformers and HF Hub
+# use authenticated requests (avoids rate-limit warnings on model downloads)
+_hf_key = os.getenv("HF_API_KEY", "")
+if _hf_key:
+    os.environ.setdefault("HF_TOKEN", _hf_key)
+    os.environ.setdefault("HUGGING_FACE_HUB_TOKEN", _hf_key)
+
 
 def _path_env(key: str, default: Path) -> Path:
     return Path(os.getenv(key, str(default)))
@@ -77,6 +84,14 @@ class Settings:
     # Storage
     users_db_path: Path
 
+    # Yukthi — RAG knowledge retrieval
+    yukthi_enabled: bool
+    yukthi_chroma_dir: Path
+    yukthi_source_dir: Path
+    yukthi_top_k: int
+    yukthi_distance_threshold: float
+    yukthi_embed_model: str
+
 
 @lru_cache
 def get_settings() -> Settings:
@@ -122,4 +137,10 @@ def get_settings() -> Settings:
         mozhi_summary_rollup=_int_env("NAVA_MOZHI_SUMMARY_ROLLUP", 5),
         session_ttl_hours=_int_env("NAVA_SESSION_TTL_HOURS", 168),  # 7 days
         users_db_path=_path_env("NAVA_USERS_DB", lg / "users" / "users.db"),
+        yukthi_enabled=os.getenv("NAVA_YUKTHI_ENABLED", "true").lower() not in ("false", "0", "no"),
+        yukthi_chroma_dir=_path_env("NAVA_YUKTHI_CHROMA_DIR", lg / "chroma"),
+        yukthi_source_dir=_path_env("NAVA_YUKTHI_SOURCE_DIR", project_root() / "ragsource"),
+        yukthi_top_k=_int_env("NAVA_YUKTHI_TOP_K", 3),
+        yukthi_distance_threshold=_float_env("NAVA_YUKTHI_DISTANCE_THRESHOLD", 0.45),
+        yukthi_embed_model=os.getenv("NAVA_YUKTHI_EMBED_MODEL", "BAAI/bge-small-en-v1.5"),
     )

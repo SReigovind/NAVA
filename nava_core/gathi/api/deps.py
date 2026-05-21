@@ -1,7 +1,8 @@
 """Shared FastAPI dependencies — singletons and auth.
 
-ML models are lazily loaded on first use, not at import time,
-so the server can start even if model files are missing.
+Heavy ML singletons (EfficientNet, VNIR, ChromaDB, RAG retriever) are
+preloaded at server startup via the lifespan hook in startup.py and stored
+on app.state. Deps here fetch those singletons — they never instantiate them.
 """
 
 from __future__ import annotations
@@ -10,7 +11,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from fastapi import Header, HTTPException
+from fastapi import Header, HTTPException, Request
 
 from nava_core.shared.config import get_settings
 from nava_core.shared.storage.field_store import FieldStore
@@ -21,6 +22,8 @@ if TYPE_CHECKING:
     from nava_core.mizhi.vnir import VNIRPipeline
     from nava_core.mozhi.chat import ChatService
     from nava_core.mozhi.memory import SessionStore
+    from nava_core.yukthi.retriever import RAGRetriever
+    from nava_core.yukthi.store import YukthiStore
 
 
 @lru_cache
@@ -80,9 +83,40 @@ def session_store_for_user(user: UserRecord) -> "SessionStore":
     return SessionStore(Path(user.db_path))
 
 
-def chat_service_for_user(user: UserRecord) -> "ChatService":
+def get_rag_retriever(request: Request) -> "RAGRetriever | None":
+    """Return the startup-preloaded RAG retriever from app.state (or None)."""
+    return getattr(request.app.state, "rag_retriever", None)
+
+
+def get_yukthi_store(request: Request) -> "YukthiStore | None":
+    """Return the startup-preloaded YukthiStore from app.state (or None)."""
+    return getattr(request.app.state, "yukthi_store", None)
+
+
+def chat_service_for_user(user: UserRecord, request: Request) -> "ChatService":
+    """Build a ChatService for this user, reusing the startup-preloaded singletons."""
     from nava_core.mozhi.chat import ChatService
+    from nava_core.shared.config import get_settings
+    s = get_settings()
+
+    rag_retriever = get_rag_retriever(request)
+    rag_router = None
+
+    if rag_retriever is not None:
+        try:
+            from nava_core.yukthi.router import QueryRouter
+            from nava_core.mozhi.chat.client import ChatClient
+            rag_router = QueryRouter(
+                client=ChatClient.from_settings(),
+                model=s.hf_summary_model,
+            )
+        except Exception as e:
+            import logging
+            logging.getLogger("nava.deps").warning("QueryRouter init failed: %s", e)
+
     return ChatService.from_settings_with_store(
         store=session_store_for_user(user),
         field_store=field_store_for_user(user),
+        rag_retriever=rag_retriever,
+        rag_router=rag_router,
     )

@@ -22,7 +22,9 @@ export default function Layout({ children, noPadding = false }) {
           <span className="app-logo"><span>N</span>AVA</span>
         </div>
         <div className="row row-gap">
-          <span className="text-sm text-muted">{user?.name}</span>
+          <span className="text-sm text-muted" style={{ cursor: "pointer", borderBottom: "1px dashed var(--border-default)" }} onClick={() => navigate("/profile")} title="View Profile">
+            {user?.name}
+          </span>
           <button id="theme-toggle" className="btn btn-ghost btn-sm theme-toggle" onClick={toggle}
             title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
             {theme === "dark" ? "☀️" : "🌙"}

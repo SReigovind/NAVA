@@ -1442,6 +1442,136 @@ h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
   opacity: 0.5;
 }
 
+/* RAG grounding indicator + chunk carousel */
+.rag-indicator {
+  margin: 0 14px 6px;
+  /* Constrain hover zone to badge width — prevents the full bubble
+     row from becoming a hover trigger */
+  display: inline-block;
+  width: fit-content;
+}
+
+.rag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--green-400);
+  background: color-mix(in srgb, var(--green-400) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green-400) 25%, transparent);
+  cursor: default;
+  user-select: none;
+  /* No margin-bottom — gap is handled by carousel padding-top */
+}
+.rag-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green-400);
+  flex-shrink: 0;
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Carousel — invisible by default, revealed on badge hover.
+   Uses opacity + visibility + max-height transition (NOT display toggle)
+   so the 150ms fade-in bridges the gap between badge and carousel,
+   preventing flicker as the cursor moves downward. */
+.rag-carousel {
+  display: flex;          /* always in layout flow */
+  align-items: stretch;
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--green-400) 20%, transparent);
+  border-radius: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--green-400) 5%, var(--surface-2, #1a1a1a));
+  font-size: 0.75rem;
+  /* Hidden state */
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0;
+  pointer-events: none;
+  margin-top: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease, max-height 0.18s ease,
+              margin-top 0.15s ease;
+}
+/* Revealed when hovering anywhere inside .rag-indicator
+   (badge OR the carousel itself — both are children, so moving the
+   cursor between them keeps :hover active on the parent) */
+.rag-indicator:hover .rag-carousel {
+  opacity: 1;
+  visibility: visible;
+  max-height: 160px;
+  pointer-events: auto;
+  margin-top: 4px;
+}
+.rag-carousel-arrow {
+  flex-shrink: 0;
+  width: 26px;
+  background: none;
+  border: none;
+  color: var(--green-400);
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  padding: 0;
+}
+.rag-carousel-arrow:hover:not(:disabled) { opacity: 1; }
+.rag-carousel-arrow:disabled { opacity: 0.2; cursor: default; }
+.rag-carousel-body {
+  flex: 1;
+  padding: 7px 8px;
+  min-width: 0;
+}
+.rag-carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+.rag-carousel-source {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--green-400);
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+.rag-carousel-nav {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.rag-carousel-section {
+  font-weight: 600;
+  color: var(--text-primary, #e8e8e8);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rag-carousel-snippet {
+  color: var(--text-secondary, #a0a0a0);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* typing dots */
 .chat-bubble.typing .bubble-content { padding: 14px; }
 .chat-bubble.typing span {

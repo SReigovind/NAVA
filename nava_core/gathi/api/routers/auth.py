@@ -7,7 +7,7 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 
-from nava_core.shared.schemas import AuthLoginRequest, AuthRegisterRequest, AuthResponse, UserResponse
+from nava_core.shared.schemas import AuthLoginRequest, AuthRegisterRequest, AuthResponse, UserResponse, UpdateUserRequest, UpdatePasswordRequest
 from nava_core.shared.storage.user_store import UserRecord
 from nava_core.gathi.api.deps import get_user_store, require_user
 
@@ -68,3 +68,33 @@ def logout(user: UserRecord = Depends(require_user)) -> dict:
 def me(bg_tasks: BackgroundTasks, user: UserRecord = Depends(require_user)) -> UserResponse:
     bg_tasks.add_task(_preload_models)
     return _to_user_response(user)
+
+
+@router.put("/me", response_model=UserResponse)
+def update_me(request: UpdateUserRequest, user: UserRecord = Depends(require_user)) -> UserResponse:
+    store = get_user_store()
+    updated = store.update_user(user.id, request.name)
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found")
+    return _to_user_response(updated)
+
+
+@router.put("/password")
+def update_password(request: UpdatePasswordRequest, user: UserRecord = Depends(require_user)) -> dict:
+    store = get_user_store()
+    try:
+        success = store.update_password(user.id, request.current_password, request.new_password)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    if not success:
+        raise HTTPException(status_code=401, detail="Incorrect current password")
+    return {"status": "password_updated"}
+
+
+@router.delete("/me")
+def delete_me(user: UserRecord = Depends(require_user)) -> dict:
+    store = get_user_store()
+    success = store.delete_user(user.id)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to delete account")
+    return {"status": "account_deleted"}

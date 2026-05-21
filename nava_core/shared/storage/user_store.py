@@ -158,6 +158,33 @@ class UserStore:
             ).fetchone()
         return self._row_to_record(row) if row else None
 
+    def update_user(self, user_id: int, name: str) -> Optional[UserRecord]:
+        with _connect(self.db_path) as conn:
+            conn.execute("UPDATE users SET name = ? WHERE id = ?", (name, user_id))
+            conn.commit()
+        return self.get_user(user_id)
+
+    def update_password(self, user_id: int, current_password: str, new_password: str) -> bool:
+        user = self.get_user(user_id)
+        if not user or not _verify_password(current_password, user.password_hash):
+            return False
+        if len(new_password) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        new_hash = _hash_password(new_password)
+        with _connect(self.db_path) as conn:
+            conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user_id))
+            conn.commit()
+        return True
+
+    def delete_user(self, user_id: int) -> bool:
+        with _connect(self.db_path) as conn:
+            conn.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+            conn.commit()
+        # Note: We should ideally delete the user's sqlite db file as well, 
+        # but leaving it orphaned or soft-deleting might be safer for now.
+        return True
+
     def authenticate(self, email: str, password: str) -> Optional[UserRecord]:
         with _connect(self.db_path) as conn:
             row = conn.execute(
