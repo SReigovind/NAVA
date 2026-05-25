@@ -54,7 +54,14 @@ function HistorySection({ plantId, onDeleted }) {
                 <div className={`health-dot ${healthy ? "dot-green" : "dot-red"}`} style={{ flexShrink: 0 }} />
                 <div className="history-item-body">
                   <span className="history-item-label">{p.class_label?.replace(/_/g, " ")}</span>
-                  <span className="history-item-meta">{conf != null && `${conf}% · `}{p.reliability} · {formatLocalTime(e.created_at)}</span>
+                  <span className="history-item-meta">
+                    {conf != null && (
+                      <span className="diag-info-icon history-conf-tip" style={{ marginRight: 4 }}>
+                        ⓘ<span className="diag-info-tooltip">{conf}% confidence</span>
+                      </span>
+                    )}
+                    {p.reliability} · {formatLocalTime(e.created_at)}
+                  </span>
                 </div>
                 <button className="history-del-btn" onClick={() => deleteEvent(e.id)} disabled={deleting === e.id}>×</button>
               </div>
@@ -176,21 +183,31 @@ export default function DiagnosePanel({ fieldId, cropId }) {
                   <div className="diag-crop-tag">{formatCrop(result.class_label)}</div>
                 )}
 
-                {/* Confidence gauge */}
-                <div className="diag-conf-block">
-                  <div className="diag-conf-label">
-                    <span>Model Confidence</span>
-                    <span className="diag-conf-pct">{confPct}%</span>
-                  </div>
-                  <div className="diag-conf-track">
-                    <div className="diag-conf-fill" style={{
-                      width: `${confPct}%`,
-                      background: confPct >= 80
-                        ? (isHealthy ? "#10b981" : "#ef4444")
-                        : "#f59e0b"
-                    }} />
-                  </div>
-                </div>
+                {/* Natural-language confidence + hover tooltip for raw % */}
+                {confPct != null && (() => {
+                  const phrase =
+                    confPct >= 90 ? "The AI is very confident about this result" :
+                    confPct >= 75 ? "The AI is fairly confident about this result" :
+                    confPct >= 60 ? "The AI has moderate confidence in this result" :
+                                   "The AI has low confidence — treat with caution";
+                  return (
+                    <div className="diag-conf-natural">
+                      <span>{phrase}</span>
+                      <span className="diag-info-icon" title={`Model confidence: ${confPct}%`}>
+                        ⓘ
+                        <span className="diag-info-tooltip">
+                          Model confidence: <strong>{confPct}%</strong>
+                          <div className="diag-conf-track" style={{ marginTop: 6 }}>
+                            <div className="diag-conf-fill" style={{
+                              width: `${confPct}%`,
+                              background: confPct >= 80 ? (isHealthy ? "#10b981" : "#ef4444") : "#f59e0b"
+                            }} />
+                          </div>
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })()}
 
                 {/* Reliability chip */}
                 <div className="diag-chip-row">

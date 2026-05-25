@@ -146,7 +146,7 @@ export default function CropDetail() {
 
         <div className="crop-tool-body" style={{ display: "flex", flexDirection: "column" }}>
           {activeTool === "overview" && (
-            <OverviewPanel fieldId={fieldId} cropId={cropId} crop={crop} field={field} onNavigate={setActiveTool} />
+            <OverviewPanel fieldId={fieldId} cropId={cropId} crop={crop} field={field} onNavigate={setActiveTool} onRefresh={load} />
           )}
           {activeTool === "chat" && (
             <ChatPanel fieldId={fieldId} cropId={cropId} userId={user?.id} />

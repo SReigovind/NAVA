@@ -369,6 +369,22 @@ class FieldStore:
                 conn.execute("DELETE FROM events WHERE plant_id = ?", (plant_id,))
             conn.commit()
 
+    def get_event(self, event_id: int) -> Optional[dict]:
+        with _connect(self.db_path) as conn:
+            row = conn.execute("SELECT id, event_type, field_id, crop_id, plant_id, payload, created_at FROM events WHERE id = ?", (event_id,)).fetchone()
+            if not row:
+                return None
+            payload = None
+            if row[5]:
+                try:
+                    payload = json.loads(row[5])
+                except json.JSONDecodeError:
+                    payload = {"raw": row[5]}
+            return {
+                "id": row[0], "event_type": row[1], "field_id": row[2],
+                "crop_id": row[3], "plant_id": row[4], "payload": payload, "created_at": row[6],
+            }
+
     def delete_event(self, event_id: int) -> None:
         """Delete a single event by ID."""
         with _connect(self.db_path) as conn:

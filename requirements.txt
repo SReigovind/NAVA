@@ -29,3 +29,4 @@ pymupdf
 apscheduler
 
 gradio
+md2pdf

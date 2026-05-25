@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../lib/api.js";
+import { AutoNotesIcon, splitNotes } from "../components/crop/OverviewPanel.jsx";
+
 
 const CROP_STAGES = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Maturity", "Harvested"];
 const SOIL_TYPES = [
@@ -38,7 +40,7 @@ export default function FieldDetail() {
       ]);
       const f = (fieldData.fields || []).find((x) => String(x.id) === String(fieldId));
       setField(f || null);
-      setCtxValue(f?.field_notes || "");   // ← manual notes only
+      setCtxValue(splitNotes(f?.field_notes || "").manual);  // manual portion only
       setCrops(cropData.crops || []);
     } catch (err) {
       setError(err.message);
@@ -162,7 +164,10 @@ export default function FieldDetail() {
           {/* Manual field notes */}
           <div className="card" style={{ background: "var(--bg-glass)", display: "flex", flexDirection: "column", flex: 1 }}>
             <div className="row row-between mb-md">
-              <strong className="text-sm">Field Notes</strong>
+              <strong className="text-sm" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                Field Notes
+                <AutoNotesIcon content={field?.shared_context || ""} label="field context" />
+              </strong>
               {!editingCtx && (
                 <button className="btn btn-ghost btn-sm" onClick={() => setEditingCtx(true)}>
                   {ctxValue ? "✏️ Edit" : "+ Add Notes"}

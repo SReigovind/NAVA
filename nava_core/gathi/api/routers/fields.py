@@ -202,7 +202,13 @@ def list_events(
 def delete_event(event_id: int, user: UserRecord = Depends(require_user)) -> dict:
     """Delete a single event by ID."""
     store = field_store_for_user(user)
+    event = store.get_event(event_id)
     store.delete_event(event_id)
+    if event and event.get("field_id"):
+        try:
+            _refresh_field_context(store, event["field_id"])
+        except Exception:
+            pass
     return {"status": "deleted", "event_id": event_id}
 
 

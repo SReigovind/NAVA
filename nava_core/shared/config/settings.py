@@ -112,7 +112,7 @@ def get_settings() -> Settings:
             m / "ThanalModel.onnx",
         ),
         torch_device=os.getenv("NAVA_TORCH_DEVICE", "cpu"),
-        confidence_threshold=_float_env("NAVA_CONFIDENCE_THRESHOLD", 0.85),
+        confidence_threshold=_float_env("NAVA_CONFIDENCE_THRESHOLD", 0.8),
         vnir_stress_threshold_pct=_float_env("NAVA_STRESS_THRESHOLD", 15.0),
         hf_api_key=os.getenv("HF_API_KEY", ""),
         hf_model=os.getenv(

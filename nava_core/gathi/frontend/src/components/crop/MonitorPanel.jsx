@@ -80,6 +80,48 @@ function HistorySection({ plantId, onDeleted }) {
   );
 }
 
+function VnirCautionBlock() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="vnir-caution-block">
+      <div className="vnir-caution-header">
+        <span className="vnir-caution-icon">⚠️</span>
+        <span className="vnir-caution-summary">
+          Stress monitoring · requires <strong>5+ healthy baseline scans</strong> to activate
+        </span>
+        <button className="vnir-caution-toggle" onClick={() => setOpen(v => !v)}>
+          {open ? "Hide details ▲" : "How it works ▼"}
+        </button>
+      </div>
+
+      {open && (
+        <div className="vnir-caution-details">
+          <div className="vnir-caution-item">
+            <span className="vnir-caution-bullet">📸</span>
+            <span><strong>Minimum 5 photos needed</strong> before stress comparisons activate. Until then the system is in calibration mode and cannot flag stress.</span>
+          </div>
+          <div className="vnir-caution-item">
+            <span className="vnir-caution-bullet">🌱</span>
+            <span><strong>First 5 photos must be from a healthy plant.</strong> The system uses these as its baseline reference — if early photos are taken during disease or stress, comparisons will be inaccurate.</span>
+          </div>
+          <div className="vnir-caution-item">
+            <span className="vnir-caution-bullet">🕐</span>
+            <span><strong>Take photos at a consistent time each day</strong> (e.g. always morning or always midday). Lighting and leaf water content change through the day and affect NIR reflectance.</span>
+          </div>
+          <div className="vnir-caution-item">
+            <span className="vnir-caution-bullet">🔄</span>
+            <span><strong>Clear monitoring data monthly</strong> or when the plant enters a new growth stage. NIR reflectance patterns change naturally as the plant matures — an old baseline will produce false stress alerts.</span>
+          </div>
+          <div className="vnir-caution-item">
+            <span className="vnir-caution-bullet">⚗️</span>
+            <span><strong>This monitoring system is experimental.</strong> Results are <em>proactive warnings only</em> — always visually inspect the plant and cross-check with the Disease Detection tab before drawing any conclusions.</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function MonitorPanel({ fieldId, cropId }) {
   const [plant, setPlant] = useState(null);
   const [result, setResult] = useState(null);
@@ -156,9 +198,7 @@ export default function MonitorPanel({ fieldId, cropId }) {
 
       {error && <div className="notice notice-danger">{error}</div>}
 
-      <div className="notice notice-info" style={{ fontSize: "0.8125rem" }}>
-        <strong>Precautionary monitoring.</strong> ≥5 scans build a stress baseline. Supplements disease detection — does not replace it.
-      </div>
+      <VnirCautionBlock />
 
       <div className="upload-bar">
         <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }}

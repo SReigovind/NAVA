@@ -8,6 +8,7 @@ from nava_core.shared.schemas import DiagnoseResponse
 from nava_core.shared.utils import image_to_base64, load_image_from_bytes
 from nava_core.shared.storage.user_store import UserRecord
 from nava_core.gathi.api.deps import field_store_for_user, get_predictor, require_user
+from nava_core.gathi.api.routers.fields import _refresh_field_context
 
 router = APIRouter(prefix="/api", tags=["diagnose"])
 
@@ -50,6 +51,12 @@ async def diagnose(
             plant_id=plant_id,
             payload=event_payload,
         )
+        effective_field_id = field_id or (plant.get("field_id") if plant else None)
+        if effective_field_id:
+            try:
+                _refresh_field_context(store, effective_field_id)
+            except Exception:
+                pass
         return DiagnoseResponse(
             class_label=result.class_label,
             class_index=result.class_index,
@@ -72,6 +79,12 @@ async def diagnose(
         plant_id=plant_id,
         payload=event_payload,
     )
+    effective_field_id = field_id or (plant.get("field_id") if plant else None)
+    if effective_field_id:
+        try:
+            _refresh_field_context(store, effective_field_id)
+        except Exception:
+            pass
     return DiagnoseResponse(
         class_label=result.class_label,
         class_index=result.class_index,

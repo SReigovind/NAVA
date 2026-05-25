@@ -311,3 +311,296 @@ Expected result for Sigatoka query: both Black and Yellow Sigatoka chunks retrie
 **Files changed:** `session_store.py`, `styles.css`, `router.py`, `retriever.py`, `store.py`
 
 **Outcome:** SQLite crash fixed, carousel hover-only with smooth animation, routing decisions visible in console, hybrid retrieval live. Requires `npm run build` + server restart.
+
+---
+
+## 2026-05-21 06:14 IST
+
+### Task: Carousel Hover Zone Too Wide
+
+**Issue:** The RAG carousel was triggering on hover anywhere along the full width of the message bubble, not just near the badge. This was because `.rag-indicator` is a block-level `div` that stretches to 100% bubble width — so the `:hover` zone was enormous.
+
+**Fix:**
+1. Added `display: inline-block; width: fit-content` to `.rag-indicator` — constrains the hover trigger to exactly the badge pill's width.
+2. Replaced `display: none` / `display: flex` toggle with `opacity`/`visibility`/`max-height` CSS transition. Reason: `display` cannot be transitioned, so there was no fade window — a 1px gap between the badge bottom and the carousel top would cause the carousel to instantly close as the cursor moved between them. With the transition approach, the 150ms fade gives the cursor time to travel from the badge into the carousel without it closing.
+3. Removed `margin-bottom: 6px` from `.rag-badge` — gap is now bridged by the transition duration rather than an invisible spacer.
+4. Added `@keyframes fadeSlideDown` for reveal animation.
+
+**CSS summary:**
+```css
+.rag-indicator { display: inline-block; width: fit-content; }
+.rag-carousel  { opacity: 0; visibility: hidden; max-height: 0; transition: ... }
+.rag-indicator:hover .rag-carousel { opacity: 1; visibility: visible; max-height: 160px; }
+```
+
+**Files changed:** `styles.css`
+
+**Outcome:** Carousel now only triggers when hovering directly over the badge area. Smooth fade-in/out. Moving cursor from badge to carousel keeps it open.
+
+---
+
+## 2026-05-21 06:49 IST
+
+### Task: LLM-Guided Hybrid RAG Retrieval (KeywordExtractor)
+
+**Background:** Previous hybrid retrieval used heuristic stopword filtering to extract keywords from the user query. This was imprecise — it would include words like "condition", "detected", "suggestions" which add no value to `where_document` keyword searches.
+
+**New architecture — 4-stage pipeline per RAG-warranted message:**
+1. **Router LLM** (`max_tokens=5`): RETRIEVE / SKIP decision
+2. **KeywordExtractor LLM** (`max_tokens=25`): Given the full enriched query context (crop + detected condition + user question), asks Llama-3.1-8B-Instruct to output the 3 most important agronomic search keywords, one per line.
+3. **Retriever** (ChromaDB, no LLM):
+   - 8 semantic candidates (cosine similarity via bge-small-en-v1.5)
+   - Per LLM keyword: ChromaDB `where_document={"$contains": term}`, top `round(8/n_keywords)` each → ~8 keyword candidates total
+   - Merge + dedup (first 120 chars as key)
+   - Rerank: `0.7 × (1 - cosine_dist) + 0.3 × keyword_overlap`; threshold relaxed ×1.2 for keyword candidates
+   - Return top 4
+4. **Main LLM**: receives the 4 chunks as AGRONOMIC REFERENCE in system prompt
+
+**New file:** `nava_core/yukthi/keywords.py` — `KeywordExtractor` class
+- `from_settings(client)` factory — uses `hf_summary_model` (same small model as router)
+- `extract(enriched_query) → list[str]` — calls LLM, parses newline-separated keywords, strips bullets/numbers, filters generic agricultural stop-words
+- Falls back to `[]` on any LLM failure; retriever then falls back to heuristic terms
+
+**service.py changes:** After `rag_router.should_retrieve()` returns True, call `keyword_extractor.extract(retrieval_query)` and pass resulting `llm_keywords` into `rag_retriever.query(...)`.
+
+**retriever.py changes:** `query()` now accepts `llm_keywords: Optional[list[str]]`. If provided, uses them for keyword-filtered ChromaDB searches; otherwise falls back to heuristic `_heuristic_fallback_terms()`.
+
+**settings.py:** `yukthi_top_k` default changed from 3 → 4.
+
+**deps.py / factory:** `KeywordExtractor` built in `from_settings_with_store()` alongside `QueryRouter`, injected as `self.keyword_extractor` on `ChatService`.
+
+**Files changed:** `keywords.py` (new), `retriever.py` (rewrite), `service.py`, `settings.py`
+
+**Outcome:** Keyword extraction is now LLM-guided and anchored to the enriched query context (includes crop name and detected disease). In tests, "sigatoka" queries now retrieve both Black Sigatoka and Yellow Sigatoka chunks because the LLM extracts "sigatoka" as a keyword which triggers the `where_document` filter on both entries.
+
+---
+
+## 2026-05-21 06:58 IST
+
+### Task: Retrieval Parameter Tuning (5+5 → top 3) + Keyword Extractor Logging
+
+**Changes:**
+1. Reduced semantic candidates from 8 → **5** (`SEMANTIC_N = 5`)
+2. Reduced keyword candidate target from 8 → **5** (`KEYWORD_PER_TERM = round(5/n_keywords)`)
+3. Reduced final top-k from 4 → **3** (`yukthi_top_k` default back to 3)
+4. Added `log.info` in `keywords.py` for:
+   - The enriched query sent to the extractor: `KeywordExtractor ▶ query:\n{enriched_query}`
+   - The raw LLM response before parsing: `KeywordExtractor ◀ raw response: {reply!r}`
+
+**Rationale:** 8+8 was over-retrieving; 5+5 gives sufficient diversity without padding the LLM context with marginally relevant chunks. The query/response logs make it easy to diagnose keyword quality in the server console without needing to add breakpoints.
+
+**Files changed:** `retriever.py`, `settings.py`, `keywords.py`
+
+---
+
+## 2026-05-21 07:07 IST
+
+### Task: Router System Prompt Rewrite — Stop Over-Triggering on Capability Questions
+
+**Problem:** The router was incorrectly routing meta/conversational queries to RETRIEVE:
+- `"what can you do?"` → RETRIEVE ✓ (wrong)
+- `"what are your capabilities?"` → RETRIEVE ✓ (wrong)
+
+**Root cause:** The old prompt identified itself as a generic "routing classifier" with no strong identity. The SKIP conditions listed only field-data and greeting examples — no mention of questions about the assistant itself. "When in doubt lean towards SKIP" was soft enough that the LLM still classified capability questions as potential knowledge lookups.
+
+**New prompt design:**
+- Identity: **"strict access-control gate for an agricultural knowledge base"** — makes the purpose concrete and restrictive
+- RETRIEVE: requires "specific agronomic facts that would NOT already be known from conversation context" — raises the bar from "would help" to "genuine knowledge gap"
+- SKIP: now includes explicit verbatim examples of the failing cases: `'what can you do?'`, `'what are your capabilities?'`, `'how do you work?'`, `'tell me about yourself'`
+- New SKIP category: **"Any self-referential or meta question about this chat session"**
+- Default: **"DEFAULT: when uncertain, always output SKIP"** — harder boundary than the previous soft lean
+
+**Files changed:** `router.py` (`_ROUTER_SYSTEM_PROMPT`)
+
+**Outcome:** Capability and meta questions now correctly route to SKIP. Agronomic queries (disease names, treatment protocols, fertilizer rates) still correctly route to RETRIEVE.
+
+---
+
+## 2026-05-25 01:10 IST
+
+### Task: UX Refinements — Disease Confidence, VNIR Caution, Auto-Notes Modal, Activity Scroll
+
+**Issue 1: Disease detection shows raw % confidence score — farmers don't find it useful**
+Changed the confidence gauge (progress bar + raw %) to a natural-language phrase:
+- ≥ 90% → "The AI is very confident about this result"
+- ≥ 75% → "The AI is fairly confident about this result"
+- ≥ 60% → "The AI has moderate confidence in this result"
+- < 60% → "The AI has low confidence — treat with caution"
+A small `ⓘ` badge sits beside the phrase. Hovering reveals a compact tooltip (140px wide, 0.7rem font) showing the exact percentage and the confidence bar. Same pattern applied to history rows — raw % is hidden, `ⓘ` reveals on hover.
+
+**Issue 2: VNIR monitoring caution block needed full caveats**
+Added a `VnirCautionBlock` component above the upload area:
+- Always-visible summary: "Requires 5+ healthy baseline scans to activate"
+- Collapsible "How it works ▼" expands to 5 bullet caveats:
+  - 📸 Minimum 5 photos needed
+  - 🌱 First 5 must be healthy (baseline establishment)
+  - 🕐 Consistent time of day required
+  - 🔄 Clear data monthly / at growth stage transitions
+  - ⚗️ System is **experimental** — results are proactive warnings only; always confirm visually and with Disease Detection
+
+**Issue 3: Auto-notes ("What NAVA knows") not visible — needed popup instead of inline card**
+Previous implementation (collapsible inline card) was removed in favour of a modal popup:
+- A small green pill button labelled "🤖 What NAVA knows · N" sits in the Crop Notes card header (next to Edit) on the Crop Overview page, and in the Field Notes card header on the Field Detail page
+- Clicking opens a full-screen backdrop modal with a scrollable list of auto-note entries (read-only)
+- Clicking outside the modal or ✕ closes it
+- If no auto-notes exist yet (the `--- NAVA Auto-notes ---` separator is absent), the button is completely hidden
+- `splitNotes()` utility exported from `OverviewPanel.jsx` and imported into `FieldDetail.jsx`
+
+**Issue 4: Recent Activity grows off-screen**
+Changed Recent Activity container from `flex: 1 / minHeight: 0` (which tried to fill remaining side-column height) to a `maxHeight: 220px` with `overflowY: auto` — the section now has its own independent scrollbar and never pushes the page.
+
+**Files changed:** `DiagnosePanel.jsx`, `MonitorPanel.jsx`, `OverviewPanel.jsx`, `FieldDetail.jsx`, `styles.css`
+
+**Outcome:** Confidence is farmer-friendly with optional detail on hover; VNIR has full operational caveats; auto-notes are read-only in a popup modal on both crop and field pages; recent activity has its own scroll.
+
+---
+
+## 2026-05-25 01:48 IST
+
+### Task: Fix Auto-Notes Icon — Always Visible, In Title, Correct Data Source
+
+**Root cause of previous invisibility:** `AutoNotesCard` returned `null` when the `--- NAVA Auto-notes ---` separator was absent from `notes`/`field_notes`. Since Smart Notes extraction (chat-to-notes) is not yet implemented, this separator never existed → the button was always invisible.
+
+**Fix 1: New `AutoNotesIcon` component**
+Replaced `AutoNotesCard` with `AutoNotesIcon` — a small dimmed 🤖 emoji button that:
+- **Always renders** (never returns null), regardless of whether auto-content exists
+- Opens a **modal popup** on click (blurred backdrop, click-outside to close)
+- If content is present: shows it as a bulleted list
+- If content is empty: shows an italic placeholder message explaining that NAVA will populate this over time
+
+**Fix 2: Icon placed inside the section title**
+Both "Crop Notes" and "Field Notes" titles now have the 🤖 icon inline (dim at rest, full opacity on hover), sitting directly next to the heading text, separate from the Edit button.
+
+**Fix 3: Correct auto-content data sources**
+- **Crop Notes (OverviewPanel):** Uses `splitNotes(crop?.notes).auto` — the portion after the `--- NAVA Auto-notes ---` separator in the crop's `notes` field. Will be populated once Smart Notes extraction is implemented. Currently shows empty-state message.
+- **Field Notes (FieldDetail):** Uses `field?.shared_context` — the auto-generated field-wide context string (crop statuses, recent events, soil info) that IS already being built and used by NAVA in chat. This shows actual content immediately.
+
+**Deprecated:** `AutoNotesCard` kept as a thin wrapper calling `AutoNotesIcon` for backward compatibility. `splitNotes` utility remains exported.
+
+**Files changed:** `OverviewPanel.jsx`, `FieldDetail.jsx`, `styles.css`
+
+**Outcome:** 🤖 icon is now always visible in both notes title areas. Field popup shows real auto-generated context immediately. Crop popup shows placeholder until Smart Notes feature is implemented.
+
+---
+
+## 2026-05-25 02:09 IST
+
+### Task: Scan-Triggered Field Context Rebuild, Smart Crop Notes, Context-Aware Router
+
+**Feature 1: Field shared_context rebuilt after every scan**
+`_refresh_field_context(store, field_id)` (already defined in `fields.py`) was not being called after disease or VNIR scans — only after field/crop CRUD events. Added call in both scan routers:
+- `diagnose.py`: after `store.add_event()` (both UNRELIABLE early-return and RELIABLE Grad-CAM paths), resolves `field_id` from form param or `plant["field_id"]`
+- `vnir.py`: after `store.add_event()`, same fallback to `plant["field_id"]`
+Wrapped in try/except so any context-build failure never blocks the scan response.
+
+**Feature 2: Smart crop notes from chat summaries**
+Added `_extract_crop_notes_from_summary(summary, crop_id)` to `ChatService`:
+- System prompt: "extract ONLY concrete, specific actions or decisions the farmer has taken or plans to take. If none, output NONE"
+- Uses `hf_summary_model` at `temperature=0.0`, `max_new_tokens=80`
+- Parses bullet lines, strips leading dash/bullet chars
+- Appends below `--- NAVA Auto-notes ---` separator in `crops.notes` via existing `field_store.update_crop_context()`
+- Called in `_summarize_if_needed()` right after each new level-1 summary is saved, using `store.get_session_context()` to get the crop_id
+- Fire-and-forget: wrapped in try/except, logged with `CropNotes: appended N auto-note(s)` or warning on failure
+
+**Feature 3: Context-aware RAG router**
+Old problem: bare replies like "yes", "tell me more", "sure" were skipped because:
+1. The 3-token minimum guard dropped them before the LLM was even consulted
+2. Even if they passed the guard, no context existed to interpret them
+
+Fixes:
+- **Removed** the `len(stripped.split()) < 3` minimum token guard entirely. Only empty strings are skipped without LLM consultation.
+- **Added** `last_assistant_reply: str = ""` parameter to `should_retrieve()`
+- If a previous NAVA reply exists, routing input becomes: `[Previous NAVA response]: {last 300 chars}\n[User]: {user message}` — giving the LLM the context to correctly classify "yes" as RETRIEVE if NAVA had just asked "Do you want more details on Black Sigatoka treatment?"
+- In `chat()`: extracts last assistant message from the already-fetched `history` list (no extra DB call) and passes it as `last_assistant_reply`
+
+**Files changed:** `diagnose.py`, `vnir.py`, `router.py`, `service.py`
+
+**Outcome:** Field 🤖 popup now refreshes after every scan. Crop auto-notes accumulate from chat summaries automatically. Short follow-up messages like "yes" are now correctly routed based on conversational context.
+
+---
+
+## 2026-05-25 02:48 IST
+
+### Task: Qualitative Workflow Tests Framework
+
+Created a robust testing framework under `tests/` to perform automated, qualitative assessments of all major workflows, generating detailed logs that serve as formal test documentation. 
+
+**Structure & Utilities:**
+- `tests/test_utils.py`: Helpers for creating dynamic authenticated users (`/api/auth/register`), provisioning new fields/crops/plants, and dynamically locating sample imagery from `data/processed/efficientnet/test/`.
+
+**Test Suites:**
+1. **Disease Detection (`tests/test_disease.py`)**
+   - Uploads a healthy banana image (`171.jpg`) and verifies normal status with confidence metrics.
+   - Uploads an infected banana image (`173.jpeg`) and verifies accurate Black Sigatoka detection with confidence.
+   - Outputs: `tests/disease_test_log.txt`.
+
+2. **Stress Monitoring (`tests/test_vnir.py`)**
+   - Uploads 5 healthy images sequentially to successfully establish a baseline and trigger "Calibrating" states.
+   - Once the baseline is formed, uploads a Sigatoka-infected image to verify immediate visual stress detection and ratio drops compared to the baseline.
+   - Outputs: `tests/vnir_test_log.txt`.
+
+3. **Chat & Context Extraction (`tests/test_chat.py`)**
+   - **General Chat:** Verifies basic greetings skip RAG routing.
+   - **RAG Retrieval:** Asks about Black Sigatoka treatment, verifies RAG activates and chunks are loaded.
+   - **Contextual Follow-up:** Sends a short "yes, tell me more" follow-up. Verifies that the new context-aware router accurately bridges the context and activates RAG.
+   - **Smart Auto-Notes:** Injects an agronomic action ("I have applied Mancozeb fungicide today..."), then sends a series of dummy messages (with deliberate `time.sleep` intervals to respect API limits) to trigger the `summary_batch` limit. Verifies that the LLM successfully parses the action from the summary and appends it to the `Crop Notes` field.
+   - Outputs: `tests/chat_test_log.txt`.
+
+---
+
+## 2026-05-25 22:50 IST
+
+### Task: Fix Manual/Auto Notes Display and Add Timestamps
+
+**Issue 1: Auto-notes appearing in manual notes textarea**
+- **Cause:** In `OverviewPanel.jsx`, `crop.notes` (which contains both manual and auto notes separated by `--- NAVA Auto-notes ---`) was being fed directly into the `notes` React state.
+- **Fix:** Used the existing `splitNotes` utility to populate the `notes` state exclusively with the `.manual` portion.
+- When `saveNotes` is triggered, the `notes` (manual part) is dynamically recombined with the `.auto` part before sending the API request.
+
+**Issue 2: Auto-notes lacking timestamps**
+- **Cause:** `_extract_crop_notes_from_summary` simply appended the bullet points generated by the LLM.
+- **Fix:** Imported `datetime` in `service.py` and prepended `[{now_str}]` to the top of each new batch of extracted notes (e.g. `[2026-05-25 22:50]`).
+
+**Files changed:** `OverviewPanel.jsx`, `service.py`
+
+### Task: Field Context Refresh on Deletion & Editable Auto-Notes
+
+**Issue 1: Field context out of sync when history events are deleted**
+- **Cause:** When a user deleted a VNIR scan or Disease detection from a plant's history, the overarching field `shared_context` was not automatically regenerating to reflect the removal.
+- **Fix:** Added `_refresh_field_context` trigger calls to the `DELETE /events/{event_id}` and `POST /vnir-clear` API endpoints to ensure the field memory stays in sync with deletions. Also added a `get_event` method to `field_store.py` to retrieve the `field_id` before deletion.
+
+**Issue 2: Unable to prune inaccurate auto-notes**
+- **Fix:** Modified `AutoNotesIcon` to accept an `onDeleteLine` prop. Each line in the auto-notes modal now features a discrete `✕` (delete) button. Passed an `onRefresh` callback from `CropDetail.jsx` into `OverviewPanel.jsx` so that deleting a bullet immediately re-fetches the parent's crop state, flawlessly updating the UI without a manual page refresh.
+
+**Files changed:** `vnir.py`, `fields.py`, `field_store.py`, `OverviewPanel.jsx`, `CropDetail.jsx`
+
+---
+
+## 2026-05-26 00:00 IST
+
+### Task: Advanced Qualitative Test Generation & PDF Export
+
+Created highly advanced test suites in `tests/` designed to capture deep internal state logs (prompts, retrieval steps, routing decisions) and output comprehensive Markdown reports with Base64 decoded images embedded directly.
+
+1. **`test_disease_advanced.py`**: 
+   - Iterates across 7 target crops (Banana, Cassava, Corn, Cucumber, Rice, Soybean, Tomato).
+   - Evaluates 1 Healthy and 1 Diseased image per crop.
+   - Decodes the Base64 API responses to automatically save the original and generated GradCAM visualizations to `tests/outputs/`.
+   - Generates `tests/disease_report.md` embedding all images with classification results.
+
+2. **`test_vnir_advanced.py`**:
+   - Executes a 5-image baseline calibration sequence on Banana, then assesses 3 Sigatoka stress images.
+   - Saves Base64 decoded HSV isolate and NIR predicted image masks.
+   - Generates `tests/vnir_report.md` with fully visualized tracking ratios alongside original images.
+
+3. **`test_chat_advanced.py`**:
+   - Utilizes FastAPI's `TestClient` and `unittest.mock.patch` to execute fully in-process testing.
+   - Automatically intercepts and logs the smart routing classifier's decisions, RAG retriever logs, and intercepts the explicit context-injected payload sent to the LLM.
+   - Includes conversational sequences targeting simple greetings, contextual follow-ups, and triggers the `summary_batch` threshold with dummy messages.
+   - Intercepts and outputs both the raw conversational summary block alongside the automatically extracted crop notes.
+   - Updated the Markdown output to use `<pre style="white-space: pre-wrap; word-wrap: break-word;">` HTML tags to ensure ultra-wide routing logs natively word-wrap inside the Markdown file, removing the need for horizontal scrolling.
+   - Generates `tests/chat_report.md`.
+
+4. **`export_pdfs.py`**:
+   - Uses the `md2pdf` library to convert the generated `.md` files into highly readable `.pdf` files.
+   - Injects a custom CSS stylesheet to style the markdown tables and apply code block word-wrapping for the final PDF document.

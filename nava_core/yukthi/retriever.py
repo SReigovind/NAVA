@@ -1,17 +1,23 @@
-"""Query-time RAG retrieval from ChromaDB — hybrid semantic + keyword search.
+"""Query-time RAG retrieval from ChromaDB — LLM-keyword-guided hybrid search.
 
-Strategy (per query):
-  1. Semantic search  — embed the enriched query, fetch top (k × 2) candidates
-  2. Keyword-filtered semantic search — for each key term extracted from the
-     query, re-query ChromaDB with a where_document filter so term-specific
-     chunks that narrowly missed the top-k semantic cutoff are included
-  3. Merge + deduplicate candidates
-  4. Rerank by a combined score: 0.7 × semantic_similarity + 0.3 × keyword_overlap
-  5. Return the top-k after reranking
+Pipeline (per query):
+  1. [Caller] Router LLM decides RETRIEVE
+  2. [Caller] Build enriched query (crop + disease + user message)
+  3. [Caller] KeywordExtractor LLM call → 3 precise agronomic keywords
+  4. [This module] Semantic search  — top 8 candidates from ChromaDB
+  5. [This module] Keyword searches — for each LLM keyword, top 3 from
+     ChromaDB where_document filter → ~9 keyword candidates (deduped to 8)
+  6. Merge + deduplicate all candidates (up to 16 unique chunks)
+  7. Rerank: combined score = 0.7 × semantic_similarity + 0.3 × keyword_overlap
+  8. Return top 4
 
-This significantly improves recall for disease-specific queries (e.g. both
-"Black Sigatoka" and "Yellow Sigatoka" chunks are retrieved when the user asks
-about Sigatoka, even if one has a slightly lower cosine similarity).
+Why 8+8 → top 4:
+  - 8 semantic ensures broad topical coverage
+  - LLM-derived keywords (not heuristic stopword filtering) target specific
+    disease names and agronomic terms, pulling in chunks that narrowly miss
+    the semantic top-8 (e.g. two different Sigatoka disease entries)
+  - Reranking to 4 (up from 3) gives the LLM richer reference material
+    without overwhelming the context window
 """
 
 from __future__ import annotations
@@ -25,7 +31,7 @@ from nava_core.shared.utils.logging import get_logger
 
 log = get_logger("yukthi.retriever")
 
-# Words to ignore when extracting keyword search terms
+# Fallback heuristic stop-words used when LLM keyword extraction fails
 _STOPWORDS = frozenset({
     "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
     "have", "has", "had", "do", "does", "did", "will", "would", "could",
@@ -47,13 +53,13 @@ class RAGChunk:
 
 
 class RAGRetriever:
-    """Hybrid semantic + keyword retriever backed by ChromaDB + sentence-transformers."""
+    """Hybrid semantic + LLM-keyword retriever backed by ChromaDB + sentence-transformers."""
 
     def __init__(
         self,
         store: YukthiStore,
         embed_model: str = "BAAI/bge-small-en-v1.5",
-        top_k: int = 3,
+        top_k: int = 4,
         distance_threshold: float = 0.45,
     ) -> None:
         self.store = store
@@ -86,30 +92,38 @@ class RAGRetriever:
                 )
         return self._encoder
 
-    # ── Term extraction & keyword scoring ───────────────────────────────────
+    # ── Keyword scoring ─────────────────────────────────────────────────────
 
-    def _extract_terms(self, text: str) -> list[str]:
-        """Extract meaningful content words from a text for keyword scoring."""
-        words = re.findall(r"\b[a-zA-Z]{3,}\b", text.lower())
-        return [w for w in words if w not in _STOPWORDS]
-
-    def _keyword_score(self, document: str, query_terms: list[str]) -> float:
-        """Keyword overlap ratio [0.0, 1.0] between document and query terms."""
-        if not query_terms:
+    def _keyword_score(self, document: str, search_terms: list[str]) -> float:
+        """Keyword overlap ratio [0.0, 1.0] — how many search terms appear in document."""
+        if not search_terms:
             return 0.0
         doc_lower = document.lower()
-        hits = sum(1 for t in query_terms if t in doc_lower)
-        return hits / len(query_terms)
+        hits = sum(1 for t in search_terms if t.lower() in doc_lower)
+        return hits / len(search_terms)
+
+    def _heuristic_fallback_terms(self, text: str) -> list[str]:
+        """Fallback: extract content words when LLM keyword extraction fails."""
+        words = re.findall(r"\b[a-zA-Z]{4,}\b", text.lower())
+        return list(dict.fromkeys(w for w in words if w not in _STOPWORDS))[:3]
 
     # ── Retrieval ────────────────────────────────────────────────────────────
 
-    def query(self, message: str, crop: str, top_k: Optional[int] = None) -> list[RAGChunk]:
-        """Hybrid retrieval: semantic (k×2) + keyword-filtered, then rerank → top-k.
+    def query(
+        self,
+        message: str,
+        crop: str,
+        top_k: Optional[int] = None,
+        llm_keywords: Optional[list[str]] = None,
+    ) -> list[RAGChunk]:
+        """Hybrid retrieval: 8 semantic + 8 keyword-guided candidates → rerank → top-k.
 
         Args:
-            message: The (optionally enriched) retrieval query.
-            crop:    Crop name — selects the correct ChromaDB collection.
-            top_k:   Override the default top-k count.
+            message:      The enriched retrieval query (crop + disease + user message).
+            crop:         Crop name — selects the correct ChromaDB collection.
+            top_k:        Override the default final chunk count (default 4).
+            llm_keywords: Pre-extracted keywords from KeywordExtractor. If None or [],
+                          falls back to heuristic term extraction.
 
         Returns:
             List of RAGChunk objects, reranked and capped at top_k.
@@ -124,70 +138,78 @@ class RAGRetriever:
 
         encoder = self._get_encoder()
         embedding = encoder.encode(message, show_progress_bar=False).tolist()
-        query_terms = self._extract_terms(message)
 
-        # ── 1. Semantic search: fetch k×2 candidates ────────────────────────
-        semantic_k = max(k * 2, 6)
-        semantic_results = self.store.query(crop=crop_norm, embedding=embedding, n_results=semantic_k)
+        # Determine keyword list: prefer LLM-generated, fall back to heuristic
+        search_keywords = (
+            llm_keywords if llm_keywords
+            else self._heuristic_fallback_terms(message)
+        )
+        source_label = "LLM" if llm_keywords else "heuristic"
 
-        # Collect candidates: (text, metadata, distance)
+        # ── 1. Semantic search: 5 candidates ─────────────────────────────────
+        SEMANTIC_N = 5
+        semantic_results = self.store.query(
+            crop=crop_norm, embedding=embedding, n_results=SEMANTIC_N
+        )
+
+        # Accumulate candidates: (text, metadata, distance)
         candidates: list[tuple[str, dict, float]] = []
         seen: set[str] = set()
 
-        def _add_candidate(doc: str, meta: dict, dist: float) -> None:
-            key = doc[:120]  # dedup by first 120 chars
+        def _add(doc: str, meta: dict, dist: float) -> None:
+            key = doc[:120]  # dedup key = first 120 chars
             if key not in seen:
                 seen.add(key)
                 candidates.append((doc, meta, dist))
 
+        n_semantic = 0
         if semantic_results:
-            docs = semantic_results.get("documents", [[]])[0]
+            docs  = semantic_results.get("documents", [[]])[0]
             metas = semantic_results.get("metadatas", [[]])[0]
             dists = semantic_results.get("distances", [[]])[0]
             for doc, meta, dist in zip(docs, metas, dists):
-                _add_candidate(doc, meta, dist)
+                _add(doc, meta, dist)
+                n_semantic += 1
 
-        # ── 2. Keyword-filtered semantic search: additional candidates ───────
-        # Take the longest unique content terms (most likely to be disease names)
-        content_terms = sorted(
-            [t for t in set(query_terms) if len(t) >= 5],
-            key=len, reverse=True
-        )[:3]  # up to 3 keyword searches
-
-        kw_total = 0
-        for term in content_terms:
+        # ── 2. Keyword-filtered semantic: up to 8 keyword candidates ─────────
+        # Each of the 3 LLM keywords → top 2 results with where_document filter
+        # That's ~6 raw keyword candidates → deduplicated to ≤5 unique ones
+        KEYWORD_PER_TERM = max(1, round(5 / max(len(search_keywords), 1)))
+        n_keyword = 0
+        for term in search_keywords:
             kw_results = self.store.query_keyword_filtered(
-                crop=crop_norm, embedding=embedding, term=term, n_results=k
+                crop=crop_norm, embedding=embedding, term=term,
+                n_results=KEYWORD_PER_TERM,
             )
-            if kw_results:
-                kw_docs = kw_results.get("documents", [[]])[0]
-                kw_metas = kw_results.get("metadatas", [[]])[0]
-                kw_dists = kw_results.get("distances", [[]])[0]
-                for doc, meta, dist in zip(kw_docs, kw_metas, kw_dists):
-                    kw_total += 1
-                    _add_candidate(doc, meta, dist)
+            if not kw_results:
+                continue
+            kw_docs  = kw_results.get("documents", [[]])[0]
+            kw_metas = kw_results.get("metadatas", [[]])[0]
+            kw_dists = kw_results.get("distances", [[]])[0]
+            for doc, meta, dist in zip(kw_docs, kw_metas, kw_dists):
+                _add(doc, meta, dist)
+                n_keyword += 1
 
         log.info(
-            "Retriever: %d semantic + %d keyword candidates for crop='%s' (terms=%s)",
-            min(len(semantic_results.get("documents", [[]])[0]) if semantic_results else 0, semantic_k),
-            kw_total,
-            crop_norm,
-            content_terms,
+            "Retriever: %d semantic + %d keyword candidates | keywords=%s (%s) | crop='%s'",
+            n_semantic, n_keyword, search_keywords, source_label, crop_norm,
         )
 
-        # ── 3. Rerank by combined score, apply distance threshold ────────────
+        # ── 3. Rerank by combined score ───────────────────────────────────────
+        # Threshold: slightly relaxed for keyword candidates (they had a hard filter,
+        # so a higher distance is acceptable if the keyword matches strongly)
         ranked: list[tuple[float, RAGChunk]] = []
         for doc, meta, dist in candidates:
-            # Apply distance threshold (permissive — keyword may rescue borderline chunks)
-            if dist > self.distance_threshold * 1.15:  # slightly relaxed for keyword candidates
-                log.debug("Retriever: skipped '%s' dist=%.3f (threshold=%.3f)",
-                          meta.get("section", "?"), dist, self.distance_threshold)
+            if dist > self.distance_threshold * 1.2:
+                log.debug(
+                    "Retriever: dropped '%s' dist=%.3f > threshold×1.2=%.3f",
+                    meta.get("section", "?"), dist, self.distance_threshold * 1.2,
+                )
                 continue
-            kw = self._keyword_score(doc, query_terms)
-            # combined: semantic similarity (1-dist, higher=better) + keyword overlap
+            kw = self._keyword_score(doc, search_keywords)
             combined = 0.7 * max(0.0, 1.0 - dist) + 0.3 * kw
             log.info(
-                "Retriever: candidate '%s' — dist=%.3f  kw=%.2f  combined=%.3f",
+                "Retriever: ✓ '%s'  dist=%.3f  kw=%.2f  combined=%.3f",
                 meta.get("section", "?"), dist, kw, combined,
             )
             ranked.append((combined, RAGChunk(
@@ -201,8 +223,8 @@ class RAGRetriever:
         result = [chunk for _, chunk in ranked[:k]]
 
         log.info(
-            "Retriever: %d final chunks returned after hybrid rerank for crop='%s'",
-            len(result), crop_norm,
+            "Retriever: returning %d final chunks (from %d candidates) for crop='%s'",
+            len(result), len(candidates), crop_norm,
         )
         return result
 
@@ -210,8 +232,6 @@ class RAGRetriever:
         """Eagerly load the embedding model in the current thread.
 
         Called at server startup so the model is ready before the first request.
-        Avoids the 8-10 second delay on the first RAG query and prevents the
-        model from being loaded inside a FastAPI worker thread.
         """
         try:
             self._get_encoder()

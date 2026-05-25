@@ -66,7 +66,7 @@ class EfficientNetB0Predictor:
         model_path: Optional[Path] = None,
         labels_path: Optional[Path] = None,
         device: str = "cpu",
-        confidence_threshold: float = 0.85,
+        confidence_threshold: float = 0.80,
     ) -> None:
         self.device = torch.device(device)
         self.model_path = model_path or _default_model_path()

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
+from datetime import datetime
 
 from .client import ChatClient
 from nava_core.mozhi.memory.session_store import SessionStore
@@ -53,6 +54,7 @@ class ChatService:
         system_prompt: str = DEFAULT_SYSTEM_PROMPT,
         rag_retriever: Optional[RAGRetriever] = None,
         rag_router: Optional[QueryRouter] = None,
+        keyword_extractor=None,  # nava_core.yukthi.keywords.KeywordExtractor | None
     ) -> None:
         self.client = client
         self.store = store
@@ -66,6 +68,7 @@ class ChatService:
         self.system_prompt = system_prompt
         self.rag_retriever = rag_retriever
         self.rag_router = rag_router
+        self.keyword_extractor = keyword_extractor
 
     @classmethod
     def from_settings(cls) -> "ChatService":
@@ -127,6 +130,16 @@ class ChatService:
                 import logging
                 logging.getLogger("mozhi.service").warning("QueryRouter init failed: %s", e)
 
+        # Build keyword extractor (always paired with router)
+        keyword_extractor = None
+        if rag_router is not None:
+            try:
+                from nava_core.yukthi.keywords import KeywordExtractor as _KE
+                keyword_extractor = _KE(client=client, model=s.hf_summary_model)
+            except Exception as e:
+                import logging
+                logging.getLogger("mozhi.service").warning("KeywordExtractor init failed: %s", e)
+
         return cls(
             client=client,
             store=store,
@@ -139,6 +152,7 @@ class ChatService:
             summary_max_new_tokens=s.hf_summary_max_new_tokens,
             rag_retriever=rag_retriever,
             rag_router=rag_router,
+            keyword_extractor=keyword_extractor,
         )
 
 
@@ -184,6 +198,81 @@ class ChatService:
         return None
 
     # ── Summary prompts ─────────────────────────────────────────────
+
+    # ── Crop auto-notes extraction ──────────────────────────────────
+
+    _AUTO_NOTES_SEPARATOR = "--- NAVA Auto-notes ---"
+
+    _NOTES_EXTRACT_SYSTEM = (
+        "You are an agricultural record-keeping assistant. "
+        "Scan the following chat summary and extract ONLY concrete, specific actions or decisions the farmer has taken or plans to take. "
+        "Examples: applied a specific pesticide, removed diseased plants, changed irrigation schedule, added fertilizer, observed a specific symptom. "
+        "Output ONLY the relevant facts, one per line, in past tense, starting with a dash (- ). "
+        "Only consider what the user said, do not include information from the assistant, unless explicitly stated by the user that they followed the assistant's advice."
+        "If no concrete agronomic action or decision is present in the summary, output exactly: NONE"
+    )
+
+    def _extract_crop_notes_from_summary(
+        self,
+        summary: str,
+        crop_id: int,
+    ) -> None:
+        """LLM scans a new summary for agronomic actions/decisions.
+        If found, appends them to the crop's notes field below the auto-notes separator.
+        """
+        if not self.field_store or not summary:
+            return
+        try:
+            prompt = [
+                {"role": "system", "content": self._NOTES_EXTRACT_SYSTEM},
+                {"role": "user",   "content": summary},
+            ]
+            reply, error = self.client.send(
+                prompt,
+                model_override=self.summary_model,
+                temperature_override=0.0,
+                max_new_tokens_override=80,
+            )
+            if error or not reply:
+                return
+            stripped = reply.strip()
+            if stripped.upper() == "NONE" or not stripped:
+                return
+
+            # Parse bullet lines
+            lines = [
+                l.lstrip("- •*").strip()
+                for l in stripped.split("\n")
+                if l.strip() and l.strip().upper() != "NONE"
+            ]
+            if not lines:
+                return
+
+            crop = self.field_store.get_crop(crop_id)
+            if not crop:
+                return
+            raw_notes = crop.get("notes") or ""
+
+            # Split at separator, append new lines below it
+            sep = self._AUTO_NOTES_SEPARATOR
+            if sep in raw_notes:
+                before, after = raw_notes.split(sep, 1)
+                auto_block = after.strip()
+            else:
+                before = raw_notes
+                auto_block = ""
+
+            now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
+            new_entries = f"[{now_str}]\n" + "\n".join(f"- {l}" for l in lines)
+            updated_auto = (auto_block + "\n\n" + new_entries).strip() if auto_block else new_entries
+            updated_notes = before.rstrip() + ("\n\n" if before.strip() else "") + sep + "\n" + updated_auto
+
+            self.field_store.update_crop_context(crop_id, updated_notes)
+            log.info("CropNotes: appended %d auto-note(s) for crop_id=%s", len(lines), crop_id)
+        except Exception as exc:
+            log.warning("CropNotes extraction failed: %s", exc)
+
+    # ── Summary + Rollup ─────────────────────────────────────────────
 
     def _build_summary_prompt(self, messages: list[tuple]) -> list[dict]:
         lines = [f"{role.upper()}: {content}" for _, role, content in messages]
@@ -233,6 +322,16 @@ class ChatService:
         max_id = max(row[0] for row in batch)
         self.store.add_summary(session_id, level=1, content=summary)
         self.store.set_last_summarized_id(session_id, max_id)
+
+        # ── Crop auto-notes extraction (fire-and-forget, best-effort) ──
+        session_ctx = self.store.get_session_context(session_id)
+        if session_ctx:
+            _cid = session_ctx.get("crop_id")
+            if _cid is not None:
+                try:
+                    self._extract_crop_notes_from_summary(summary, _cid)
+                except Exception:
+                    pass
 
         if self.store.count_summaries(session_id, level=1) >= self.summary_rollup:
             oldest = self.store.fetch_oldest_summaries(session_id, level=1, limit=self.summary_rollup)
@@ -356,7 +455,12 @@ class ChatService:
         rag_chunk_count = 0
         rag_chunks: list[dict] = []
         if self.rag_router and self.rag_retriever and self.field_store and crop_id is not None:
-            if self.rag_router.should_retrieve(message):
+            # Find last NAVA reply from fetched history to give the router context
+            _last_reply = next(
+                (h["content"] for h in reversed(history) if h.get("role") == "assistant"),
+                "",
+            )
+            if self.rag_router.should_retrieve(message, last_assistant_reply=_last_reply):
                 crop = self.field_store.get_crop(crop_id)
                 crop_name = (crop.get("name") or "").lower().strip() if crop else ""
                 if crop_name:
@@ -365,7 +469,24 @@ class ChatService:
                         crop_name=crop_name,
                         crop_id=crop_id,
                     )
-                    chunks = self.rag_retriever.query(retrieval_query, crop=crop_name)
+
+                    # ── LLM keyword extraction ────────────────────────────
+                    # Ask the small model for the 3 most important agronomic
+                    # search keywords from the full enriched query context.
+                    # These are passed to ChromaDB where_document filters for
+                    # precision recall alongside the 8-candidate semantic search.
+                    llm_keywords: list[str] = []
+                    if self.keyword_extractor:
+                        try:
+                            llm_keywords = self.keyword_extractor.extract(retrieval_query)
+                        except Exception as _ke:
+                            log.warning("Keyword extraction failed: %s — using heuristic fallback", _ke)
+
+                    chunks = self.rag_retriever.query(
+                        retrieval_query,
+                        crop=crop_name,
+                        llm_keywords=llm_keywords,
+                    )
                     if chunks:
                         rag_used = True
                         rag_chunk_count = len(chunks)
@@ -388,6 +509,7 @@ class ChatService:
                         for chunk in chunks:
                             rag_block += f"[{chunk.source} — {chunk.section}]\n{chunk.text}\n\n"
                         messages.append({"role": "system", "content": rag_block.strip()})
+
 
 
         messages.extend(history)

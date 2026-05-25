@@ -9,6 +9,7 @@ from nava_core.shared.schemas import VNIRResponse
 from nava_core.shared.utils import image_to_base64, load_image_from_bytes
 from nava_core.shared.storage.user_store import UserRecord
 from nava_core.gathi.api.deps import field_store_for_user, get_vnir_pipeline, require_user
+from nava_core.gathi.api.routers.fields import _refresh_field_context
 
 router = APIRouter(prefix="/api", tags=["vnir"])
 
@@ -23,6 +24,12 @@ def clear_vnir_history(
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")
     store.clear_vnir_history(plant_id)
+    if plant.get("field_id"):
+        from nava_core.gathi.api.routers.fields import _refresh_field_context
+        try:
+            _refresh_field_context(store, plant["field_id"])
+        except Exception:
+            pass
     return {"status": "cleared", "plant_id": plant_id}
 
 
@@ -67,6 +74,12 @@ async def vnir_upload(
             "vs_prev_checkpoint": stats.vs_prev_checkpoint,
         },
     )
+    effective_field_id = field_id or (plant.get("field_id") if plant else None)
+    if effective_field_id:
+        try:
+            _refresh_field_context(store, effective_field_id)
+        except Exception:
+            pass
 
     return VNIRResponse(
         plant_id=str(plant_id),
