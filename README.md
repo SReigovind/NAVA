@@ -127,3 +127,4 @@ The following directions are identified as meaningful extensions to NAVA beyond 
 - **External Guide:** Dr. Hsing-Kuo Pao, Professor, Department of Computer Science and Information Engineering, National Taiwan University of Science and Technology
 
 ---
+thanks
