@@ -5,11 +5,11 @@ from __future__ import annotations
 import sqlite3
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, Header, HTTPException, BackgroundTasks
 
 from nava_core.shared.schemas import AuthLoginRequest, AuthRegisterRequest, AuthResponse, UserResponse, UpdateUserRequest, UpdatePasswordRequest
 from nava_core.shared.storage.user_store import UserRecord
-from nava_core.gathi.api.deps import get_user_store, require_user
+from nava_core.gathi.api.deps import get_user_store, require_user, _extract_token
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -32,6 +32,17 @@ def _preload_models():
         log.info("Models preloaded successfully.")
     except Exception as e:
         log.error("Failed to preload models: %s", e)
+
+
+def _models_loaded() -> bool:
+    """Return True if both ML models are already in the lru_cache.
+    Avoids spawning a redundant background thread on every /me request.
+    """
+    from nava_core.gathi.api.deps import get_predictor, get_vnir_pipeline
+    return (
+        get_predictor.cache_info().currsize > 0
+        and get_vnir_pipeline.cache_info().currsize > 0
+    )
 
 
 @router.post("/register", response_model=AuthResponse)
@@ -60,13 +71,24 @@ def login(request: AuthLoginRequest, bg_tasks: BackgroundTasks) -> AuthResponse:
 
 
 @router.post("/logout")
-def logout(user: UserRecord = Depends(require_user)) -> dict:
+def logout(
+    authorization: str | None = Header(None),
+    user: UserRecord = Depends(require_user),
+) -> dict:
+    """Invalidate the session token so it cannot be reused after logout."""
+    token = _extract_token(authorization)
+    if token:
+        get_user_store().delete_session(token)
     return {"status": "logged_out"}
 
 
 @router.get("/me", response_model=UserResponse)
 def me(bg_tasks: BackgroundTasks, user: UserRecord = Depends(require_user)) -> UserResponse:
-    bg_tasks.add_task(_preload_models)
+    # Only spin up the preload task if models haven't been loaded yet.
+    # Startup already handles this; the guard prevents a redundant thread
+    # being spawned on every /me poll (e.g. auth keep-alive calls).
+    if not _models_loaded():
+        bg_tasks.add_task(_preload_models)
     return _to_user_response(user)
 
 

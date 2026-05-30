@@ -1,32 +1,29 @@
 --index-url https://download.pytorch.org/whl/cpu
 --extra-index-url https://pypi.org/simple
 
+# API server
 fastapi
 uvicorn
-sqlalchemy
 pydantic
 python-multipart
 requests
 python-dotenv
 
+# Image processing
 numpy
-pandas
 pillow
 opencv-python
 
+# ML — disease detection
 torch
 torchvision
 grad-cam
 
+# ML — VNIR (Thanal model)
 onnx
 onnxruntime
 
-langchain
-langchain-community
+# RAG knowledge retrieval
 chromadb
 sentence-transformers
 pymupdf
-apscheduler
-
-gradio
-md2pdf

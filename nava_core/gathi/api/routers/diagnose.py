@@ -33,7 +33,11 @@ async def diagnose(
     pil_image = load_image_from_bytes(data)
     predictor = get_predictor()
 
-    result = predictor.predict(pil_image)
+    # Single forward pass always — CAM output is conditionally included in the
+    # response. Previously predict() was called first to gate reliability, then
+    # predict_with_cam() was called again — two full forward passes for every
+    # reliable diagnosis. Now one pass covers both.
+    result, cam_image = predictor.predict_with_cam(pil_image)
 
     event_payload = {
         "plant_name": plant["name"],
@@ -43,35 +47,6 @@ async def diagnose(
         "reliability": result.reliability,
     }
 
-    if result.reliability == "UNRELIABLE":
-        store.add_event(
-            event_type="diagnose",
-            field_id=field_id,
-            crop_id=crop_id or plant["crop_id"],
-            plant_id=plant_id,
-            payload=event_payload,
-        )
-        effective_field_id = field_id or (plant.get("field_id") if plant else None)
-        if effective_field_id:
-            try:
-                _refresh_field_context(store, effective_field_id)
-            except Exception:
-                pass
-        return DiagnoseResponse(
-            class_label=result.class_label,
-            class_index=result.class_index,
-            confidence=result.confidence,
-            reliability=result.reliability,
-        )
-
-    # Only run Grad-CAM for reliable predictions — single call, no double inference
-    result, cam_image = predictor.predict_with_cam(pil_image)
-    event_payload.update({
-        "class_label": result.class_label,
-        "class_index": result.class_index,
-        "confidence": result.confidence,
-        "reliability": result.reliability,
-    })
     store.add_event(
         event_type="diagnose",
         field_id=field_id,
@@ -85,6 +60,16 @@ async def diagnose(
             _refresh_field_context(store, effective_field_id)
         except Exception:
             pass
+
+    if result.reliability == "UNRELIABLE":
+        # Prediction is below confidence threshold — return result without CAM
+        return DiagnoseResponse(
+            class_label=result.class_label,
+            class_index=result.class_index,
+            confidence=result.confidence,
+            reliability=result.reliability,
+        )
+
     return DiagnoseResponse(
         class_label=result.class_label,
         class_index=result.class_index,

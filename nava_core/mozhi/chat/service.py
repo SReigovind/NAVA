@@ -10,6 +10,9 @@ from .client import ChatClient
 from nava_core.mozhi.memory.session_store import SessionStore
 from nava_core.shared.config import get_settings
 from nava_core.shared.storage.field_store import FieldStore
+from nava_core.shared.utils.logging import get_logger
+
+log = get_logger("mozhi.service")
 
 if TYPE_CHECKING:
     from nava_core.yukthi.router import QueryRouter
@@ -117,18 +120,14 @@ class ChatService:
                     distance_threshold=s.yukthi_distance_threshold,
                 )
             except Exception as e:
-                import logging
-                logging.getLogger("mozhi.service").warning(
-                    "Yukthi RAG fallback init failed: %s", e
-                )
+                log.warning("Yukthi RAG fallback init failed: %s", e)
 
         if rag_router is None and rag_retriever is not None:
             try:
                 from nava_core.yukthi.router import QueryRouter as _Router
                 rag_router = _Router(client=client, model=s.hf_summary_model)
             except Exception as e:
-                import logging
-                logging.getLogger("mozhi.service").warning("QueryRouter init failed: %s", e)
+                log.warning("QueryRouter init failed: %s", e)
 
         # Build keyword extractor (always paired with router)
         keyword_extractor = None
@@ -137,8 +136,7 @@ class ChatService:
                 from nava_core.yukthi.keywords import KeywordExtractor as _KE
                 keyword_extractor = _KE(client=client, model=s.hf_summary_model)
             except Exception as e:
-                import logging
-                logging.getLogger("mozhi.service").warning("KeywordExtractor init failed: %s", e)
+                log.warning("KeywordExtractor init failed: %s", e)
 
         return cls(
             client=client,
