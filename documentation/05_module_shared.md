@@ -40,6 +40,63 @@ nava_core/shared/
 
 ## 3. Configuration (`config/settings.py`)
 
+### High-Level Shared Module Overview
+
+The Shared module is a purely infrastructure layer — it has no business logic and owns no domain. All other modules import from it; it never imports from them.
+
+```mermaid
+flowchart TD
+    subgraph Shared["Shared — Foundation"]
+        direction LR
+        Config["Settings\n(frozen dataclass)"]
+        Schemas["Pydantic Schemas\n(API contracts)"]
+        UserDB["UserStore\n(global users.db)"]
+        FarmDB["FieldStore\n(per-user farm.db)"]
+        Utils["Utilities\n(image · logging · paths)"]
+    end
+
+    Gathi(["Gathi"])
+    Mizhi(["Mizhi"])
+    Mozhi(["Mozhi"])
+    Yukthi(["Yukthi"])
+
+    Gathi --> Config
+    Gathi --> Schemas
+    Gathi --> UserDB
+    Gathi --> FarmDB
+    Mizhi --> Config
+    Mizhi --> Utils
+    Mozhi --> FarmDB
+    Mozhi --> Config
+    Yukthi --> Config
+
+    style Shared fill:#1a0a0a,stroke:#ef4444,stroke-width:2px
+```
+
+### Two-Database Architecture Overview
+
+A key design decision is the strict separation between the **global user registry** (one file for all users) and **per-user farm databases** (one file per registered user).
+
+```mermaid
+flowchart LR
+    User(["Authenticated\nUser"])
+    Token["Bearer Token"]
+
+    subgraph Global["Global (shared) "]
+        GDB[("users.db\nusers + sessions")]
+    end
+
+    subgraph PerUser["Per-User (isolated)"]
+        FDB[("user_{hash}.db\nfields · crops · plants\nevents · vnir_history\nchat sessions")]
+    end
+
+    User --> Token --> GDB
+    GDB -- "db_path" --> FDB
+
+    style Global fill:#451a03,stroke:#fdba74
+    style PerUser fill:#1e3a5f,stroke:#93c5fd
+```
+
 ### 3.1 The `Settings` Dataclass
 
 All configuration is centralised in a single frozen dataclass:
@@ -557,7 +614,7 @@ A key architectural decision in NAVA is the separation of user identity from far
 3. **Privacy:** Deleting an account deletes only the relevant per-user file — no complex SQL cascade across a shared table.
 4. **Simplicity:** SQLite's write-ahead logging (WAL mode, enabled with `PRAGMA journal_mode=WAL`) handles concurrent reads efficiently without a separate database server.
 
-### Two-Database Architecture
+### Two-Database Architecture (Detailed)
 
 ```mermaid
 flowchart TD

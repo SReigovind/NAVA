@@ -88,6 +88,105 @@ It manages:
 * ─────────────── redirect to /
 ```
 
+### Page Navigation Flow
+
+The following diagram shows how users navigate through the application and which authenticated routes are protected.
+
+```mermaid
+flowchart TD
+    Start(["User visits NAVA"])
+    Land["Landing Page\n( / )"]
+    Auth["Auth Page\n( /auth )\nLogin · Register"]
+    Fields["Fields Dashboard\n( /fields )\nStats · All Fields · Activity Feed"]
+    FDetail["Field Detail\n( /fields/:id )\nCrops · Field Notes"]
+    CDetail["Crop Workspace\n( /fields/:id/crops/:id )"]
+    Profile["Profile / Settings\n( /profile )"]
+
+    subgraph CropPanels["Crop Workspace Panels"]
+        Overview["Overview Panel\nCrop info · Plants · Notes"]
+        Chat["Chat Panel\nConversational AI"]
+        Diagnose["Diagnose Panel\nDisease Detection"]
+        Monitor["Monitor Panel\nVNIR Stress"]
+    end
+
+    Start --> Land
+    Land -- "Get Started / Log In" --> Auth
+    Auth -- "Authenticated" --> Fields
+    Fields -- "Click field" --> FDetail
+    FDetail -- "Click crop" --> CDetail
+    CDetail --> Overview
+    CDetail --> Chat
+    CDetail --> Diagnose
+    CDetail --> Monitor
+    Fields -- "Profile link" --> Profile
+
+    style CropPanels fill:#0f1a2e,stroke:#3b82f6
+    style Auth fill:#0d1f0d,stroke:#22c55e
+```
+
+### Component Architecture
+
+The following diagram shows the React component tree and how shared infrastructure (auth context, API client) flows through the application.
+
+```mermaid
+flowchart TD
+    Root["main.jsx\nReactDOM.createRoot"]
+    Browser["BrowserRouter"]
+    AP["AuthProvider\n(React Context)"]
+    App["App.jsx\nRoute definitions"]
+
+    subgraph Public["Public Routes"]
+        LandingC["Landing.jsx"]
+        AuthC["Auth.jsx"]
+    end
+
+    subgraph Protected["Protected Routes (RequireAuth)"]
+        Layout["Layout.jsx\n(NavBar wrapper)"]
+        FieldsC["Fields.jsx"]
+        FieldDetailC["FieldDetail.jsx"]
+        CropLayout["CropLayout.jsx\n(no-padding shell)"]
+        CropDetailC["CropDetail.jsx"]
+        ProfileC["Profile.jsx"]
+    end
+
+    subgraph CropPanels2["Crop Tool Panels"]
+        OP["OverviewPanel.jsx"]
+        CP["ChatPanel.jsx"]
+        DP["DiagnosePanel.jsx"]
+        MP["MonitorPanel.jsx"]
+        PS["PlantSelector.jsx"]
+    end
+
+    subgraph Lib["Shared Infrastructure"]
+        API2["lib/api.js\napiFetch wrapper"]
+        AuthLib["lib/auth.js\ntoken helpers"]
+    end
+
+    Root --> Browser --> AP --> App
+    App --> Public
+    App --> Protected
+
+    Protected --> Layout
+    Layout --> FieldsC
+    Layout --> FieldDetailC
+    Layout --> ProfileC
+    CropLayout --> CropDetailC
+    CropDetailC --> OP
+    CropDetailC --> CP
+    CropDetailC --> DP
+    CropDetailC --> MP
+    DP --> PS
+    MP --> PS
+
+    AP -..->|"useAuth hook"| Protected
+    API2 -..->|"apiFetch"| Protected
+    AuthLib -..->|"getToken"| API2
+
+    style Protected fill:#0f1a2e,stroke:#3b82f6
+    style CropPanels2 fill:#0d1f0d,stroke:#22c55e
+    style Lib fill:#1a1400,stroke:#f59e0b
+```
+
 ---
 
 ## 3. Landing Page (`pages/Landing.jsx`)

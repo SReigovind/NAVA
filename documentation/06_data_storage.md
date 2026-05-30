@@ -23,16 +23,19 @@ Model files are not a database, but they are essential runtime artifacts:
 
 ---
 
-## 2. Entity-Relationship Diagram
+## 2. Full-System Entity-Relationship Diagram
+
+The diagram below covers all persistent tables across both the global user database and the per-user farm/chat database, using visual grouping to clarify which database each table lives in.
 
 ```mermaid
 erDiagram
+    %% === GLOBAL DATABASE: users.db ===
     USERS {
         int id PK
         text name
         text email UK
-        text password
-        text db_path
+        text password "bcrypt hash"
+        text db_path "path to per-user DB"
         int onboarded
         text location
         text goals
@@ -42,19 +45,20 @@ erDiagram
     SESSIONS {
         int id PK
         int user_id FK
-        text token UK
+        text token UK "32-byte hex"
         text expires_at
         text created_at
     }
 
+    %% === PER-USER DATABASE: user_{hash}.db ===
     FIELDS {
         int id PK
         text name
         text location
         text area
         text soil_type
-        text shared_context
-        text field_notes
+        text shared_context "auto-generated LLM context"
+        text field_notes "manual notes"
         text created_at
     }
 
@@ -65,7 +69,7 @@ erDiagram
         text variety
         text season
         text stage
-        text notes
+        text notes "manual + NAVA auto-notes"
         text created_at
     }
 
@@ -79,18 +83,18 @@ erDiagram
 
     EVENTS {
         int id PK
-        text event_type
+        text event_type "diagnose | vnir"
         int field_id FK
         int crop_id FK
         int plant_id FK
-        text payload
+        text payload "JSON blob"
         text created_at
     }
 
     VNIR_HISTORY {
         int id PK
         int plant_id FK
-        real ratio
+        real ratio "NIR/Green ratio"
         real avg_green
         real avg_vnir
         text status
@@ -100,21 +104,21 @@ erDiagram
     CHAT_MESSAGES {
         int id PK
         text session_id
-        text role
+        text role "user | assistant"
         text content
-        text metadata
+        text metadata "JSON: RAG attribution"
         text created_at
     }
 
     CHAT_STATE {
         text session_id PK
-        int last_summarized_id
+        int last_summarized_id "pointer into CHAT_MESSAGES"
     }
 
     CHAT_SUMMARIES {
         int id PK
         text session_id
-        int level
+        int level "1=recent batch, 2=long-term rollup"
         text content
         text created_at
     }
@@ -125,16 +129,19 @@ erDiagram
         int crop_id
     }
 
+    %% Relationships
     USERS ||--o{ SESSIONS : "has"
     FIELDS ||--o{ CROPS : "contains"
-    CROPS ||--o{ PLANTS : "contains"
-    PLANTS ||--o{ EVENTS : "logged to"
-    PLANTS ||--o{ VNIR_HISTORY : "recorded in"
-    CROPS ||--o{ EVENTS : "logged to"
-    FIELDS ||--o{ EVENTS : "logged to"
+    CROPS ||--o{ PLANTS : "tracks"
+    PLANTS ||--o{ EVENTS : "logs to"
+    PLANTS ||--o{ VNIR_HISTORY : "timeseries"
+    CROPS ||--o{ EVENTS : "owns"
+    FIELDS ||--o{ EVENTS : "scoped to"
+    CHAT_CONTEXT }o--|| FIELDS : "anchored to"
+    CHAT_CONTEXT }o--|| CROPS : "anchored to"
 ```
 
-> **Note:** The `USERS` and `SESSIONS` tables live in `users.db`. All other tables live in the per-user `user_{hash}.db`. The `CHAT_*` tables also live in the per-user database (managed by `SessionStore`).
+> **Database boundary:** `USERS` and `SESSIONS` live in `logs/users/users.db`. All remaining tables live in `logs/users/user_{hash}.db` — one file per registered user. Chat tables (`CHAT_*`) are managed by `SessionStore` but share the per-user database file.
 
 ---
 

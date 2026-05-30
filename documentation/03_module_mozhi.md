@@ -30,6 +30,50 @@ nava_core/mozhi/
 
 ## 3. The HTTP Client (`client.py`)
 
+### High-Level Mozhi Overview
+
+Mozhi is the orchestration engine that turns a simple user message into a grounded, memory-aware, contextual LLM response. At a high level, it sequences five concerns:
+
+```mermaid
+flowchart TD
+    Msg(["User Message"])
+
+    subgraph Mozhi["Mozhi — Cognition"]
+        direction TB
+        CTX["1. Context Assembly\n(farm data + memory)"]
+        ROUTE["2. RAG Routing\n(retrieve or skip?)"]
+        RAG["3. Knowledge Retrieval\n(from Yukthi)"]
+        LLM_["4. LLM Generation\n(Llama-3 70B)"]
+        MEM["5. Memory Update\n(summarise + auto-notes)"]
+    end
+
+    Reply(["Grounded Reply"])
+
+    Msg --> CTX --> ROUTE
+    ROUTE -->|"RETRIEVE"| RAG --> LLM_
+    ROUTE -->|"SKIP"| LLM_
+    LLM_ --> Reply
+    LLM_ --> MEM
+
+    style Mozhi fill:#0f1a2e,stroke:#3b82f6,stroke-width:2px
+    style RAG fill:#1a0a2e,stroke:#8b5cf6
+    style MEM fill:#1a0a0a,stroke:#ef4444
+```
+
+### LLM Prompt Structure
+
+Every request assembles a layered prompt in this order:
+
+```
+[system] NAVA persona + safety rules
+[system] Farm & crop context  ← from FieldStore
+[system] Long-term memory (L2 rollup)  ← from SessionStore
+[system] Recent summaries (L1)  ← from SessionStore
+[system] RAG reference material  ← from Yukthi (if RETRIEVE)
+[user / assistant] Last 12 unsummarised messages
+[user] CURRENT MESSAGE
+```
+
 `ChatClient` is a thin, dependency-free HTTP client that calls the Hugging Face Router API — an OpenAI-compatible `/v1/chat/completions` endpoint.
 
 ```python
@@ -210,7 +254,7 @@ return ChatResult(
 )
 ```
 
-### Chat Orchestration Flow
+### Chat Orchestration Flow (Detailed)
 
 ```mermaid
 sequenceDiagram
@@ -312,7 +356,7 @@ This creates a two-tier memory:
 
 When injected into the prompt, both levels appear as a system message. The LLM sees the broad long-term context and the recent detail simultaneously, without the context window being overwhelmed by the raw message history.
 
-### Memory Hierarchy
+### Memory Hierarchy (Detailed)
 
 ```mermaid
 flowchart BT

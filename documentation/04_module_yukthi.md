@@ -29,6 +29,38 @@ nava_core/yukthi/
 
 ## 3. Source Document Management
 
+### High-Level Yukthi Overview
+
+Yukthi has two modes of operation: an **offline ingestion pipeline** (run once to build the vector store) and an **online retrieval pipeline** (run per-query during chat). Only the online path is in the critical request flow.
+
+```mermaid
+flowchart LR
+    subgraph Offline["Offline — Ingestion (once)"]
+        Docs["Source Documents\n(PDF / TXT per crop)"]
+        Chunk["Chunking"]
+        Embed["Embedding\n(bge-small-en-v1.5)"]
+        DB[("ChromaDB\nper-crop collections")]
+        Docs --> Chunk --> Embed --> DB
+    end
+
+    subgraph Online["Online — Retrieval (per chat request)"]
+        Msg(["User Message"])
+        Router["Query Router\n(RETRIEVE / SKIP?)"]
+        KW["Keyword Extractor\n(LLM)"]
+        Ret["Hybrid Retriever\nSemantic + Keyword"]
+        Inject["RAG Block Injected\ninto LLM Prompt"]
+        Msg --> Router
+        Router -->|"RETRIEVE"| KW --> Ret --> Inject
+        Router -->|"SKIP"| Inject
+    end
+
+    DB --> Ret
+
+    style Offline fill:#1a0a2e,stroke:#8b5cf6,stroke-width:2px
+    style Online fill:#0f1a2e,stroke:#3b82f6,stroke-width:2px
+    style DB fill:#0a1a0a,stroke:#22c55e
+```
+
 ### 3.1 Source Layout Convention
 
 Agricultural reference documents are stored in `ragsource/` at the project root, organised by crop:
@@ -64,7 +96,7 @@ The pipeline is **idempotent** — re-running without `--force` detects that the
 
 `RAGPipeline.ingest()` transforms source documents into ChromaDB entries in four stages.
 
-### Ingestion Pipeline
+### Ingestion Pipeline (Detailed)
 
 ```mermaid
 flowchart LR
@@ -254,7 +286,7 @@ class RAGChunk:
     score: float  # cosine distance — lower is more similar
 ```
 
-### Hybrid Retrieval Algorithm
+### Hybrid Retrieval Algorithm (Detailed)
 
 ```mermaid
 flowchart TD

@@ -570,6 +570,7 @@ Created a robust testing framework under `tests/` to perform automated, qualitat
 - **Fix:** Added `_refresh_field_context` trigger calls to the `DELETE /events/{event_id}` and `POST /vnir-clear` API endpoints to ensure the field memory stays in sync with deletions. Also added a `get_event` method to `field_store.py` to retrieve the `field_id` before deletion.
 
 **Issue 2: Unable to prune inaccurate auto-notes**
+- **Cause:** Auto-generated crop notes were previously read-only, meaning if the LLM hallucinated an action, the farmer couldn't remove it from the context popup. Additionally, deleting a note didn't immediately update the UI.
 - **Fix:** Modified `AutoNotesIcon` to accept an `onDeleteLine` prop. Each line in the auto-notes modal now features a discrete `✕` (delete) button. Passed an `onRefresh` callback from `CropDetail.jsx` into `OverviewPanel.jsx` so that deleting a bullet immediately re-fetches the parent's crop state, flawlessly updating the UI without a manual page refresh.
 
 **Files changed:** `vnir.py`, `fields.py`, `field_store.py`, `OverviewPanel.jsx`, `CropDetail.jsx`
@@ -604,3 +605,51 @@ Created highly advanced test suites in `tests/` designed to capture deep interna
 4. **`export_pdfs.py`**:
    - Uses the `md2pdf` library to convert the generated `.md` files into highly readable `.pdf` files.
    - Injects a custom CSS stylesheet to style the markdown tables and apply code block word-wrapping for the final PDF document.
+
+---
+
+## 2026-05-30 14:49 IST
+
+### Task: Architecture Documentation — High-Level & Detailed Diagrams (docs 00–07)
+
+**Objective:** Upgrade all documentation files to include both a high-level abstracted diagram and a detailed diagram for each module, add an improved ER diagram to the data storage doc, and add frontend view/flow diagrams.
+
+**Changes made:**
+
+- **`00_overview.md`**: Added a **High-Level Architecture (§4.1)** Mermaid diagram with five colour-coded zones (API Gateway, Perception, Cognition, Knowledge, Storage) showing only real system flows with internal sub-components abstracted. Relabelled the existing detailed diagram as **§4.2 Detailed Architecture**.
+
+- **`01_module_gathi.md`**: Added a **High-Level Gathi Overview** showing Gathi as an API gateway + SPA host with Modules and Storage as abstracted external nodes. Relabelled the existing routing map as **Module Routing Map (Detailed)**.
+
+- **`02_module_mizhi.md`**: Added a **High-Level Mizhi Overview** depicting the two independent pipelines (Disease Detection, VNIR) as black boxes feeding a shared event store. Relabelled existing detailed flowcharts.
+
+- **`03_module_mozhi.md`**: Added a **High-Level Mozhi Overview** showing the 5-step orchestration sequence (Context → Route → Retrieve → Generate → Memory) with RETRIEVE/SKIP branching. Added a **LLM Prompt Structure** reference block showing the assembled layer order. Relabelled existing diagrams.
+
+- **`04_module_yukthi.md`**: Added a **High-Level Yukthi Overview** that clearly separates the offline ingestion path (build vector store, run once) from the online retrieval path (per query at chat time). Relabelled existing diagrams.
+
+- **`05_module_shared.md`**: Added a **High-Level Shared Module Overview** showing all 4 modules importing from Shared. Added a **Two-Database Architecture Overview** showing the global vs. per-user DB split. Relabelled the existing detailed diagram.
+
+- **`06_data_storage.md`**: Improved the ER diagram significantly — added inline field descriptions (e.g. `"bcrypt hash"`, `"JSON blob"`, `"NIR/Green ratio"`), added `CHAT_CONTEXT` foreign key relationships to `FIELDS` and `CROPS`, and added database boundary annotation.
+
+- **`07_frontend_views.md`**: Added two new diagrams after the route map: (1) **Page Navigation Flow** showing user traversal from landing → auth → fields → crop workspace → tool panels; (2) **Component Architecture** showing the full React tree (`main.jsx → BrowserRouter → AuthProvider → App`) with public vs. protected route grouping, `CropLayout`, all four tool panels, `PlantSelector`, and how `AuthProvider`/`apiFetch` wire through the tree via dotted dependency arrows.
+
+**Outcome:** All 8 documentation files now have both high-level and detailed architecture representations.
+
+---
+
+## 2026-05-30 15:18 IST
+
+### Task: Feature Planning — Weather Context & Season Dropdown
+
+**Decisions made and documented:**
+
+1. **Season field**: Changed from free-text input to a dropdown with three Kerala-specific options: Summer / Hot Season (Mar–May), Monsoon Season (Jun–Nov), Winter / Cool Season (Dec–Feb). Season auto-detection from geolocation was considered and rejected — manual selection keeps user agency and removes geocoding dependency from crop creation.
+
+2. **Geo-weather context**: Retained and planned in full. Field location is resolved to lat/lon via Nominatim (OSM, free, no key) once per field, with coordinates persisted in two new `lat`/`lon` REAL columns in the `fields` table. Live weather data fetched from Open-Meteo (free, no key, GDPR-compliant) with a 60-minute in-memory cache. Injected into `ChatService._build_context_message()` as a `CURRENT WEATHER CONDITIONS` system prompt block, run in a `ThreadPoolExecutor` with 5s timeout so network calls never delay chat responses. No new pip installs — entirely stdlib `urllib` + `json`.
+
+3. **Multilingual support (Malayalam)**: Deferred to future work. Documented the recommended approach for when it is implemented: DeepL API Free tier (500k chars/month, official `deepl` SDK, Malayalam code `"ML"`), input translated ML→EN before RAG/LLM, LLM instructed to respond in Malayalam via system prompt, `preferred_lang` column in `chat_context` table, EN/ML toggle in ChatPanel.
+
+**Files updated:**
+
+- `implementation_plan.md` — replaced the obsolete 12 May 2026 plan with the current feature plan covering the season dropdown and geo-weather context, with a future work note on multilingual support.
+- `README.md` — updated to reflect the current complete state of the system.
+- `worklog.md` — this entry.

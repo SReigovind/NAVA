@@ -67,6 +67,40 @@ nava_core/gathi/
 
 ## 3. Backend Architecture
 
+### High-Level Gathi Overview
+
+At a high level, Gathi has two responsibilities: it is an **API gateway** (authenticating and routing requests to the right module) and an **SPA host** (serving the React frontend and all static assets).
+
+```mermaid
+flowchart LR
+    Browser(["Browser"])
+
+    subgraph Gathi["Gathi (FastAPI + React SPA)"]
+        direction TB
+        Auth["Auth\n/api/auth/*"]
+        API["Module Routers\n/api/diagnose | /api/vnir-*\n/api/chat | /api/fields"]
+        SPA["SPA Host\n/* → index.html"]
+        DI["Dependency Injection\nSingletons & Per-request"]
+    end
+
+    Modules(["Mizhi · Mozhi\nYukthi · Shared"])
+    Storage(["SQLite DBs"])
+
+    Browser -- "Auth requests" --> Auth
+    Browser -- "API calls" --> API
+    Browser -- "Page navigation" --> SPA
+
+    Auth --> DI
+    API --> DI
+    DI --> Modules
+    DI --> Storage
+    Modules -- "Results" --> API
+
+    style Gathi fill:#0f1a2e,stroke:#3b82f6,stroke-width:2px
+    style Modules fill:#0d1f0d,stroke:#22c55e
+    style Storage fill:#1a0a0a,stroke:#ef4444
+```
+
 ### 3.1 The FastAPI Application (`main.py`)
 
 The root FastAPI application is created in `main.py` with version `0.2.0`. It performs three jobs:
@@ -364,7 +398,7 @@ Gathi does not implement business logic itself — it is a coordination layer. E
 
 The startup hook ensures that when any router's dependency function is called for the first time, the heavy singleton it needs is already loaded (or loading in the background). The `deps.py` dependency functions are the precise integration seam: they translate FastAPI's dependency injection system into calls to the module layer.
 
-### Module Routing Map
+### Module Routing Map (Detailed)
 
 ```mermaid
 flowchart LR
@@ -403,8 +437,8 @@ flowchart LR
     Deps -->|"get_rag_retriever()"| Yukthi
     Deps -->|"get_user_store()\nfield_store_for_user()"| Shared
 
-    Mozhi -.->|"retrieval"| Yukthi
-    Mozhi -.->|"crop context"| Shared
+    Mozhi -..->|"retrieval"| Yukthi
+    Mozhi -..->|"crop context"| Shared
 ```
 
 ---

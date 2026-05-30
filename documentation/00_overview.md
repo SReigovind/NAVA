@@ -68,6 +68,70 @@ The foundation layer. Provides the `Settings` configuration singleton, all Pydan
 
 ## 4. System Architecture
 
+### 4.1 High-Level Architecture
+
+The following diagram abstracts internal implementation details and shows only the real system flows between the major concerns of the platform.
+
+```mermaid
+graph TD
+    User(["👨‍🌾 Farmer\n(Browser)"])
+
+    subgraph NAVA ["NAVA Platform"]
+        GW["🔀 API Gateway\n& Auth"]
+
+        subgraph Perception ["👁 Perception"]
+            D["Disease Detection"]
+            V["VNIR Stress Monitoring"]
+        end
+
+        subgraph Cognition ["🧠 Cognition"]
+            C["Chat & Memory"]
+        end
+
+        subgraph Knowledge ["📚 Knowledge"]
+            R["RAG Retrieval"]
+            K["Vector Store"]
+        end
+
+        subgraph Storage ["🗄 Storage"]
+            DB["Farm Data\n& Sessions"]
+        end
+    end
+
+    LLM(["☁ External LLM\n(Hugging Face)"])
+
+    User -- "Leaf Photo" --> GW
+    User -- "Chat Message" --> GW
+    User -- "Farm Management" --> GW
+
+    GW --> D
+    GW --> V
+    GW --> C
+    GW --> DB
+
+    D -- "Events" --> DB
+    V -- "Events" --> DB
+    C -- "Farm Context" --> DB
+    C -- "Retrieve" --> R
+    R --> K
+    C -- "Generate" --> LLM
+    LLM -- "Reply" --> C
+    C -- "Save Session" --> DB
+
+    GW -- "Results" --> User
+
+    style NAVA fill:#0d1f0d,stroke:#22c55e,stroke-width:2px
+    style Perception fill:#1a1400,stroke:#f59e0b
+    style Cognition fill:#0f1a2e,stroke:#3b82f6
+    style Knowledge fill:#1a0a2e,stroke:#8b5cf6
+    style Storage fill:#1a0a0a,stroke:#ef4444
+    style LLM fill:#1a1a2e,stroke:#6366f1
+```
+
+### 4.2 Detailed Architecture
+
+The following diagram shows the full internal structure, component-by-component, with precise data flows and storage interactions.
+
 ```mermaid
 graph TD
     subgraph "Client (Browser)"

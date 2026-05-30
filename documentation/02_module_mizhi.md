@@ -38,6 +38,43 @@ nava_core/mizhi/
 
 ## 3. Disease Detection Sub-System
 
+### High-Level Mizhi Overview
+
+Mizhi operates as two independent pipelines sharing a common entry point. Both receive a raw image and a plant identifier; both write their findings to the farm event store.
+
+```mermaid
+flowchart LR
+    Input(["Leaf Photo\n+ plant_id"])
+
+    subgraph Mizhi["Mizhi — Perception"]
+        direction TB
+        subgraph Detection["Disease Detection"]
+            EN["EfficientNet-B0\nClassifier"]
+            GC["Grad-CAM\nExplainer"]
+        end
+        subgraph VNIR_["VNIR Monitoring"]
+            HSV["HSV Leaf\nIsolator"]
+            TH["Thanal ONNX\nInference"]
+            AN["Ratio\nAnalyzer"]
+        end
+    end
+
+    Store(["Farm Event\nStore"])
+    Chat(["Chat Context"])
+
+    Input --> Detection
+    Input --> VNIR_
+    EN --> GC
+    HSV --> TH --> AN
+    Detection -- "class + confidence + heatmap" --> Store
+    VNIR_ -- "ratio + status" --> Store
+    Store -- "scan history" --> Chat
+
+    style Mizhi fill:#1a1400,stroke:#f59e0b,stroke-width:2px
+    style Detection fill:#1a0700,stroke:#f97316
+    style VNIR_ fill:#0a1a1a,stroke:#14b8a6
+```
+
 ### 3.1 The Dataset — Superset Strategy
 
 The EfficientNet-B0 model was not trained on a single benchmark dataset. Instead, a **Superset** was constructed by aggregating six open-source repositories:
@@ -154,7 +191,7 @@ The `confidence_threshold` (default: 0.80, configurable via `NAVA_CONFIDENCE_THR
 
 This gate is critical for preventing harm. A farmer acting on a confidently-wrong diagnosis could apply the wrong pesticide. By surfacing uncertainty, NAVA encourages the farmer to consult a human expert.
 
-### Disease Detection Flow
+### Disease Detection Flow (Detailed)
 
 ```mermaid
 flowchart TD
@@ -297,7 +334,7 @@ A **stress alert** is triggered when the current checkpoint average has **droppe
 
 All computed values (`ratio`, `avg_g`, `avg_vnir`, `baseline`, `rolling_avg`, `prev_checkpoint_avg`, `global_avg`, `vs_baseline`, `vs_global`, `vs_rolling`, `vs_prev_checkpoint`) are returned to the router in a `VNIRStats` dataclass, stored as an event, and added to the per-plant `vnir_history` timeseries table.
 
-### 4.6 Full Pipeline Flow
+### 4.6 Full VNIR Pipeline Flow (Detailed)
 
 ```mermaid
 flowchart TD
