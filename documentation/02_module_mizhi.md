@@ -154,6 +154,37 @@ The `confidence_threshold` (default: 0.80, configurable via `NAVA_CONFIDENCE_THR
 
 This gate is critical for preventing harm. A farmer acting on a confidently-wrong diagnosis could apply the wrong pesticide. By surfacing uncertainty, NAVA encourages the farmer to consult a human expert.
 
+### Disease Detection Flow
+
+```mermaid
+flowchart TD
+    Upload(["📷 POST /api/diagnose\nleaf image + plant_id"])
+    Preprocess["Preprocess\n256 resize → 224 center-crop\nImageNet normalise → tensor"]
+    FastPath["predict()\ntorch.no_grad()\nForward pass"]
+    Softmax["Softmax probabilities\n34 classes"]
+    Confidence{"confidence\n≥ threshold?\n(default 0.80)"}
+    Reliable["predict_with_cam()\nFull forward pass\n+ backward for Grad-CAM"]
+    CAM["GradCamGenerator\nheatmap overlay"]
+    StoreEvent["store.add_event()\npayload: class, confidence,\ngrad-cam, original image"]
+    Response["DiagnoseResponse\nclass_label · confidence\nreliability · base64 images"]
+    Unreliable["Mark UNRELIABLE\nno Grad-CAM"]
+
+    Upload --> Preprocess
+    Preprocess --> FastPath
+    FastPath --> Softmax
+    Softmax --> Confidence
+    Confidence -->|Yes| Reliable
+    Confidence -->|No| Unreliable
+    Reliable --> CAM
+    CAM --> StoreEvent
+    Unreliable --> StoreEvent
+    StoreEvent --> Response
+
+    style Reliable fill:#14532d,color:#86efac
+    style Unreliable fill:#451a03,color:#fdba74
+    style CAM fill:#1e3a5f,color:#93c5fd
+```
+
 ### 3.6 Grad-CAM Explainability (`gradcam.py`)
 
 Gradient-weighted Class Activation Mapping (Grad-CAM) produces a heatmap that highlights which regions of the input image the model attended to when making its prediction. This transforms NAVA from a black-box oracle into an interpretable tool that shows *why* it reached a conclusion.
@@ -268,38 +299,42 @@ All computed values (`ratio`, `avg_g`, `avg_vnir`, `baseline`, `rolling_avg`, `p
 
 ### 4.6 Full Pipeline Flow
 
-```
-POST /api/vnir-upload
-    │
-    ├─ load image bytes → PIL Image
-    ├─ get_vnir_pipeline() → VNIRPipeline (singleton)
-    ├─ store.get_vnir_ratios(plant_id) → history ratios list
-    │
-    ├─ VNIRPipeline.process_image(image, plant_name, history_ratios)
-    │       │
-    │       ├─ cv2 colour conversion (PIL → BGR numpy)
-    │       ├─ VNIRPipeline.isolate_leaf(frame_bgr)
-    │       │       ├─ HSV conversion
-    │       │       ├─ Green mask + morphology
-    │       │       ├─ Yellow-brown mask + morphology
-    │       │       └─ → LeafIsolationResult(leaf_state, mask, hsv_visual, masked_rgb)
-    │       │
-    │       ├─ if leaf_state == "GREEN":
-    │       │       ├─ VNIREngine.predict(masked_rgb_image) → vnir_image (PIL)
-    │       │       └─ VNIRAnalyzer.analyze(masked_rgb, vnir_array, mask, history_ratios)
-    │       │               ├─ extract green + vnir pixels under mask
-    │       │               ├─ compute ratio, rolling avg, checkpoint avg
-    │       │               └─ → VNIRStats
-    │       ├─ if leaf_state == "YELLOW_BROWN":
-    │       │       └─ VNIRStats(status="CRITICAL: Visual Stress")
-    │       └─ if leaf_state == "NONE":
-    │               └─ VNIRStats(status="No Leaf Detected")
-    │
-    ├─ store.add_vnir_reading(plant_id, ratio, avg_g, avg_vnir, status)
-    ├─ store.add_event("vnir", field_id, crop_id, plant_id, payload)
-    ├─ _refresh_field_context(store, field_id)
-    │
-    └─ return VNIRResponse (status, ratios, deltas, hsv_image_base64, vnir_image_base64)
+```mermaid
+flowchart TD
+    Upload(["📷 POST /api/vnir-upload\nleaf image + plant_id"])
+    LoadHistory["store.get_vnir_ratios\nhistory_ratios list"]
+    HSV["HSV Leaf Isolation\nResize 256×256\nGreen mask + Yellow-brown mask"]
+    State{"leaf_state?"}
+    ONNXInfer["VNIREngine.predict()\nONNX forward pass\noutput: grayscale NIR map"]
+    Analyze["VNIRAnalyzer.analyze()\nratio = avg_vnir / avg_green\nbaseline · rolling · checkpoint"]
+    Threshold{"checkpoint drop\n> 15%?"}
+    OK["Status: OK"]
+    Warning["Status: WARNING\nStress detected"]
+    CritVisual["Status: CRITICAL\nVisual Stress\n(skip ONNX)"]
+    NoLeaf["Status: No Leaf\nDetected"]
+    SaveEvent["store.add_vnir_reading()\nstore.add_event()\n_refresh_field_context()"]
+    Response["VNIRResponse\nstatus · ratios · deltas\nhsv_image · vnir_image"]
+
+    Upload --> LoadHistory
+    LoadHistory --> HSV
+    HSV --> State
+    State -->|GREEN| ONNXInfer
+    State -->|YELLOW_BROWN| CritVisual
+    State -->|NONE| NoLeaf
+    ONNXInfer --> Analyze
+    Analyze --> Threshold
+    Threshold -->|No| OK
+    Threshold -->|Yes| Warning
+    OK --> SaveEvent
+    Warning --> SaveEvent
+    CritVisual --> SaveEvent
+    NoLeaf --> SaveEvent
+    SaveEvent --> Response
+
+    style ONNXInfer fill:#1e3a5f,color:#93c5fd
+    style CritVisual fill:#7f1d1d,color:#fca5a5
+    style Warning fill:#78350f,color:#fde68a
+    style OK fill:#14532d,color:#86efac
 ```
 
 ---

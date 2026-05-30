@@ -64,6 +64,48 @@ The pipeline is **idempotent** — re-running without `--force` detects that the
 
 `RAGPipeline.ingest()` transforms source documents into ChromaDB entries in four stages.
 
+### Ingestion Pipeline
+
+```mermaid
+flowchart LR
+    subgraph Sources["ragsource/{crop}/"]
+        TXT[".txt files"]
+        PDF[".pdf files"]
+    end
+
+    subgraph Stage1["Stage 1: Discovery"]
+        FindSrc["_find_sources(crop)\nglob supported extensions"]
+    end
+
+    subgraph Stage2["Stage 2: Chunking"]
+        TXTChunk["TXT chunker\nparagraph split\nsection header detection"]
+        PDFChunk["PDF chunker\nfitz page extraction\n+ paragraph split"]
+        Chunks["list of Chunk\ntext · source · section\nchunk_index · crop"]
+    end
+
+    subgraph Stage3["Stage 3: Embedding"]
+        Embed["SentenceTransformer\nBAAI/bge-small-en-v1.5\nbatch_size=64\n384-dim vectors"]
+    end
+
+    subgraph Stage4["Stage 4: Upsert"]
+        IDs["deterministic IDs\n{source}_{chunk_index}"]
+        ChromaDB["ChromaDB\nnava_{crop} collection\nPersistentClient"]
+    end
+
+    TXT --> FindSrc
+    PDF --> FindSrc
+    FindSrc --> TXTChunk
+    FindSrc --> PDFChunk
+    TXTChunk --> Chunks
+    PDFChunk --> Chunks
+    Chunks --> Embed
+    Embed --> IDs
+    IDs -->|"upsert (idempotent)"| ChromaDB
+
+    style ChromaDB fill:#1e3a5f,color:#93c5fd
+    style Embed fill:#14532d,color:#86efac
+```
+
 ### Stage 1 — Source Discovery
 
 ```python
@@ -210,6 +252,46 @@ class RAGChunk:
     source: str
     section: str
     score: float  # cosine distance — lower is more similar
+```
+
+### Hybrid Retrieval Algorithm
+
+```mermaid
+flowchart TD
+    Query(["Enriched retrieval query\ne.g. 'Crop: banana. Condition: black_sigatoka. How do I treat?'"])
+
+    Embed["Embed query\nbge-small-en-v1.5\n→ 384-dim vector"]
+
+    Sem["Semantic search\nChromaDB cosine NN\ntop-5 candidates"]
+
+    KW["LLM keyword extraction\nKeywordExtractor.extract()\n→ 3 terms: [sigatoka, fungicide, banana leaf]"]
+
+    KWSearch1["keyword_filtered query\nterm: 'sigatoka'\ncandidates with text match"]
+    KWSearch2["keyword_filtered query\nterm: 'fungicide'"]
+    KWSearch3["keyword_filtered query\nterm: 'banana leaf'"]
+
+    Dedup["Deduplication\nkey = doc[:120]\nmerge all candidates"]
+
+    Rerank["Reranking\nscore = 0.7 × (1-dist) + 0.3 × kw_overlap\nfilter dist > threshold"]
+
+    TopK["Return top-4 RAGChunks\nsource · section · snippet"]
+
+    Query --> Embed
+    Embed --> Sem
+    Embed --> KW
+    KW --> KWSearch1
+    KW --> KWSearch2
+    KW --> KWSearch3
+    Sem --> Dedup
+    KWSearch1 --> Dedup
+    KWSearch2 --> Dedup
+    KWSearch3 --> Dedup
+    Dedup --> Rerank
+    Rerank --> TopK
+
+    style Rerank fill:#3b0764,color:#d8b4fe
+    style TopK fill:#14532d,color:#86efac
+    style KW fill:#1e3a5f,color:#93c5fd
 ```
 
 ### 6.2 Why This Design?

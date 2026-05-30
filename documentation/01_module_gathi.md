@@ -139,6 +139,29 @@ app.state.rag_retriever = retriever
 
 This `app.state` pattern is the FastAPI-idiomatic way to share objects across request handlers without global variables.
 
+### Startup Sequence
+
+```mermaid
+sequenceDiagram
+    participant UV as Uvicorn Process
+    participant LS as lifespan()
+    participant Main as Main Thread
+    participant BG as Background Threads
+    participant State as app.state
+
+    UV->>LS: server boot
+    LS->>Main: _startup(app)
+    Main->>Main: chromadb.PersistentClient()<br/>(must run in main thread — Rust FFI)
+    Main->>State: app.state.yukthi_store = store
+    Main->>State: app.state.rag_retriever = retriever
+    Main->>BG: Thread(_load_predictor).start()
+    Main->>BG: Thread(_load_vnir).start()
+    Note over BG: EfficientNet-B0 loads asynchronously
+    Note over BG: VNIR ONNX model loads asynchronously
+    LS-->>UV: yield  ← server now accepts requests
+    Note over UV,State: First /api/diagnose or /api/vnir-upload<br/>request waits if BG threads not done yet
+```
+
 ### 3.3 Dependency Injection (`deps.py`)
 
 FastAPI's dependency injection system is used extensively. All heavy objects are accessed through dependency functions decorated with `@lru_cache`, which ensures they are constructed exactly once across the entire process lifetime:
@@ -259,6 +282,29 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 </Routes>
 ```
 
+### Frontend Route Tree
+
+```mermaid
+flowchart TD
+    Root["/"] --> Landing["Landing Page"]
+    Root --> Auth["/auth — Login / Register"]
+    Root --> Fields["/fields — Dashboard\n🔒 RequireAuth"]
+    Root --> FieldDetail["/fields/:fieldId\n🔒 RequireAuth"]
+    Root --> CropDetail["/fields/:fieldId/crops/:cropId\n🔒 RequireAuth"]
+    Root --> Profile["/profile\n🔒 RequireAuth"]
+    Root --> Wildcard["* → redirect /"]
+
+    CropDetail --> Overview["Overview Panel"]
+    CropDetail --> ChatTab["Ask NAVA — Chat Panel"]
+    CropDetail --> Diagnose["Disease Detection Panel"]
+    CropDetail --> Monitor["Stress Monitor Panel"]
+
+    style CropDetail fill:#1e3a5f,color:#93c5fd
+    style ChatTab fill:#14532d,color:#86efac
+    style Diagnose fill:#451a03,color:#fdba74
+    style Monitor fill:#3b0764,color:#d8b4fe
+```
+
 ### 4.3 Authentication Context (`AuthProvider`)
 
 All authentication state lives in a React context provided by `AuthProvider`. The context stores the current `user` object and a `loading` flag, and exposes `login()` and `logout()` functions.
@@ -317,6 +363,49 @@ Gathi does not implement business logic itself — it is a coordination layer. E
 ```
 
 The startup hook ensures that when any router's dependency function is called for the first time, the heavy singleton it needs is already loaded (or loading in the background). The `deps.py` dependency functions are the precise integration seam: they translate FastAPI's dependency injection system into calls to the module layer.
+
+### Module Routing Map
+
+```mermaid
+flowchart LR
+    Browser["🌐 Browser\n(React SPA)"]
+
+    subgraph Gathi["Gathi — FastAPI"]
+        Auth["auth.py\n/api/auth/*"]
+        Diagnose["diagnose.py\n/api/diagnose"]
+        VNIR["vnir.py\n/api/vnir-upload"]
+        Chat["chat.py\n/api/chat"]
+        Fields["fields.py\n/api/fields\n/api/crops\n/api/plants\n/api/events"]
+        Deps["deps.py\nDependency Injection\n& Singletons"]
+    end
+
+    subgraph Modules["Specialist Modules"]
+        Mizhi["⚡ Mizhi\nEfficientNet-B0\nVNIR Pipeline"]
+        Mozhi["🧠 Mozhi\nChatService\nSessionStore"]
+        Yukthi["📚 Yukthi\nRAGRetriever\nChromaDB"]
+        Shared["🗄 Shared\nUserStore\nFieldStore"]
+    end
+
+    Browser -->|"HTTP REST"| Auth
+    Browser -->|"multipart/form"| Diagnose
+    Browser -->|"multipart/form"| VNIR
+    Browser -->|"JSON"| Chat
+    Browser -->|"JSON"| Fields
+
+    Auth --> Deps
+    Diagnose --> Deps
+    VNIR --> Deps
+    Chat --> Deps
+    Fields --> Deps
+
+    Deps -->|"get_predictor()\nget_vnir_pipeline()"| Mizhi
+    Deps -->|"chat_service_for_user()"| Mozhi
+    Deps -->|"get_rag_retriever()"| Yukthi
+    Deps -->|"get_user_store()\nfield_store_for_user()"| Shared
+
+    Mozhi -.->|"retrieval"| Yukthi
+    Mozhi -.->|"crop context"| Shared
+```
 
 ---
 

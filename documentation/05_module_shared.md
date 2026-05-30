@@ -338,6 +338,64 @@ CREATE TABLE vnir_history (
 );
 ```
 
+### Farm Data Entity-Relationship Diagram
+
+```mermaid
+erDiagram
+    FIELDS {
+        int id PK
+        text name
+        text location
+        text area
+        text soil_type
+        text shared_context
+        text field_notes
+        text created_at
+    }
+    CROPS {
+        int id PK
+        int field_id FK
+        text name
+        text variety
+        text season
+        text stage
+        text notes
+        text created_at
+    }
+    PLANTS {
+        int id PK
+        int crop_id FK
+        text name
+        text description
+        text created_at
+    }
+    EVENTS {
+        int id PK
+        text event_type
+        int field_id FK
+        int crop_id FK
+        int plant_id FK
+        text payload
+        text created_at
+    }
+    VNIR_HISTORY {
+        int id PK
+        int plant_id FK
+        real ratio
+        real avg_green
+        real avg_vnir
+        text status
+        text created_at
+    }
+
+    FIELDS ||--o{ CROPS : "has"
+    CROPS  ||--o{ PLANTS : "tracks"
+    PLANTS ||--o{ EVENTS : "generates"
+    PLANTS ||--o{ VNIR_HISTORY : "timeseries"
+    CROPS  ||--o{ EVENTS : "owns"
+    FIELDS ||--o{ EVENTS : "scoped to"
+```
+
 ### 6.2 Two Storage Layers for VNIR Data
 
 VNIR data is intentionally stored in two tables:
@@ -498,3 +556,35 @@ A key architectural decision in NAVA is the separation of user identity from far
 2. **Scalability:** Per-user databases can be archived, backed up, or migrated independently.
 3. **Privacy:** Deleting an account deletes only the relevant per-user file — no complex SQL cascade across a shared table.
 4. **Simplicity:** SQLite's write-ahead logging (WAL mode, enabled with `PRAGMA journal_mode=WAL`) handles concurrent reads efficiently without a separate database server.
+
+### Two-Database Architecture
+
+```mermaid
+flowchart TD
+    subgraph Global["Global Database (all users)"]
+        UsersDB[("logs/users/users.db\nusers table\nsessions table")]
+    end
+
+    subgraph PerUser["Per-User Databases (one per account)"]
+        U1DB[("logs/users/user_a3f8.db\nfields · crops · plants\nevents · vnir_history\nchat_messages · chat_summaries")]
+        U2DB[("logs/users/user_b72c.db\n...")]
+        UNDb[("logs/users/user_...db\n...")]
+    end
+
+    Register["POST /api/auth/register"]
+    Login["POST /api/auth/login"]
+    FieldOps["Field / Crop / Plant / Event\nAPI requests"]
+    ChatOps["Chat API requests"]
+
+    Register -->|"bcrypt hash + new token"| UsersDB
+    Login -->|"validate + issue token"| UsersDB
+    UsersDB -->|"user.db_path"| FieldOps
+    UsersDB -->|"user.db_path"| ChatOps
+    FieldOps --> U1DB
+    ChatOps --> U1DB
+
+    style UsersDB fill:#451a03,color:#fdba74
+    style U1DB fill:#1e3a5f,color:#93c5fd
+    style U2DB fill:#1e3a5f,color:#93c5fd
+    style UNDb fill:#1e3a5f,color:#93c5fd
+```

@@ -210,6 +210,48 @@ return ChatResult(
 )
 ```
 
+### Chat Orchestration Flow
+
+```mermaid
+sequenceDiagram
+    participant FE as React Frontend
+    participant GW as Gathi Router
+    participant CS as ChatService
+    participant FS as FieldStore
+    participant QR as QueryRouter
+    participant KE as KeywordExtractor
+    participant RR as RAGRetriever
+    participant LLM as LLM (Llama-3 70B)
+    participant SS as SessionStore
+
+    FE->>GW: POST /api/chat {message, session_id, crop_id}
+    GW->>CS: service.chat()
+
+    CS->>SS: fetch_messages(after last_summarized_id)
+    CS->>FS: get_rich_crop_context(crop_id)
+    FS-->>CS: field + crop + plant history block
+    CS->>SS: fetch_recent_summaries (L1, L2)
+
+    CS->>QR: should_retrieve(message, last_reply)
+    QR-->>CS: RETRIEVE / SKIP
+
+    alt RETRIEVE
+        CS->>KE: extract(enriched_query)
+        KE-->>CS: ["keyword1", "keyword2", "keyword3"]
+        CS->>RR: query(enriched_query, crop, keywords)
+        RR-->>CS: list[RAGChunk] (top-4 reranked)
+        CS->>CS: inject RAG block as system message
+    end
+
+    CS->>LLM: send(system+context+memory+rag+history+user)
+    LLM-->>CS: reply text
+
+    CS->>SS: append_message(user)
+    CS->>SS: append_message(assistant + rag_metadata)
+    GW->>GW: BackgroundTask: _summarize_if_needed()
+    CS-->>FE: ChatResponse {reply, rag_used, rag_chunks}
+```
+
 ### 5.3 Retrieval Query Enrichment
 
 A raw user message like "how do I treat this?" is ambiguous for semantic search. The `_build_retrieval_query()` method enriches it:
@@ -269,6 +311,60 @@ This creates a two-tier memory:
 - **Level-2 (long-term):** a compressed rollup of many level-1 summaries, representing the deep history
 
 When injected into the prompt, both levels appear as a system message. The LLM sees the broad long-term context and the recent detail simultaneously, without the context window being overwhelmed by the raw message history.
+
+### Memory Hierarchy
+
+```mermaid
+flowchart BT
+    subgraph Messages["SQLite: chat_messages"]
+        M1["msg 1"]
+        M2["msg 2"]
+        M3["... msgs 3-12"]
+        M4["msg 13"]
+        M5["... msgs 14-24"]
+        M6["msgs 25-36 (current window)"]
+    end
+
+    subgraph L1["L1 Summaries (level=1)"]
+        S1A["Summary A\n4-8 bullets\nmsgs 1-12"]
+        S1B["Summary B\n4-8 bullets\nmsgs 13-24"]
+    end
+
+    subgraph L2["L2 Rollup (level=2)"]
+        S2["Long-term memory\n(rollup of 5 L1s)"]
+    end
+
+    subgraph Prompt["LLM Prompt (assembled each request)"]
+        P1["system: NAVA persona"]
+        P2["system: farm context"]
+        P3["system: L2 rollup"]
+        P4["system: recent L1 summaries"]
+        P5["system: RAG reference"]
+        P6["user/assistant: last 12 msgs"]
+        P7["user: current message"]
+    end
+
+    M1 --> S1A
+    M2 --> S1A
+    M3 --> S1A
+    M4 --> S1B
+    M5 --> S1B
+    S1A --> S2
+    S2 --> P3
+    S1B --> P4
+    M6 --> P6
+    P1 --> Prompt
+    P2 --> Prompt
+    P3 --> Prompt
+    P4 --> Prompt
+    P5 --> Prompt
+    P6 --> Prompt
+    P7 --> Prompt
+
+    style S2 fill:#1e3a5f,color:#93c5fd
+    style P3 fill:#1e3a5f,color:#93c5fd
+    style P5 fill:#14532d,color:#86efac
+```
 
 ### 6.3 Auto-Notes Extraction
 
