@@ -60,6 +60,13 @@ erDiagram
         text shared_context "auto-generated LLM context"
         text field_notes "manual notes"
         text created_at
+        real lat "Nominatim-resolved latitude"
+        real lon "Nominatim-resolved longitude"
+        real weather_temp "°C (Open-Meteo)"
+        real weather_humidity "% RH"
+        real weather_precipitation "mm"
+        real weather_wind_speed "km/h"
+        text weather_updated_at "ISO 8601 UTC"
     }
 
     CROPS {
@@ -193,9 +200,18 @@ erDiagram
 | `shared_context` | TEXT | **Auto-generated** by `auto_generate_field_context()` — never directly edited by the user via API; fed into the LLM system prompt |
 | `field_notes` | TEXT | **Manually written** field-level observations; shown in the UI; prepended to `shared_context` when building LLM context |
 | `created_at` | TEXT | ISO 8601 UTC timestamp |
+| `lat` | REAL | Nominatim-resolved WGS84 latitude. `NULL` until the first geocoding run. Persisted permanently so Nominatim is never called again for this field. |
+| `lon` | REAL | Nominatim-resolved WGS84 longitude. Same lifecycle as `lat`. |
+| `weather_temp` | REAL | Current temperature in °C from Open-Meteo. `NULL` until first weather refresh. |
+| `weather_humidity` | REAL | Relative humidity in % from Open-Meteo. |
+| `weather_precipitation` | REAL | Current precipitation in mm from Open-Meteo. |
+| `weather_wind_speed` | REAL | Wind speed in km/h from Open-Meteo. |
+| `weather_updated_at` | TEXT | ISO 8601 UTC timestamp of the last successful weather fetch. Displayed in the WeatherStrip UI as a relative time ("3h ago"). |
 
 **`shared_context` vs. `field_notes`:**
 This distinction is important. `shared_context` is machine-generated from the live database state (crop names, stages, health statuses). The user never edits it directly — it is always fresh and always reflects current farm state. `field_notes` is human-written and is preserved exactly as typed.
+
+**Weather columns lifecycle:** All five weather columns start as `NULL` (added via `_migrate_schema()` for existing databases). They are written by `FieldStore.update_field_weather()` which is called by: (1) `_geocode_and_fetch_weather()` background task on field create/edit, and (2) `refresh_user_weather()` on login.
 
 ### 3.4 `crops` (per-user DB)
 
@@ -403,6 +419,37 @@ POST /api/auth/register
         → return AuthResponse(token, user)
 ```
 
+### 5.1b Login-Triggered Weather Refresh
+```
+POST /api/auth/login
+    → UserStore.authenticate(email, password)
+    → UserStore.create_session(user.id)
+    → BackgroundTasks.add_task(_refresh_user_weather, user.id)  [non-blocking]
+        → FieldStore.list_fields()  [all fields for this user]
+        → for each field with lat IS NOT NULL and lon IS NOT NULL:
+            → geo_context.get_weather_context(lat, lon)  [Open-Meteo API, 5s timeout]
+            → FieldStore.update_field_weather(field_id, temp, humidity, precip, wind)
+                → UPDATE fields SET weather_temp=?, humidity=?, ... WHERE id=?
+            → sleep(1)  [rate-limit courtesy to Open-Meteo]
+    → return AuthResponse immediately (login is not blocked by weather refresh)
+```
+
+### 5.1c Field Creation \u2014 Geocode & Initial Weather
+```
+POST /api/fields  {name, location, ...}
+    → FieldStore.create_field(...)
+    → BackgroundTasks.add_task(_geocode_and_fetch_weather, db_path, field_id)  [non-blocking]
+        → FieldStore.get_field(field_id)  [read location string]
+        → geo_context.resolve_coordinates(location)  [Nominatim API, 5s timeout]
+            → if decimal coords in string: parse directly (no API call)
+            → else: GET https://nominatim.openstreetmap.org/search?q=...
+        → FieldStore.set_field_coordinates(field_id, lat, lon)
+            → UPDATE fields SET lat=?, lon=? WHERE id=?
+        → geo_context.get_weather_context(lat, lon)  [Open-Meteo API]
+        → FieldStore.update_field_weather(field_id, temp, humidity, precip, wind)
+    → return FieldResponse immediately (field create is not blocked by geocoding)
+```
+
 ### 5.2 Disease Scan
 ```
 POST /api/diagnose (image, plant_id, crop_id, field_id)
@@ -448,7 +495,11 @@ POST /api/chat (message, session_id, field_id, crop_id)
 ```
 GET /api/fields
     → FieldStore.list_fields()
-        → SELECT * FROM fields
+        → SELECT id, name, location, area, soil_type, shared_context, field_notes,
+                 created_at, lat, lon,
+                 weather_temp, weather_humidity, weather_precipitation,
+                 weather_wind_speed, weather_updated_at
+          FROM fields ORDER BY id ASC
 
 GET /api/crops?field_id={id}  (parallelised for all fields)
     → FieldStore.list_crops(field_id)
@@ -457,6 +508,25 @@ GET /api/crops?field_id={id}  (parallelised for all fields)
 GET /api/events?limit=100
     → FieldStore.list_events(limit=100)
         → SELECT * FROM events ORDER BY created_at DESC LIMIT ?
+```
+
+### 6.1b WeatherStrip Load
+```
+GET /api/weather?field_id={id}
+    → FieldStore.get_field(field_id)  [includes all weather columns]
+    → if field.weather_updated_at IS NOT NULL:
+        → return {temp, humidity, precipitation, wind_speed, updated_at, location}  [DB only, zero API calls]
+    → else:
+        → geo_context.get_field_weather_context(location, lat=None, lon=None)
+        → FieldStore.set_field_coordinates(...)  [persist lat/lon if newly resolved]
+        → FieldStore.update_field_weather(...)   [persist weather]
+        → return fresh values
+
+POST /api/weather/refresh?field_id={id}  (manual \u21bb refresh button)
+    → FieldStore.get_field(field_id)  [read stored lat/lon]
+    → geo_context.get_weather_context(lat, lon)  [force-fetch from Open-Meteo]
+    → FieldStore.update_field_weather(...)  [update DB]
+    → return fresh {temp, humidity, precipitation, wind_speed, updated_at}
 ```
 
 ### 6.2 LLM Context Assembly (per chat request)

@@ -31,9 +31,13 @@ class VNIRPipeline:
         self,
         model_path: Path | None = None,
         stress_threshold_pct: float = 15.0,
+        warning_threshold_pct: float = 10.0,
     ) -> None:
         self.engine = VNIREngine(model_path=model_path)
-        self.analyzer = VNIRAnalyzer(stress_threshold_pct=stress_threshold_pct)
+        self.analyzer = VNIRAnalyzer(
+            stress_threshold_pct=stress_threshold_pct,
+            warning_threshold_pct=warning_threshold_pct,
+        )
 
     def isolate_leaf(self, frame_bgr: np.ndarray) -> LeafIsolationResult:
         frame_256 = cv2.resize(frame_bgr, (256, 256))

@@ -34,12 +34,30 @@ class VNIRStats:
 class VNIRAnalyzer:
     """Compute VNIR stress statistics from a history of ratios.
 
+    Two-tier alert system
+    ---------------------
+    CRITICAL: STRESS  — current ratio drops > stress_threshold_pct (default 15%)
+                        below the *initial baseline* (first 5 scans).
+                        Indicates sustained long-term physiological decline.
+
+    WARNING: STRESS   — current ratio drops > warning_threshold_pct (default 10%)
+                        below the *rolling 5-scan average*.
+                        Indicates recent deterioration even if the long-term
+                        baseline is not yet breached — useful for early detection.
+
+    Priority: CRITICAL takes precedence when both conditions are met simultaneously.
+
     Unlike the original, this does NOT write CSV files — the caller
     (pipeline or API) is responsible for persisting via FieldStore.
     """
 
-    def __init__(self, stress_threshold_pct: float = 15.0) -> None:
-        self.stress_threshold_pct = stress_threshold_pct
+    def __init__(
+        self,
+        stress_threshold_pct: float = 15.0,
+        warning_threshold_pct: float = 10.0,
+    ) -> None:
+        self.stress_threshold_pct = stress_threshold_pct    # CRITICAL gate (vs baseline)
+        self.warning_threshold_pct = warning_threshold_pct  # WARNING gate (vs rolling avg)
 
     def analyze(
         self,
@@ -93,7 +111,12 @@ class VNIRAnalyzer:
             stats.vs_rolling = _safe_pct(current_ratio, current_5_avg)
             stats.vs_prev_checkpoint = _safe_pct(current_ratio, prev_checkpoint_avg)
 
+            # Two-tier alert — worst-case wins when both conditions are met.
+            # CRITICAL: sustained long-term decline (vs personalised baseline).
+            # WARNING:  recent deterioration (vs rolling 5-scan window).
             if stats.vs_baseline <= -self.stress_threshold_pct:
+                stats.status = "CRITICAL: STRESS"
+            elif stats.vs_rolling <= -self.warning_threshold_pct:
                 stats.status = "WARNING: STRESS"
             else:
                 stats.status = "OK"

@@ -307,7 +307,7 @@ For each pixel within the leaf mask, both the green channel value (from the orig
 - `avg_vnir` — mean estimated NIR intensity over the leaf region
 - `ratio` — NIR/Green ratio (higher = healthier)
 
-**The Rolling Checkpoint Strategy:**
+**The Two-Level Stress Alert System:**
 
 Rather than comparing to a fixed threshold (which would require per-species calibration data), Thanal uses a **relative comparison strategy** tied to the plant's own history:
 
@@ -316,21 +316,31 @@ History: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, ...]
                 │ baseline  │   checkpoint 1  │  checkpoint 2
 ```
 
-- **Baseline:** The mean of the first 5 readings. The system assumes these are taken from a healthy plant.
-- **Rolling average:** Mean of the most recent 5 readings.
+- **Baseline:** The mean of the first 5 *valid* readings (i.e., `ratio > 0`; scans where no leaf was detected are excluded). The system assumes these are taken from a healthy plant.
+- **Rolling average:** Mean of the most recent 5 valid readings (ratios > 0 only).
 - **Previous checkpoint avg:** Mean of readings 6–10 (the previous batch of 5).
 - **Current checkpoint avg:** Mean of the latest 5 readings.
 
-A **stress alert** is triggered when the current checkpoint average has **dropped by more than `stress_threshold_pct`%** (default: 15%) relative to the previous checkpoint average. This relative comparison is crop-agnostic: it doesn't matter whether the baseline ratio is 1.2 or 0.8 — what matters is whether it has dropped significantly.
+**Zero-ratio guard:** Any scan returning `ratio == 0` (produced when `leaf_state == "NONE"`) is explicitly excluded from all statistical calculations — baseline building, rolling window, and comparison. Without this guard, a single failed scan would corrupt the baseline and trigger spurious warnings.
+
+NAVA implements **two independent alert levels**:
+
+| Level | Comparison | Default Threshold | Priority |
+|-------|-----------|-------------------|----------|
+| `WARNING` | Current ratio vs. rolling mean of last 5 valid scans | Drop ≥ 10% | Lower |
+| `CRITICAL` (stress) | Current ratio vs. initial 5-scan baseline mean | Drop ≥ 15% | Higher |
+
+Both comparisons run independently on every scan. If both thresholds are simultaneously breached, `CRITICAL` takes precedence. This means: `WARNING` gives early notice of a deteriorating trend that may not yet have crossed the baseline threshold; `CRITICAL` confirms a significant departure from the plant's healthy reference point.
 
 **Status codes:**
 | Status | Condition |
 |--------|-----------|
-| `"Calibrating: N scans remaining"` | Fewer than 5 readings in history |
-| `"OK: Stress within normal range"` | No significant checkpoint drop |
-| `"WARNING: Stress detected"` | Checkpoint drop > threshold |
+| `"Calibrating: N scans remaining"` | Fewer than 5 valid readings in history |
+| `"OK: Stress within normal range"` | No significant drop detected |
+| `"WARNING: Stress detected"` | Rolling-window drop ≥ 10% vs. recent mean |
+| `"CRITICAL: Significant stress vs. baseline"` | Baseline drop ≥ 15% vs. initial healthy baseline |
 | `"CRITICAL: Visual Stress"` | Yellow-brown leaf state detected during HSV isolation |
-| `"No Leaf Detected"` | No leaf found in the image |
+| `"No Leaf Detected"` | No leaf found in the image (ratio stored as 0, excluded from stats) |
 
 All computed values (`ratio`, `avg_g`, `avg_vnir`, `baseline`, `rolling_avg`, `prev_checkpoint_avg`, `global_avg`, `vs_baseline`, `vs_global`, `vs_rolling`, `vs_prev_checkpoint`) are returned to the router in a `VNIRStats` dataclass, stored as an event, and added to the per-plant `vnir_history` timeseries table.
 
@@ -339,16 +349,18 @@ All computed values (`ratio`, `avg_g`, `avg_vnir`, `baseline`, `rolling_avg`, `p
 ```mermaid
 flowchart TD
     Upload(["📷 POST /api/vnir-upload\nleaf image + plant_id"])
-    LoadHistory["store.get_vnir_ratios\nhistory_ratios list"]
+    LoadHistory["store.get_vnir_ratios\nhistory_ratios list (ratio > 0 only)"]
     HSV["HSV Leaf Isolation\nResize 256×256\nGreen mask + Yellow-brown mask"]
     State{"leaf_state?"}
     ONNXInfer["VNIREngine.predict()\nONNX forward pass\noutput: grayscale NIR map"]
     Analyze["VNIRAnalyzer.analyze()\nratio = avg_vnir / avg_green\nbaseline · rolling · checkpoint"]
-    Threshold{"checkpoint drop\n> 15%?"}
+    RollingCheck{"rolling drop\n≥10%?"}
+    BaselineCheck{"baseline drop\n≥15%?"}
     OK["Status: OK"]
     Warning["Status: WARNING\nStress detected"]
+    Critical["Status: CRITICAL\nSignificant stress\nvs. baseline"]
     CritVisual["Status: CRITICAL\nVisual Stress\n(skip ONNX)"]
-    NoLeaf["Status: No Leaf\nDetected"]
+    NoLeaf["Status: No Leaf\nDetected\n(ratio=0, excluded from stats)"]
     SaveEvent["store.add_vnir_reading()\nstore.add_event()\n_refresh_field_context()"]
     Response["VNIRResponse\nstatus · ratios · deltas\nhsv_image · vnir_image"]
 
@@ -359,17 +371,21 @@ flowchart TD
     State -->|YELLOW_BROWN| CritVisual
     State -->|NONE| NoLeaf
     ONNXInfer --> Analyze
-    Analyze --> Threshold
-    Threshold -->|No| OK
-    Threshold -->|Yes| Warning
+    Analyze --> BaselineCheck
+    BaselineCheck -->|Yes - CRITICAL takes precedence| Critical
+    BaselineCheck -->|No| RollingCheck
+    RollingCheck -->|No| OK
+    RollingCheck -->|Yes| Warning
     OK --> SaveEvent
     Warning --> SaveEvent
+    Critical --> SaveEvent
     CritVisual --> SaveEvent
     NoLeaf --> SaveEvent
     SaveEvent --> Response
 
     style ONNXInfer fill:#1e3a5f,color:#93c5fd
     style CritVisual fill:#7f1d1d,color:#fca5a5
+    style Critical fill:#7f1d1d,color:#fca5a5
     style Warning fill:#78350f,color:#fde68a
     style OK fill:#14532d,color:#86efac
 ```

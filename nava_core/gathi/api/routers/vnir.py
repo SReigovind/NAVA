@@ -56,7 +56,13 @@ async def vnir_upload(
     history_ratios = store.get_vnir_ratios(plant_id)
     stats, hsv_image, vnir_image = pipeline.process_image(pil_image, plant["name"], history_ratios)
 
-    store.add_vnir_reading(plant_id, stats.ratio, stats.avg_g, stats.avg_vnir, stats.status)
+    # Only persist a computed ratio to the timeseries table when a valid green
+    # leaf was detected. No Leaf Detected and YELLOW_BROWN scans return
+    # ratio=0.0 (VNIRStats dataclass default), which would corrupt baseline,
+    # rolling, and checkpoint calculations on every subsequent scan.
+    # The event log below is always written so the UI still shows all scan outcomes.
+    if stats.leaf_state == "GREEN":
+        store.add_vnir_reading(plant_id, stats.ratio, stats.avg_g, stats.avg_vnir, stats.status)
 
     store.add_event(
         event_type="vnir",

@@ -397,6 +397,9 @@ ChatService.chat()
 
 All three Yukthi objects (`RAGRetriever`, `QueryRouter`, `KeywordExtractor`) are instantiated once at server startup via the lifespan hook and stored on `app.state`. `ChatService` receives them via dependency injection. This means ChromaDB and the embedding model are loaded exactly once per process, not per request.
 
+> **Scope note:** `ChatService` also reads weather context from `FieldStore` (DB columns) and assembles farm/crop context from `get_rich_crop_context()`. These are entirely separate from the Yukthi RAG path and involve no vector lookups. Yukthi's role is strictly knowledge retrieval from agricultural extension documents, not farm operational data.
+
+
 ---
 
 ## 10. ChromaDB Operational Notes

@@ -66,7 +66,7 @@ Every request assembles a layered prompt in this order:
 
 ```
 [system] NAVA persona + safety rules
-[system] Farm & crop context  ← from FieldStore
+[system] Farm & crop context  ← from FieldStore (field metadata + crops + plant history + weather)
 [system] Long-term memory (L2 rollup)  ← from SessionStore
 [system] Recent summaries (L1)  ← from SessionStore
 [system] RAG reference material  ← from Yukthi (if RETRIEVE)
@@ -192,9 +192,10 @@ if ctx:
 
 For crop-level chat, `_build_context_message()` calls `field_store.get_rich_crop_context(crop_id)`, which generates a structured multi-section string containing:
 - Field metadata (location, area, soil type)
+- **Current weather** — read directly from the field's DB columns (`weather_temp`, `weather_humidity`, `weather_precipitation`, `weather_wind_speed`, `weather_updated_at`). This is a zero-latency DB read; no network call is made during the chat request path.
 - All sibling crops with their latest health summaries
 - Current crop details (variety, stage, season, notes)
-- Priority rules (disease detection > VNIR stress monitoring)
+- Priority rules (disease detection > VNIR stress monitoring; WARNING vs CRITICAL distinction for VNIR)
 - Full per-plant disease detection history (up to 5 entries, high priority)
 - Full per-plant VNIR monitoring history (up to 5 entries, lower priority)
 
@@ -434,11 +435,13 @@ Mozhi has three key dependencies:
 
 | Dependency | How it's used |
 |-----------|--------------|
-| `FieldStore` | Fetches rich crop context (field, all crops, plant scan history) for context injection |
+| `FieldStore` | Fetches rich crop context (field, all crops, plant scan history) **and weather** (direct DB column read — no network call) for context injection; writes auto-notes back to `crops.notes` |
 | `RAGRetriever` + `QueryRouter` | Routes and retrieves relevant knowledge chunks from Yukthi's ChromaDB store |
 | `SessionStore` | Persists all messages, summaries, RAG metadata, and session-to-crop context bindings |
 
 These are injected at construction time via `ChatService.from_settings_with_store()`, called from `deps.py`'s `chat_service_for_user()`. The RAG singletons are passed directly from `app.state` (preloaded at startup) — Mozhi never creates them itself in the normal server path.
+
+> **Weather in chat context:** Previous versions fetched live weather in a `ThreadPoolExecutor` during context assembly. This was replaced by a DB read: `field_store.get_field(field_id)` returns the pre-populated weather columns, which are injected into the prompt as a `CURRENT WEATHER CONDITIONS` system block. The DB is kept fresh by login-triggered and field-creation-triggered background tasks (see Gathi / Shared docs).
 
 ---
 
@@ -448,7 +451,13 @@ Every chat request assembles a prompt with this structure (ordered):
 
 ```
 [system] NAVA persona + rules
-[system] Farm/crop context (field, sibling crops, plant history, priority rules)
+[system] Farm/crop context:
+         - field: location, area, soil, weather (temp/humidity/precipitation/wind, from DB)
+         - sibling crops + latest health summaries
+         - current crop: variety, stage, season, notes
+         - priority rules (disease detection > VNIR stress monitoring)
+         - per-plant disease history (up to 5, HIGH PRIORITY)
+         - per-plant VNIR history (up to 5, LOWER PRIORITY — WARNING vs CRITICAL level noted)
 [system] Memory: Long-term rollup summary (if exists)
 [system] Memory: Recent level-1 summaries (up to 2)
 [system] RAG reference material (VERIFIED SOURCE MATERIAL block) — only if retrieved

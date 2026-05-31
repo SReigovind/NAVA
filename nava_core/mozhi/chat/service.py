@@ -10,6 +10,9 @@ from .client import ChatClient
 from nava_core.mozhi.memory.session_store import SessionStore
 from nava_core.shared.config import get_settings
 from nava_core.shared.storage.field_store import FieldStore
+from nava_core.shared.utils.logging import get_logger
+
+log = get_logger("mozhi.service")
 
 if TYPE_CHECKING:
     from nava_core.yukthi.router import QueryRouter
@@ -117,18 +120,14 @@ class ChatService:
                     distance_threshold=s.yukthi_distance_threshold,
                 )
             except Exception as e:
-                import logging
-                logging.getLogger("mozhi.service").warning(
-                    "Yukthi RAG fallback init failed: %s", e
-                )
+                log.warning("Yukthi RAG fallback init failed: %s", e)
 
         if rag_router is None and rag_retriever is not None:
             try:
                 from nava_core.yukthi.router import QueryRouter as _Router
                 rag_router = _Router(client=client, model=s.hf_summary_model)
             except Exception as e:
-                import logging
-                logging.getLogger("mozhi.service").warning("QueryRouter init failed: %s", e)
+                log.warning("QueryRouter init failed: %s", e)
 
         # Build keyword extractor (always paired with router)
         keyword_extractor = None
@@ -137,8 +136,7 @@ class ChatService:
                 from nava_core.yukthi.keywords import KeywordExtractor as _KE
                 keyword_extractor = _KE(client=client, model=s.hf_summary_model)
             except Exception as e:
-                import logging
-                logging.getLogger("mozhi.service").warning("KeywordExtractor init failed: %s", e)
+                log.warning("KeywordExtractor init failed: %s", e)
 
         return cls(
             client=client,
@@ -165,14 +163,29 @@ class ChatService:
         def _c(v: Optional[str]) -> Optional[str]:
             return v.strip() if isinstance(v, str) and v.strip() else None
 
-        # Crop-specific: use rich context with full plant history
+        # Crop-specific: use rich context with full plant history + DB weather
         if crop_id is not None:
             rich = self.field_store.get_rich_crop_context(crop_id)
-            if rich:
-                return "CROP CONTEXT (use silently to ground answers):\n" + rich
-            return None
+            if not rich:
+                return None
+            # Append weather from DB (populated on login / manual refresh — zero latency)
+            try:
+                crop_rec = self.field_store.get_crop(crop_id)
+                field_rec = self.field_store.get_field(crop_rec["field_id"]) if crop_rec else None
+                if field_rec and field_rec.get("weather_updated_at") is not None:
+                    rich += (
+                        "\n\n=== CURRENT WEATHER CONDITIONS ==="
+                        f"\n- Temperature: {field_rec['weather_temp']}\u00b0C"
+                        f"\n- Humidity: {field_rec['weather_humidity']}%"
+                        f"\n- Recent precipitation: {field_rec['weather_precipitation']} mm"
+                        f"\n- Wind speed: {field_rec['weather_wind_speed']} km/h"
+                        f"\n- (As of {field_rec['weather_updated_at']})"
+                    )
+            except Exception as e:
+                log.warning("Weather DB read failed for crop %s: %s", crop_id, e)
+            return "CROP CONTEXT (use silently to ground answers):\n" + rich
 
-        # Field-level only: minimal metadata
+        # Field-level only: minimal metadata + live weather
         if field_id is not None:
             ctx = self.field_store.get_field_context(field_id)
             if not ctx:
@@ -192,6 +205,20 @@ class ChatService:
             fn = _c(field.get("field_notes"))
             if fn:
                 sections.append("FIELD NOTES (user-written):\n" + fn)
+
+            # Weather injection — read from DB (refreshed on login, zero latency, no network call)
+            if field.get("weather_updated_at") is not None:
+                try:
+                    wx_lines = [
+                        f"- Temperature: {field['weather_temp']}\u00b0C",
+                        f"- Humidity: {field['weather_humidity']}%",
+                        f"- Recent precipitation: {field['weather_precipitation']} mm",
+                        f"- Wind speed: {field['weather_wind_speed']} km/h",
+                        f"- (As of {field['weather_updated_at']})",
+                    ]
+                    sections.append("CURRENT WEATHER CONDITIONS:\n" + "\n".join(wx_lines))
+                except Exception as e:
+                    log.warning("Weather DB read failed for field %s: %s", field_id, e)
 
             return ("STRUCTURED CONTEXT (use silently):\n" + "\n\n".join(sections)) if sections else None
 

@@ -5,11 +5,11 @@ from __future__ import annotations
 import sqlite3
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, Header, HTTPException, BackgroundTasks
 
 from nava_core.shared.schemas import AuthLoginRequest, AuthRegisterRequest, AuthResponse, UserResponse, UpdateUserRequest, UpdatePasswordRequest
 from nava_core.shared.storage.user_store import UserRecord
-from nava_core.gathi.api.deps import get_user_store, require_user
+from nava_core.gathi.api.deps import get_user_store, require_user, _extract_token
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -34,6 +34,38 @@ def _preload_models():
         log.error("Failed to preload models: %s", e)
 
 
+def _models_loaded() -> bool:
+    """Return True if both ML models are already in the lru_cache.
+    Avoids spawning a redundant background thread on every /me request.
+    """
+    from nava_core.gathi.api.deps import get_predictor, get_vnir_pipeline
+    return (
+        get_predictor.cache_info().currsize > 0
+        and get_vnir_pipeline.cache_info().currsize > 0
+    )
+
+
+def _refresh_user_weather(user_id: int) -> None:
+    """Background task: refresh weather for every field of this user that has lat/lon stored.
+    Called once on login. 1-second delay between each Open-Meteo call.
+    """
+    log = logging.getLogger("mizhi.weather_refresh")
+    try:
+        from nava_core.gathi.api.deps import field_store_for_user
+        from nava_core.shared.utils.geo_context import refresh_user_weather
+        from nava_core.shared.storage.field_store import FieldStore
+        from pathlib import Path
+        store = get_user_store()
+        user = store.get_user(user_id)
+        if not user:
+            log.warning("[WEATHER-REFRESH] User %d not found — skipping", user_id)
+            return
+        fstore = FieldStore(Path(user.db_path))
+        refresh_user_weather(fstore)
+    except Exception as exc:
+        log.warning("[WEATHER-REFRESH] Login refresh failed for user %d: %s", user_id, exc)
+
+
 @router.post("/register", response_model=AuthResponse)
 def register(request: AuthRegisterRequest, bg_tasks: BackgroundTasks) -> AuthResponse:
     store = get_user_store()
@@ -56,17 +88,29 @@ def login(request: AuthLoginRequest, bg_tasks: BackgroundTasks) -> AuthResponse:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = store.create_session(user.id)
     bg_tasks.add_task(_preload_models)
+    bg_tasks.add_task(_refresh_user_weather, user.id)
     return AuthResponse(token=token, user=_to_user_response(user))
 
 
 @router.post("/logout")
-def logout(user: UserRecord = Depends(require_user)) -> dict:
+def logout(
+    authorization: str | None = Header(None),
+    user: UserRecord = Depends(require_user),
+) -> dict:
+    """Invalidate the session token so it cannot be reused after logout."""
+    token = _extract_token(authorization)
+    if token:
+        get_user_store().delete_session(token)
     return {"status": "logged_out"}
 
 
 @router.get("/me", response_model=UserResponse)
 def me(bg_tasks: BackgroundTasks, user: UserRecord = Depends(require_user)) -> UserResponse:
-    bg_tasks.add_task(_preload_models)
+    # Only spin up the preload task if models haven't been loaded yet.
+    # Startup already handles this; the guard prevents a redundant thread
+    # being spawned on every /me poll (e.g. auth keep-alive calls).
+    if not _models_loaded():
+        bg_tasks.add_task(_preload_models)
     return _to_user_response(user)
 
 

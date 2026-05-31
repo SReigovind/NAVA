@@ -1957,6 +1957,137 @@ h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 .ov-activity-meta { font-size: 0.75rem; color: var(--text-muted); }
 
 
+/* ══════════════════════════════════════════════════════
+   WEATHER STRIP
+   ══════════════════════════════════════════════════════ */
+.weather-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--green-500) 6%, var(--bg-card)),
+    color-mix(in srgb, #3b82f6 6%, var(--bg-card))
+  );
+  border: 1px solid color-mix(in srgb, var(--green-500) 18%, var(--border-default));
+  border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+  row-gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle shimmer line */
+.weather-strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.weather-strip-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.4));
+}
+
+.weather-strip-location {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.weather-strip-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-default);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.weather-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  cursor: default;
+}
+
+.weather-pill:hover {
+  border-color: var(--border-hover);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.weather-pill-emoji { font-size: 0.875rem; flex-shrink: 0; }
+
+.weather-pill-value {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.weather-strip-updated {
+  margin-left: auto;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.weather-strip-refresh {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.weather-strip-refresh:hover:not(:disabled) {
+  border-color: var(--green-400);
+  color: var(--green-400);
+  background: color-mix(in srgb, var(--green-400) 8%, transparent);
+}
+
+.weather-strip-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+[data-theme="light"] .weather-strip {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--green-500) 5%, #fff),
+    color-mix(in srgb, #3b82f6 5%, #fff)
+  );
+}
+
+[data-theme="light"] .weather-pill {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .weather-pill:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
 /* ── History section ────────────────────────────────────────── */
 .history-section { margin-top: 8px; }
 .history-toggle {

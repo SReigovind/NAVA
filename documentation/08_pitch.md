@@ -50,6 +50,10 @@ This was the hardest problem. Large language models are conversational and fluen
 
 Most chatbots have no memory. Every conversation starts fresh. NAVA maintains a rolling summary of every session, compressing old conversations into memory that persists across weeks and months. When you ask "how is Plant-1 doing compared to last month?" NAVA knows the answer — because it kept notes.
 
+**We grounded advice in real environmental context.**
+
+When a farmer asks "should I apply fungicide today?" the answer depends on the weather. NAVA automatically fetches the current temperature, humidity, precipitation, and wind speed for the field location — without the farmer having to type a single weather-related word. That context is woven into every chat response. NAVA doesn't give generic advice; it gives advice grounded in what the farm actually looks like right now.
+
 ---
 
 ## What was actually built
@@ -60,12 +64,21 @@ We built this from scratch over the course of two years as an M.Sc. thesis proje
 
 **Phase 2** — the version you're looking at — is the full-stack deployment. Everything a farmer would actually need: user accounts, multi-field farm management, plant-level tracking, scan history, a chat interface that talks about your specific farm, early stress detection before visible symptoms form, and a mobile-responsive web app that works on a smartphone.
 
+Phase 2 also introduced several features that make NAVA feel like a real agronomist rather than a lab prototype:
+
+- **Ambient weather context** — when you chat with NAVA, it already knows the current temperature, humidity, precipitation, and wind speed at your field's location. Weather is fetched automatically at login and stored per-field; the chat assistant receives it as part of its context without any network delay in the conversation path.
+- **Two-level stress alerts** — NAVA now distinguishes between `WARNING` (a deteriorating trend vs. the recent rolling average) and `CRITICAL` (a significant drop vs. the plant's initial healthy baseline). Each level means something different and warrants a different response.
+- **Full field lifecycle management** — fields can now be created, edited, and deleted with a single click. Deleting a field cascades cleanly through all crops, plants, scans, and VNIR history associated with it.
+
 The backend runs on a single Python process — no cloud dependency, no external database, no DevOps complexity. The ML models run on CPU. The vector knowledge base stores agricultural extension documents locally. The entire system can be deployed on a modest server (or even a Raspberry Pi) and used in areas with limited connectivity.
 
 **Total scope:**
 - **34 disease classes** across 7 crops (rice, banana, tomato, corn, soybean, cassava, cucumber)
 - **94.54% disease classification accuracy** on held-out test data
 - **28 dB PSNR / 0.85 SSIM** for the VNIR estimation model
+- **Two-level VNIR stress alerts** (WARNING: rolling trend | CRITICAL: baseline departure)
+- **DB-backed weather context** per field — geocoded via Nominatim, weather from Open-Meteo, injected into every chat session
+- **Full field management** — create, edit, delete fields with cascade; crop/plant/event lifecycle
 - **Hybrid RAG system** with semantic + keyword retrieval and LLM-based reranking
 - **Full-stack web application** (FastAPI + React 18 + ChromaDB + SQLite + ONNX)
 - **Multilingual by design** — the LLM layer handles queries in any language
