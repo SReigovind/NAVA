@@ -652,8 +652,6 @@ Created highly advanced test suites in `tests/` designed to capture deep interna
 
 - `implementation_plan.md` — replaced the obsolete 12 May 2026 plan with the current feature plan covering the season dropdown and geo-weather context, with a future work note on multilingual support.
 - `README.md` — updated to reflect the current complete state of the system.
-- `implementation_plan.md` — replaced the obsolete 12 May 2026 plan with the current feature plan covering the season dropdown and geo-weather context, with a future work note on multilingual support.
-- `README.md` — updated to reflect the current complete state of the system.
 - `worklog.md` — this entry.
 
 ---
