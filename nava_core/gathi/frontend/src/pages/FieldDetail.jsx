@@ -5,6 +5,11 @@ import { AutoNotesIcon, splitNotes } from "../components/crop/OverviewPanel.jsx"
 
 
 const CROP_STAGES = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Maturity", "Harvested"];
+const KERALA_SEASONS = [
+  { value: "Summer / Hot Season",  label: "Summer / Hot Season (Mar–May)" },
+  { value: "Monsoon Season",        label: "Monsoon Season (Jun–Nov)" },
+  { value: "Winter / Cool Season", label: "Winter / Cool Season (Dec–Feb)" },
+];
 const SOIL_TYPES = [
   "Alluvial", "Black / Regur", "Red", "Laterite", "Desert / Arid",
   "Mountain / Forest", "Saline / Alkaline", "Peaty / Marshy", "Clay", "Sandy",
@@ -26,6 +31,8 @@ export default function FieldDetail() {
   const [editingField, setEditingField] = useState(false);
   const [fieldForm, setFieldForm] = useState({ name: "", location: "", area: "", soil_type: "" });
   const [savingField, setSavingField] = useState(false);
+  const [confirmDeleteField, setConfirmDeleteField] = useState(false);
+  const [deletingField, setDeletingField] = useState(false);
 
   // Manual notes only (field_notes) — shared_context is auto-generated, hidden from UI
   const [editingCtx, setEditingCtx] = useState(false);
@@ -109,6 +116,19 @@ export default function FieldDetail() {
     finally { setSavingField(false); }
   };
 
+  const deleteField = async () => {
+    setDeletingField(true);
+    try {
+      await apiFetch(`/api/fields/${field.id}`, { method: "DELETE" });
+      navigate("/fields");
+    } catch (err) {
+      setError(err.message);
+      setConfirmDeleteField(false);
+    } finally {
+      setDeletingField(false);
+    }
+  };
+
   const saveFieldNotes = async () => {
     setSavingCtx(true);
     try {
@@ -151,6 +171,7 @@ export default function FieldDetail() {
                     setFieldForm({ name: field.name, location: field.location || "", area: field.area || "", soil_type: field.soil_type || "" });
                     setEditingField(true);
                   }} title="Edit Field">✏️</button>
+                  <button className="btn btn-ghost btn-sm" style={{ padding: "4px", color: "#fca5a5" }} onClick={() => setConfirmDeleteField(true)} title="Delete Field">🗑️</button>
                 </div>
                 <div className="row row-gap mt-sm text-sm text-muted" style={{ flexWrap: "wrap" }}>
                   {field.location && <span>📍 {field.location}</span>}
@@ -263,7 +284,10 @@ export default function FieldDetail() {
               <div className="grid-2">
                 <label className="label">
                   Season
-                  <input className="input" value={form.season} onChange={(e) => setForm({ ...form, season: e.target.value })} placeholder="e.g. Kharif 2026" />
+                  <select className="select" value={form.season} onChange={(e) => setForm({ ...form, season: e.target.value })}>
+                    <option value="">— Select season —</option>
+                    {KERALA_SEASONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
                 </label>
                 <label className="label">
                   Growth Stage
@@ -318,6 +342,40 @@ export default function FieldDetail() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete Field confirm modal ─────────────────── */}
+      {confirmDeleteField && (
+        <div className="modal-overlay" onClick={() => !deletingField && setConfirmDeleteField(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420 }}>
+            <h2 style={{ marginBottom: 8, color: "#fca5a5" }}>🗑️ Delete Field</h2>
+            <p className="text-sm" style={{ color: "var(--text-secondary)", marginBottom: 8, lineHeight: 1.6 }}>
+              You are about to permanently delete <strong style={{ color: "var(--text-primary)" }}>{field.name}</strong> and <strong style={{ color: "#fca5a5" }}>everything inside it</strong>:
+            </p>
+            <ul className="text-sm" style={{ color: "var(--text-muted)", marginBottom: 20, paddingLeft: 20, lineHeight: 2 }}>
+              <li>All crops and their plant records</li>
+              <li>All disease detection scan history</li>
+              <li>All VNIR stress monitoring history</li>
+              <li>All events and field context</li>
+            </ul>
+            <p className="text-sm" style={{ color: "#f87171", marginBottom: 20, fontWeight: 600 }}>
+              This cannot be undone.
+            </p>
+            <div className="row row-gap" style={{ justifyContent: "flex-end" }}>
+              <button className="btn btn-ghost" onClick={() => setConfirmDeleteField(false)} disabled={deletingField}>
+                Cancel
+              </button>
+              <button
+                className="btn"
+                style={{ background: "rgba(239,68,68,0.15)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.35)" }}
+                onClick={deleteField}
+                disabled={deletingField}
+              >
+                {deletingField ? "Deleting…" : "Yes, Delete Field"}
+              </button>
+            </div>
           </div>
         </div>
       )}

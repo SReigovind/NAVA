@@ -99,7 +99,8 @@ Phase 2 transforms NAVA from a validated diagnostic pipeline into a proactive, i
 
 **VNIR monitoring pipeline:**
 - HSV leaf isolator filters background before Thanal ONNX inference
-- Rolling checkpoint analysis: baseline (first 5 scans) → per-scan ratio comparison vs. baseline, global average, rolling average, and previous checkpoint
+- Scans with `ratio == 0` (no leaf detected) are excluded from all statistical calculations
+- Two-level stress detection: `WARNING` (≥10% drop vs. rolling 5-scan average) and `CRITICAL` (≥15% drop vs. initial 5-scan baseline); `CRITICAL` takes precedence if both fire
 - Results stored as `vnir` events and in a dedicated `vnir_history` timeseries table per plant
 - Status tiers: CALIBRATING → OK → WARNING → CRITICAL
 
@@ -140,10 +141,16 @@ Phase 2 transforms NAVA from a validated diagnostic pipeline into a proactive, i
 ### Module: Shared — Foundation Layer
 
 - `UserStore` (global `users.db`): user registry, session tokens
-- `FieldStore` (per-user `user_{hash}.db`): fields, crops, plants, events, VNIR history; WAL mode; non-destructive schema migrations via `PRAGMA table_info`
+- `FieldStore` (per-user `user_{hash}.db`): fields, crops, plants, events, VNIR history, weather cache; WAL mode; non-destructive schema migrations via `PRAGMA table_info`
 - `SessionStore`: chat messages, summaries, state, and context — co-located in the per-user DB
 - `Settings` frozen dataclass loaded from `.env`; all modules read from a single `get_settings()` singleton
 - Pydantic v2 request/response schemas for all API endpoints
+
+**`geo_context.py` — Coordinate resolution & weather:**
+- `resolve_coordinates(location_str)` — Nominatim (OSM) geocoder; parses decimal coordinates first, falls back to Nominatim API; results persisted as `lat`/`lon` in the `fields` table
+- `get_weather_context(lat, lon)` — Open-Meteo API (free, no key); returns `{temp, humidity, precipitation, wind_speed}`
+- `refresh_user_weather(field_store)` — batch refresh all fields for a user with 1-second inter-call delay; called on login as a background task
+- Both external APIs use 5-second timeouts; all failures are silent with detailed `[GEO]` / `[WEATHER]` log prefixes
 
 ---
 
@@ -160,22 +167,20 @@ A complete automated testing framework in `tests/` generates Markdown reports wi
 
 ---
 
-## In Progress
+## External Integrations
 
-| Feature | Status |
-|---------|--------|
-| Season dropdown (Kerala 3-season calendar) | Planned — frontend only |
-| Geo-weather context injection into chat | Planned — Open-Meteo API, stdlib only |
+| Integration | Purpose | Auth |
+|------------|---------|------|
+| **Hugging Face Router API** | LLM inference (Llama-3 70B for chat, Llama-3.1 8B for summarisation, routing, keyword extraction) | `HF_API_KEY` |
+| **BAAI/bge-small-en-v1.5** | Text embeddings for RAG retrieval (via sentence-transformers, runs locally) | None |
+| **Nominatim (OpenStreetMap)** | Geocoding field location strings to lat/lon — called once per field, result persisted in DB | None (fair-use rate limit) |
+| **Open-Meteo** | Current weather fetch (temp, humidity, precipitation, wind) — called on login per field | None (free, GDPR-compliant) |
 
 ---
 
 ## Future Work
 
-- **Multilingual support:** DeepL API Free tier for Malayalam translation (ML → EN for RAG input, LLM instructed to respond in Malayalam); EN/ML toggle in ChatPanel
-- **IoT sensor fusion:** Hardware-agnostic ingestion endpoint for field sensor nodes (soil moisture, weather stations, ESP32 cameras)
-- **Multi-label disease detection:** Sigmoid multi-label output head for concurrent pathology detection
-- **Expanded crop coverage:** Additional regional crops relevant to Kerala and broader South Asian farming
-- **On-device LLM:** Quantised (4-bit) small language model for fully offline advisory generation
+See [`futureWork.md`](futureWork.md) for planned extensions including multilingual support, native mobile app, expanded crop coverage, satellite/drone integration, multi-user collaboration, and production infrastructure.
 
 ---
 
@@ -188,7 +193,7 @@ NAVA-AG/
 │   ├── mizhi/          # EfficientNet-B0, Grad-CAM, Thanal VNIR pipeline
 │   ├── mozhi/          # ChatService, ChatClient, SessionStore, memory
 │   ├── yukthi/         # RAG: chunker, store, pipeline, router, keywords, retriever
-│   └── shared/         # Config, schemas, UserStore, FieldStore, utilities
+│   └── shared/         # Config, schemas, UserStore, FieldStore, geo_context, utilities
 ├── models/             # EfficientNet-B0.pth, ThanalModel.onnx, labels
 ├── ragsource/          # Per-crop knowledge base subfolders
 ├── logs/               # users.db, user_{hash}.db files, chroma/ vector store
@@ -196,7 +201,7 @@ NAVA-AG/
 ├── documentation/      # Documentation
 ├── ingest.py           # Offline RAG ingestion CLI
 ├── run.py              # Server entry point
-├── implementation_plan.md
+├── futureWork.md       # Planned future extensions
 └── worklog.md
 ```
 

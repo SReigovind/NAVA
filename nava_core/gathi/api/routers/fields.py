@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 
 from nava_core.shared.schemas import (
@@ -24,6 +24,65 @@ def _refresh_field_context(store, field_id: int) -> None:
     store.update_field_context(field_id, ctx)
 
 
+def _geocode_and_fetch_weather(db_path: str, field_id: int) -> None:
+    """Background task: geocode the field's location string and fetch initial weather.
+
+    Runs after field creation (and after location edits). Steps:
+      1. Read the field's location string from DB.
+      2. Resolve lat/lon via Nominatim (skipped if already decimal coords).
+      3. Persist lat/lon to DB so Nominatim is never called again.
+      4. Fetch weather from Open-Meteo and persist to DB.
+
+    All failures are silent — the field is still usable without weather.
+    """
+    import logging
+    from pathlib import Path
+    from nava_core.shared.storage.field_store import FieldStore
+    from nava_core.shared.utils.geo_context import resolve_coordinates, get_weather_context
+
+    log = logging.getLogger("gathi.field_weather")
+    try:
+        store = FieldStore(Path(db_path))
+        field = store.get_field(field_id)
+        if not field:
+            log.warning("[FIELD-WEATHER] Field %d not found in DB — skipping", field_id)
+            return
+        location = (field.get("location") or "").strip()
+        if not location:
+            log.info("[FIELD-WEATHER] Field %d has no location set — skipping", field_id)
+            return
+
+        # Step 1: Resolve coordinates (skip if already stored from a previous edit)
+        lat = field.get("lat")
+        lon = field.get("lon")
+        if lat is None or lon is None:
+            log.info("[FIELD-WEATHER] Resolving coordinates for field %d (%r)", field_id, location)
+            coords = resolve_coordinates(location)
+            if coords is None:
+                log.warning("[FIELD-WEATHER] Could not resolve coordinates for field %d — no weather stored", field_id)
+                return
+            lat, lon = coords
+            store.set_field_coordinates(field_id, lat, lon)
+            log.info("[FIELD-WEATHER] Stored coordinates for field %d: lat=%.6f, lon=%.6f", field_id, lat, lon)
+        else:
+            log.info("[FIELD-WEATHER] Field %d already has coordinates: lat=%.6f, lon=%.6f", field_id, lat, lon)
+
+        # Step 2: Fetch weather
+        wx = get_weather_context(lat, lon)
+        if wx is None:
+            log.warning("[FIELD-WEATHER] Weather fetch failed for field %d — no weather stored", field_id)
+            return
+        store.update_field_weather(field_id, wx["temp"], wx["humidity"], wx["precipitation"], wx["wind_speed"])
+        log.info(
+            "[FIELD-WEATHER] ✓ Field %d (%s): %.1f°C, %s%% RH stored",
+            field_id, field.get("name", ""), wx["temp"] or 0, wx["humidity"] or 0,
+        )
+    except Exception as exc:
+        logging.getLogger("gathi.field_weather").warning(
+            "[FIELD-WEATHER] Unexpected error for field %d: %s", field_id, exc
+        )
+
+
 # ── Fields ──────────────────────────────────────────────────────
 
 @router.get("/fields", response_model=FieldListResponse)
@@ -33,26 +92,56 @@ def list_fields(user: UserRecord = Depends(require_user)) -> FieldListResponse:
 
 
 @router.post("/fields", response_model=FieldResponse)
-def create_field(request: FieldCreateRequest, user: UserRecord = Depends(require_user)) -> FieldResponse:
+def create_field(
+    request: FieldCreateRequest,
+    bg_tasks: BackgroundTasks,
+    user: UserRecord = Depends(require_user),
+) -> FieldResponse:
     store = field_store_for_user(user)
     fid = store.create_field(request.name, request.location, request.area, request.soil_type, request.shared_context)
     _refresh_field_context(store, fid)
     field = store.get_field(fid)
     if not field:
         raise HTTPException(status_code=500, detail="Failed to create field")
+    # Geocode + fetch initial weather in background so the response is instant
+    if request.location and request.location.strip():
+        bg_tasks.add_task(_geocode_and_fetch_weather, user.db_path, fid)
     return FieldResponse(**field)
 
 
 @router.put("/fields", response_model=FieldResponse)
-def update_field(request: FieldUpdateRequest, user: UserRecord = Depends(require_user)) -> FieldResponse:
+def update_field(
+    request: FieldUpdateRequest,
+    bg_tasks: BackgroundTasks,
+    user: UserRecord = Depends(require_user),
+) -> FieldResponse:
     store = field_store_for_user(user)
+    # If the location changed, invalidate stored coordinates so geocoding re-runs
+    if request.location is not None:
+        old = store.get_field(request.field_id)
+        if old and (request.location or "").strip() != (old.get("location") or "").strip():
+            store.set_field_coordinates(request.field_id, None, None)  # type: ignore[arg-type]
     store.update_field(request.field_id, name=request.name, location=request.location,
                        area=request.area, soil_type=request.soil_type)
     _refresh_field_context(store, request.field_id)
     field = store.get_field(request.field_id)
     if not field:
         raise HTTPException(status_code=404, detail="Field not found")
+    # Re-geocode + refresh weather if location was updated
+    if request.location and request.location.strip():
+        bg_tasks.add_task(_geocode_and_fetch_weather, user.db_path, request.field_id)
     return FieldResponse(**field)
+
+
+@router.delete("/fields/{field_id}")
+def delete_field(field_id: int, user: UserRecord = Depends(require_user)) -> dict:
+    """Permanently delete a field and all its crops, plants, events, and VNIR history."""
+    store = field_store_for_user(user)
+    field = store.get_field(field_id)
+    if not field:
+        raise HTTPException(status_code=404, detail="Field not found")
+    store.delete_field(field_id)
+    return {"status": "deleted", "field_id": field_id}
 
 
 # ── Crops ────────────────────────────────────────────────────────

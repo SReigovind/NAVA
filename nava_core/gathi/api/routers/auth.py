@@ -45,6 +45,27 @@ def _models_loaded() -> bool:
     )
 
 
+def _refresh_user_weather(user_id: int) -> None:
+    """Background task: refresh weather for every field of this user that has lat/lon stored.
+    Called once on login. 1-second delay between each Open-Meteo call.
+    """
+    log = logging.getLogger("mizhi.weather_refresh")
+    try:
+        from nava_core.gathi.api.deps import field_store_for_user
+        from nava_core.shared.utils.geo_context import refresh_user_weather
+        from nava_core.shared.storage.field_store import FieldStore
+        from pathlib import Path
+        store = get_user_store()
+        user = store.get_user(user_id)
+        if not user:
+            log.warning("[WEATHER-REFRESH] User %d not found — skipping", user_id)
+            return
+        fstore = FieldStore(Path(user.db_path))
+        refresh_user_weather(fstore)
+    except Exception as exc:
+        log.warning("[WEATHER-REFRESH] Login refresh failed for user %d: %s", user_id, exc)
+
+
 @router.post("/register", response_model=AuthResponse)
 def register(request: AuthRegisterRequest, bg_tasks: BackgroundTasks) -> AuthResponse:
     store = get_user_store()
@@ -67,6 +88,7 @@ def login(request: AuthLoginRequest, bg_tasks: BackgroundTasks) -> AuthResponse:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = store.create_session(user.id)
     bg_tasks.add_task(_preload_models)
+    bg_tasks.add_task(_refresh_user_weather, user.id)
     return AuthResponse(token=token, user=_to_user_response(user))
 
 

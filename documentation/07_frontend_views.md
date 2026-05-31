@@ -52,6 +52,7 @@ The design system provides utility classes that all components use:
 - `.notice-danger` / `.notice-warning` — alert boxes
 - `.modal-overlay` + `.modal` — full-screen backdrop with centered card
 - `.empty-state` — centered placeholder with icon, title, description
+- `.weather-strip` — compact horizontal bar showing temperature, humidity, precipitation, wind with icons and a relative timestamp + ↻ refresh button
 
 ### 1.3 Authentication & Routing Infrastructure
 
@@ -151,6 +152,7 @@ flowchart TD
 
     subgraph CropPanels2["Crop Tool Panels"]
         OP["OverviewPanel.jsx"]
+        WS["WeatherStrip.jsx\n(weather + \u21bb refresh)"]
         CP["ChatPanel.jsx"]
         DP["DiagnosePanel.jsx"]
         MP["MonitorPanel.jsx"]
@@ -175,6 +177,7 @@ flowchart TD
     CropDetailC --> CP
     CropDetailC --> DP
     CropDetailC --> MP
+    OP --> WS
     DP --> PS
     MP --> PS
 
@@ -185,6 +188,7 @@ flowchart TD
     style Protected fill:#0f1a2e,stroke:#3b82f6
     style CropPanels2 fill:#0d1f0d,stroke:#22c55e
     style Lib fill:#1a1400,stroke:#f59e0b
+    style WS fill:#0a1a2e,stroke:#38bdf8
 ```
 
 ---
@@ -288,7 +292,7 @@ flowchart TD
 
 **Data loading strategy:**
 The dashboard makes three parallel API calls on mount:
-1. `GET /api/fields` — all fields
+1. `GET /api/fields` — all fields (response now includes `weather_temp`, `weather_humidity`, `weather_precipitation`, `weather_wind_speed`, `weather_updated_at` columns)
 2. `GET /api/crops?field_id=...` — crops for each field (parallelised via `Promise.all`)
 3. `GET /api/events?limit=100` — recent 100 events
 
@@ -320,25 +324,24 @@ A modal with four fields (name, location, area, soil type dropdown) handles both
 **URL:** `/fields/:fieldId`
 
 **Layout:**
-```
 [← Back to Fields]
 
-┌──────────────────────────┬──────────────────────────────┐
+┌───────────────────────────────────────────────────────────┐
 │ LEFT COLUMN              │ RIGHT COLUMN                  │
+┌──────────────────────────┬──────────────────────────────┐
 │ ┌────────────────────────┐  ┌────────────────────────┐   │
-│ │ 🟢 Field               │  │ CROPS IN THIS FIELD    │   │
-│ │ North Paddock       ✏  │  │              [+ Add]   │   │
+│ │ 🟢 Field        ✑✏     │  │ CROPS IN THIS FIELD    │   │
+│ │ North Paddock          │  │              [+ Add]   │   │
 │ │ 📍 Wayanad  📐 2 acres │  │ ┌──────────┬──────────┐ │   │
 │ │ 🪨 Laterite            │  │ │ Banana   │ Rice     │ │   │
-│ └────────────────────────┘  │ │ 🧬 Nend- │ 🧬 Jyot- │ │   │
-│ ┌────────────────────────┐  │ │ ran      │ hi       │ │   │
-│ │ Field Notes     ✏/Add  │  │ │ Vegeta-  │ Flower-  │ │   │
-│ │                        │  │ │ tive     │ ing      │ │   │
-│ │ Irrigation notes...    │  │ ✏🗑         ✏🗑         │ │   │
-│ │                        │  │ └──────────┴──────────┘ │   │
+│ │ [🗑 Delete Field]      │  │ │ 🧬 Nend- │ 🧬 Jyot- │ │   │
+│ └────────────────────────┘  │ │ ran      │ hi       │ │   │
+│ ┌────────────────────────┐  │ │ Vegeta-  │ Flower-  │ │   │
+│ │ Field Notes     ✏/Add  │  │ │ tive     │ ing      │ │   │
+│ │                        │  │ ✏🗑         ✏🗑         │ │   │
+│ │ Irrigation notes...    │  │ └──────────┴──────────┘ │   │
 │ └────────────────────────┘  └────────────────────────┘   │
 └──────────────────────────────────────────────────────────┘
-```
 
 **Data loading:**
 Two parallel API calls: `GET /api/fields` (to find the current field by ID) and `GET /api/crops?field_id={fieldId}`.
@@ -352,11 +355,10 @@ An inline "Add Notes" / "Edit" toggle reveals a `<textarea>` with Save/Cancel bu
 **Crop cards:**
 Each crop card is clickable (navigates to `/fields/:fieldId/crops/:cropId`). Cards include edit (✏️) and delete (🗑️) buttons positioned absolutely in the top-right corner. Delete prompts a confirmation dialog before calling `DELETE /api/crops/{id}`.
 
-**Two modal dialogs:**
-1. Create/Edit crop (name, variety, season, stage dropdown)
+**Three modal dialogs:**
+1. Create/Edit crop (name, variety, season dropdown — Kerala 3-season calendar: Summer / Hot Season, Monsoon Season, Winter / Cool Season — stage dropdown)
 2. Edit field (name, location, area, soil type dropdown)
-
-Both modals are rendered conditionally at the bottom of the JSX tree with `modal-overlay` + `modal` classes.
+3. Delete field confirmation — triggered by the red 🗑️ button in the field header card. The modal explicitly lists what will be permanently deleted (crops, plants, disease scans, VNIR history, events). Confirming calls `DELETE /api/fields/{fieldId}` and navigates back to `/fields`.
 
 ---
 

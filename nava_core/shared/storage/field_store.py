@@ -89,6 +89,22 @@ class FieldStore:
             field_cols = {row[1] for row in conn.execute("PRAGMA table_info(fields)").fetchall()}
             if "field_notes" not in field_cols:
                 conn.execute("ALTER TABLE fields ADD COLUMN field_notes TEXT")
+            # 1c. Geo-coordinates — stored once after Nominatim geocoding, used for weather context
+            if "lat" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN lat REAL DEFAULT NULL")
+            if "lon" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN lon REAL DEFAULT NULL")
+            # 1d. Weather cache — refreshed on login and manual refresh
+            if "weather_temp" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN weather_temp REAL DEFAULT NULL")
+            if "weather_humidity" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN weather_humidity REAL DEFAULT NULL")
+            if "weather_precipitation" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN weather_precipitation REAL DEFAULT NULL")
+            if "weather_wind_speed" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN weather_wind_speed REAL DEFAULT NULL")
+            if "weather_updated_at" not in field_cols:
+                conn.execute("ALTER TABLE fields ADD COLUMN weather_updated_at TEXT DEFAULT NULL")
         except Exception:
             pass
 
@@ -144,19 +160,29 @@ class FieldStore:
     def list_fields(self) -> list[dict]:
         with _connect(self.db_path) as conn:
             rows = conn.execute(
-                "SELECT id, name, location, area, soil_type, shared_context, field_notes, created_at FROM fields ORDER BY id ASC"
+                "SELECT id, name, location, area, soil_type, shared_context, field_notes, created_at, lat, lon,"
+                " weather_temp, weather_humidity, weather_precipitation, weather_wind_speed, weather_updated_at"
+                " FROM fields ORDER BY id ASC"
             ).fetchall()
-        return [dict(zip(("id", "name", "location", "area", "soil_type", "shared_context", "field_notes", "created_at"), r)) for r in rows]
+        keys = ("id", "name", "location", "area", "soil_type", "shared_context", "field_notes", "created_at",
+                "lat", "lon", "weather_temp", "weather_humidity", "weather_precipitation",
+                "weather_wind_speed", "weather_updated_at")
+        return [dict(zip(keys, r)) for r in rows]
 
     def get_field(self, field_id: int) -> Optional[dict]:
         with _connect(self.db_path) as conn:
             row = conn.execute(
-                "SELECT id, name, location, area, soil_type, shared_context, field_notes, created_at FROM fields WHERE id = ?",
+                "SELECT id, name, location, area, soil_type, shared_context, field_notes, created_at, lat, lon,"
+                " weather_temp, weather_humidity, weather_precipitation, weather_wind_speed, weather_updated_at"
+                " FROM fields WHERE id = ?",
                 (field_id,),
             ).fetchone()
         if not row:
             return None
-        return dict(zip(("id", "name", "location", "area", "soil_type", "shared_context", "field_notes", "created_at"), row))
+        keys = ("id", "name", "location", "area", "soil_type", "shared_context", "field_notes", "created_at",
+                "lat", "lon", "weather_temp", "weather_humidity", "weather_precipitation",
+                "weather_wind_speed", "weather_updated_at")
+        return dict(zip(keys, row))
 
     def update_field_context(self, field_id: int, shared_context: str) -> None:
         """Update the AUTO-GENERATED context (not shown in UI)."""
@@ -168,6 +194,31 @@ class FieldStore:
         """Update manually entered field notes (shown in UI, separate from auto-context)."""
         with _connect(self.db_path) as conn:
             conn.execute("UPDATE fields SET field_notes = ? WHERE id = ?", (notes, field_id))
+            conn.commit()
+
+    def set_field_coordinates(self, field_id: int, lat: float, lon: float) -> None:
+        """Persist geocoded lat/lon for a field so Nominatim is only called once."""
+        with _connect(self.db_path) as conn:
+            conn.execute("UPDATE fields SET lat = ?, lon = ? WHERE id = ?", (lat, lon, field_id))
+            conn.commit()
+
+    def update_field_weather(
+        self,
+        field_id: int,
+        temp: float | None,
+        humidity: float | None,
+        precipitation: float | None,
+        wind_speed: float | None,
+    ) -> None:
+        """Write fresh weather values and timestamp to the fields table."""
+        from datetime import datetime, timezone
+        updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        with _connect(self.db_path) as conn:
+            conn.execute(
+                "UPDATE fields SET weather_temp=?, weather_humidity=?, "
+                "weather_precipitation=?, weather_wind_speed=?, weather_updated_at=? WHERE id=?",
+                (temp, humidity, precipitation, wind_speed, updated_at, field_id),
+            )
             conn.commit()
 
     def update_field(self, field_id: int, name: Optional[str] = None, location: Optional[str] = None,
@@ -182,6 +233,22 @@ class FieldStore:
         values.append(field_id)
         with _connect(self.db_path) as conn:
             conn.execute(f"UPDATE fields SET {', '.join(updates)} WHERE id = ?", values)
+            conn.commit()
+
+    def delete_field(self, field_id: int) -> None:
+        """Delete a field and cascade-delete all crops, plants, events, and VNIR history."""
+        with _connect(self.db_path) as conn:
+            crop_ids = [r[0] for r in conn.execute("SELECT id FROM crops WHERE field_id = ?", (field_id,)).fetchall()]
+            for cid in crop_ids:
+                plant_ids = [r[0] for r in conn.execute("SELECT id FROM plants WHERE crop_id = ?", (cid,)).fetchall()]
+                for pid in plant_ids:
+                    conn.execute("DELETE FROM vnir_history WHERE plant_id = ?", (pid,))
+                    conn.execute("DELETE FROM events WHERE plant_id = ?", (pid,))
+                conn.execute("DELETE FROM plants WHERE crop_id = ?", (cid,))
+                conn.execute("DELETE FROM events WHERE crop_id = ?", (cid,))
+            conn.execute("DELETE FROM events WHERE field_id = ?", (field_id,))
+            conn.execute("DELETE FROM crops WHERE field_id = ?", (field_id,))
+            conn.execute("DELETE FROM fields WHERE id = ?", (field_id,))
             conn.commit()
 
     def auto_generate_field_context(self, field_id: int) -> str:

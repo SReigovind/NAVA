@@ -14,7 +14,7 @@ _nava_dir = str(Path(__file__).resolve().parents[3])
 if _nava_dir not in sys.path:
     sys.path.insert(0, _nava_dir)
 
-from nava_core.gathi.api.routers import auth, chat, diagnose, fields, vnir
+from nava_core.gathi.api.routers import auth, chat, diagnose, fields, vnir, weather
 from nava_core.gathi.api.startup import lifespan
 from nava_core.shared.utils.paths import project_root
 
@@ -35,6 +35,7 @@ app.include_router(diagnose.router)
 app.include_router(vnir.router)
 app.include_router(chat.router)
 app.include_router(fields.router)
+app.include_router(weather.router)
 
 # Directories
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend" / "dist"

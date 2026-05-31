@@ -8,6 +8,11 @@ import MonitorPanel from "../components/crop/MonitorPanel.jsx";
 import OverviewPanel from "../components/crop/OverviewPanel.jsx";
 
 const CROP_STAGES = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Maturity", "Harvested"];
+const KERALA_SEASONS = [
+  { value: "Summer / Hot Season",  label: "Summer / Hot Season (Mar–May)" },
+  { value: "Monsoon Season",        label: "Monsoon Season (Jun–Nov)" },
+  { value: "Winter / Cool Season", label: "Winter / Cool Season (Dec–Feb)" },
+];
 
 const NAV_ITEMS = [
   { id: "overview",  icon: "🏡", label: "Overview" },
@@ -176,7 +181,11 @@ export default function CropDetail() {
               </div>
               <div className="grid-2">
                 <label className="label">Season
-                  <input className="input" value={editForm.season} onChange={e => setEditForm({ ...editForm, season: e.target.value })} />
+                  <select className="select" value={editForm.season}
+                    onChange={e => setEditForm({ ...editForm, season: e.target.value })}>
+                    <option value="">— Select season —</option>
+                    {KERALA_SEASONS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
                 </label>
                 <label className="label">Growth Stage
                   <select className="select" value={editForm.stage} onChange={e => setEditForm({ ...editForm, stage: e.target.value })}>

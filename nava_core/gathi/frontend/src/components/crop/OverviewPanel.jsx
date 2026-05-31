@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../lib/api.js";
+import WeatherStrip from "./WeatherStrip.jsx";
 
 const AUTO_NOTES_SEPARATOR = "--- NAVA Auto-notes ---";
 
@@ -205,6 +206,9 @@ export default function OverviewPanel({ fieldId, cropId, crop, field, onNavigate
 
   return (
     <div className="ov-layout" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      {/* Live weather strip — auto-hides if field has no location or fetch fails */}
+      <WeatherStrip fieldId={field?.id} />
+
       {/* Stats row */}
       <div className="ov-stats">
         <StatCard icon="🌱" label="Plants Tracked" value={plants.length} />

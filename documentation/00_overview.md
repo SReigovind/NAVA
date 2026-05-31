@@ -99,6 +99,8 @@ graph TD
     end
 
     LLM(["☁ External LLM\n(Hugging Face)"])
+    GEO(["🌍 Nominatim\n(OSM Geocoder)"])
+    WX(["🌤 Open-Meteo\n(Weather API)"])
 
     User -- "Leaf Photo" --> GW
     User -- "Chat Message" --> GW
@@ -118,6 +120,11 @@ graph TD
     LLM -- "Reply" --> C
     C -- "Save Session" --> DB
 
+    GW -- "On Login / Field Create" --> GEO
+    GEO -- "lat/lon" --> DB
+    DB -- "lat/lon" --> WX
+    WX -- "Weather" --> DB
+
     GW -- "Results" --> User
 
     style NAVA fill:#0d1f0d,stroke:#22c55e,stroke-width:2px
@@ -126,6 +133,8 @@ graph TD
     style Knowledge fill:#1a0a2e,stroke:#8b5cf6
     style Storage fill:#1a0a0a,stroke:#ef4444
     style LLM fill:#1a1a2e,stroke:#6366f1
+    style GEO fill:#0a1a1a,stroke:#22d3ee
+    style WX fill:#0a1a1a,stroke:#38bdf8
 ```
 
 ### 4.2 Detailed Architecture
@@ -142,6 +151,7 @@ graph TD
         API["REST API\n/api/*"]
         SPA["SPA Fallback\n/* → index.html"]
         STARTUP["Lifespan Startup\n(model preloading)"]
+        BGWEATHER["Background Tasks\n(weather refresh on login / field create)"]
     end
 
     subgraph "Mizhi — Perception"
@@ -162,6 +172,11 @@ graph TD
         KEYWORDS["KeywordExtractor\n(Llama-3.1 8B)"]
         RETRIEVER["RAGRetriever\nHybrid Search"]
         CHROMA["ChromaDB\nVector Store"]
+    end
+
+    subgraph "Shared — geo_context"
+        GEO["resolve_coordinates\n(Nominatim / OSM)"]
+        WX["get_weather_context\n(Open-Meteo)"]
     end
 
     subgraph "Shared Storage"
@@ -185,6 +200,12 @@ graph TD
     ROUTER --> KEYWORDS
     KEYWORDS --> RETRIEVER
     RETRIEVER --> CHROMA
+
+    API -- "login / field create" --> BGWEATHER
+    BGWEATHER --> GEO
+    GEO -- "lat/lon" --> FARMDB
+    BGWEATHER --> WX
+    WX -- "weather columns" --> FARMDB
 
     API -- "auth/user ops" --> USERDB
     API -- "field/crop/event ops" --> FARMDB
@@ -229,6 +250,8 @@ NAVA ships two model artifacts (not committed to the repository, loaded at runti
 | **BAAI/bge-small-en-v1.5** | Text embeddings for RAG retrieval (via sentence-transformers) | `NAVA_YUKTHI_EMBED_MODEL` |
 | **sentence-transformers** | Local embedding inference — no external API call for RAG embeddings | (pip dependency) |
 | **ONNX Runtime** | CPU-efficient inference for the Thanal VNIR model | (pip dependency) |
+| **Nominatim (OpenStreetMap)** | Free geocoder to resolve field location strings to lat/lon. Called once per field at creation time; coordinates persisted in DB so Nominatim is never called again for that field. | None required (fair-use: 1 req/sec) |
+| **Open-Meteo** | Free, no-key weather API. Returns current temperature, humidity, precipitation, and wind speed given lat/lon. Called on login (all user fields) and on field create/edit. Results persisted in DB. | None required |
 
 All LLM calls go to `https://router.huggingface.co/v1/chat/completions`, an OpenAI-compatible endpoint. No proprietary SDK is used — raw `httpx` POST requests with JSON bodies.
 
@@ -287,7 +310,12 @@ The system requires no external database server, no message broker, and no conta
 Established the core dual-model architecture: EfficientNet-B0 for disease classification and Llama 3.1 8B for prescription generation. Validated across 20,400 training samples and 4,089 test samples with 94.54% accuracy.
 
 ### Phase 2 — The Full Digital Agronomist (Current)
-Transformed the pipeline into a full-stack application with persistent user accounts, field/crop/plant management, contextual chat memory, RAG-grounded advisory, Grad-CAM explainability, and the Thanal VNIR stress monitoring engine.
+Transformed the pipeline into a full-stack application with persistent user accounts, field/crop/plant management, contextual chat memory, RAG-grounded advisory, Grad-CAM explainability, and the Thanal VNIR stress monitoring engine. Additional features implemented in this phase include:
+- **Two-level VNIR stress alerts**: `WARNING` (rolling-window comparison) and `CRITICAL` (baseline comparison)
+- **DB-backed weather context**: Geocoding via Nominatim and live weather via Open-Meteo, stored persistently in the `fields` table and refreshed on login and field creation
+- **Field management**: Create, edit, and delete fields with full cascade deletion of all associated data
+- **WeatherStrip UI**: Compact live weather display on the crop overview with relative timestamp and manual refresh
+- **Smart crop notes**: LLM-extracted farmer actions appended automatically from chat summaries
 
 ---
 

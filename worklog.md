@@ -652,4 +652,92 @@ Created highly advanced test suites in `tests/` designed to capture deep interna
 
 - `implementation_plan.md` — replaced the obsolete 12 May 2026 plan with the current feature plan covering the season dropdown and geo-weather context, with a future work note on multilingual support.
 - `README.md` — updated to reflect the current complete state of the system.
+- `implementation_plan.md` — replaced the obsolete 12 May 2026 plan with the current feature plan covering the season dropdown and geo-weather context, with a future work note on multilingual support.
+- `README.md` — updated to reflect the current complete state of the system.
 - `worklog.md` — this entry.
+
+---
+
+## 2026-05-31 20:00 IST
+
+### Task: Session Recap — Weather DB System, VNIR Two-Level Warnings, Delete Field, Geocode-on-Create, Bug Fixes, Documentation Update
+
+This session covered a significant extension of the platform, moving from an in-process weather cache to a fully persistent, DB-backed weather system, adding two-level VNIR stress classification, implementing cascade field deletion, and updating all project documentation.
+
+---
+
+#### Task 1: Code Review & Bug Fixes
+
+A comprehensive code review was conducted across the full codebase. The following bugs were fixed:
+
+**Bug 1: `requirements.txt` inconsistency**
+`requirements.txt` listed `bcrypt` as a direct dependency, but the actual password hashing in `user_store.py` uses `hashlib.pbkdf2_hmac` (stdlib). `bcrypt` was removed. `httpx` was also listed but replaced by stdlib `urllib` throughout; removed. Final deps standardised.
+
+**Bug 2: Model preload background thread not started on register**
+`_preload_models` background task was only added in the `login` endpoint, not in `register`. A newly registered user's first scan would always hit cold-start latency. Fixed by adding `bg_tasks.add_task(_preload_models)` to the `register` endpoint as well.
+
+---
+
+#### Task 2: VNIR Two-Level Stress Warnings
+
+**Background:** Previous implementation only compared VNIR ratio against the initial baseline (first 5 scans) and emitted a single `WARNING` if the drop exceeded a threshold.
+
+**New design — two warning levels:**
+
+| Level | Comparison | Trigger |
+|-------|-----------|---------|
+| `WARNING` | Rolling window (last 5 valid ratios) | Drop ≥ 10% vs. rolling mean |
+| `CRITICAL` | Initial baseline (first 5 scans) | Drop ≥ 15% vs. baseline mean |
+
+Both comparisons run independently. If both thresholds are breached simultaneously, `CRITICAL` takes precedence.
+
+**Zero-ratio guard:** Scans with `ratio == 0` (no leaf detected / HSV isolation failed) are now explicitly excluded from all checkpoint calculations — baseline building, rolling window, and warning comparisons. Previously these zeros were stored and corrupted statistical baselines.
+
+**Files changed:** `nava_core/mizhi/vnir/analyzer.py`
+
+---
+
+#### Task 3: Persistent DB-Backed Weather System
+
+**Problem with previous approach:** Weather was stored in a Python in-process dict (`_weather_cache`) with a 60-minute TTL. This meant: (1) cache was wiped on every server restart, (2) cold-start latency on first access, (3) chat context built weather via a `ThreadPoolExecutor` call on every chat request — adding network latency to the hot path.
+
+**New design:**
+
+- **Storage:** 5 new columns in the `fields` table: `weather_temp REAL`, `weather_humidity REAL`, `weather_precipitation REAL`, `weather_wind_speed REAL`, `weather_updated_at TEXT`. Added via incremental migration in `FieldStore._migrate_schema()`.
+- **On login:** `_refresh_user_weather(user_id)` fires as a `BackgroundTask`. For every field with lat/lon stored, it calls Open-Meteo and writes the result to DB. 1-second delay between each field call to avoid API hammering.
+- **On field create/edit:** `_geocode_and_fetch_weather(db_path, field_id)` fires as a `BackgroundTask`. Resolves coordinates via Nominatim if not yet stored, then fetches and stores weather immediately. On location edits, stored lat/lon is cleared first so Nominatim re-geocodes the new location.
+- **`GET /api/weather?field_id=X`:** Returns DB values immediately (zero API calls post-login). Falls back to live fetch if DB is empty (first time for a field).
+- **`POST /api/weather/refresh?field_id=X`:** Force-fetches Open-Meteo, writes to DB, returns fresh values. Used by the manual ↻ button.
+- **Chat context:** `service.py` now reads `field_rec["weather_temp"]` etc. directly from the DB field dict — no network calls during chat.
+- **`WeatherStrip.jsx`:** Shows relative `updated_at` timestamp ("3h ago") and a ↻ refresh button.
+
+**Files changed:** `field_store.py`, `geo_context.py`, `auth.py`, `fields.py` (router), `weather.py` (router, rewritten), `service.py`, `WeatherStrip.jsx`, `styles.css`
+
+**Logging:** Detailed `[GEO]` and `[WEATHER]` prefixed log lines at every step (Nominatim URL, raw response bytes, parsed result, cache decisions) for manual verification.
+
+---
+
+#### Task 4: Delete Field Feature
+
+Added full cascade field deletion across the stack.
+
+**`FieldStore.delete_field(field_id)`:** Iterates crops → plants → deletes `vnir_history` + `events` per plant → deletes `plants` per crop → deletes crop-level `events` → deletes field-level `events` → deletes `crops` → deletes `fields` row. All within a single transaction.
+
+**`DELETE /api/fields/{field_id}`:** Returns 404 if field not found, `{"status": "deleted", "field_id": N}` on success.
+
+**Frontend:** 🗑️ button (red-tinted) added next to the ✏️ edit button in the field header card. Clicking opens a styled confirmation modal that lists all data categories that will be deleted (crops, plants, disease scans, VNIR history, events) and has a red "Yes, Delete Field" button. On confirm, navigates back to `/fields`.
+
+**Files changed:** `field_store.py`, `fields.py` (router), `FieldDetail.jsx`
+
+---
+
+#### Task 5: Documentation Update
+
+- `implementation_plan.md` **renamed** to `futureWork.md`. Content replaced with 9 forward-looking future work items: multilingual support, native mobile app, expanded crop coverage, satellite/drone integration, multi-user collaboration, automated field reports, crop insurance integration, VNIR ground-truth validation, and production infrastructure.
+- `worklog.md` — this entry appended.
+- `README.md` — updated Phase 2 description, added weather and delete-field features, updated external integrations table.
+- `documentation/00_overview.md` — architecture diagrams updated (Open-Meteo added as external node), External Integrations table updated, Phase 2 description updated.
+- `documentation/06_data_storage.md` — ERD updated with new weather + coordinate columns in FIELDS, Section 3.3 updated, weather write/read paths added.
+- `documentation/05_module_shared.md` — FieldStore section updated with `update_field_weather()`, `delete_field()`, `refresh_user_weather()`, and removal of in-process cache.
+- `documentation/01_module_gathi.md` — API routes table updated with new weather and delete endpoints; WeatherStrip and delete modal documented.
+- `documentation/02_module_mizhi.md` — VNIR two-level warning system and zero-ratio guard documented.

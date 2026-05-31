@@ -33,7 +33,8 @@ nava_core/gathi/
 │       ├── diagnose.py  ← /api/diagnose
 │       ├── vnir.py      ← /api/vnir-upload, /api/vnir-clear
 │       ├── chat.py      ← /api/chat, /api/chat/history, /api/chat/clear, /api/chat/summary
-│       └── fields.py    ← /api/fields, /api/crops, /api/plants, /api/events, /api/field-context, /api/crop-context, /api/field-notes
+│       ├── fields.py    ← /api/fields, /api/crops, /api/plants, /api/events, /api/field-context, /api/crop-context, /api/field-notes
+│       └── weather.py   ← /api/weather, /api/weather/refresh
 └── frontend/
     ├── index.html
     ├── package.json
@@ -78,7 +79,7 @@ flowchart LR
     subgraph Gathi["Gathi (FastAPI + React SPA)"]
         direction TB
         Auth["Auth\n/api/auth/*"]
-        API["Module Routers\n/api/diagnose | /api/vnir-*\n/api/chat | /api/fields"]
+        API["Module Routers\n/api/diagnose | /api/vnir-*\n/api/chat | /api/fields | /api/weather"]
         SPA["SPA Host\n/* → index.html"]
         DI["Dependency Injection\nSingletons & Per-request"]
     end
@@ -118,13 +119,14 @@ app.add_middleware(
 During development, the Vite dev server runs on port 5173. CORS is explicitly opened for that origin. In production, both the API and SPA share the same origin (port 8000), so CORS headers are not strictly needed but don't interfere.
 
 **Router registration:**
-All five routers are registered on the application, each with its own prefix:
+All routers are registered on the application, each with its own prefix:
 ```python
 app.include_router(auth.router)      # prefix: /api/auth
 app.include_router(diagnose.router)  # prefix: /api
 app.include_router(vnir.router)      # prefix: /api
 app.include_router(chat.router)      # prefix: /api
 app.include_router(fields.router)    # prefix: /api
+app.include_router(weather.router)   # prefix: /api
 ```
 
 **SPA serving:**
@@ -241,7 +243,7 @@ The `require_user` dependency extracts the Bearer token from the `Authorization`
 | PUT | `/api/auth/password` | Change password (requires current password) |
 | DELETE | `/api/auth/me` | Delete account and all associated data |
 
-Both `register` and `login` trigger a background task to preload ML models, so they are warm by the time the user's first scan request arrives.
+Both `register` and `login` trigger background tasks: (1) preload ML models so they are warm by the time the user's first scan arrives, and (2) refresh weather for all the user's fields from the DB-cached Open-Meteo values (1-second delay per field).
 
 #### Diagnose Router (`/api`)
 | Method | Path | Action |
@@ -268,6 +270,7 @@ The diagnose router accepts a multipart form upload (`image`, `plant_id`, `crop_
 | Method | Path | Action |
 |--------|------|--------|
 | GET/POST/PUT | `/api/fields` | List / create / update fields |
+| DELETE | `/api/fields/{field_id}` | **Cascade-delete** a field and all its crops, plants, events, and VNIR history |
 | GET/POST/PUT/DELETE | `/api/crops` | List / create / update / delete crops |
 | GET/POST/DELETE | `/api/plants` | List / create / delete plants |
 | GET/POST | `/api/field-context` | Get / update auto-generated field context |
@@ -277,7 +280,15 @@ The diagnose router accepts a multipart form upload (`image`, `plant_id`, `crop_
 | DELETE | `/api/plants/{plant_id}/history` | Clear plant scan history |
 | POST | `/api/field-notes` | Save manually written field notes |
 
-Every mutation to the field/crop/plant hierarchy triggers `_refresh_field_context()`, which regenerates the `shared_context` text field in the fields table. This auto-context is what gets injected into chat conversations as background knowledge.
+Every mutation to the field/crop/plant hierarchy triggers `_refresh_field_context()`, which regenerates the `shared_context` text field in the fields table. Field creation and location edits also fire `_geocode_and_fetch_weather()` as a background task to resolve lat/lon via Nominatim and fetch initial weather from Open-Meteo.
+
+#### Weather Router (`/api`)
+| Method | Path | Action |
+|--------|------|--------|
+| GET | `/api/weather?field_id={id}` | Return weather for the field from DB; falls back to live fetch if DB is empty |
+| POST | `/api/weather/refresh?field_id={id}` | Force-fetch fresh weather from Open-Meteo, update DB, return fresh values |
+
+Weather data is served directly from the `fields` table (zero API calls after login). The ↻ refresh button in the WeatherStrip UI calls `POST /api/weather/refresh`.
 
 ---
 
@@ -392,8 +403,9 @@ Gathi does not implement business logic itself — it is a coordination layer. E
 /api/diagnose   → Mizhi (EfficientNetB0Predictor, GradCamGenerator)
 /api/vnir-*     → Mizhi (VNIRPipeline → VNIREngine + VNIRAnalyzer)
 /api/chat       → Mozhi (ChatService → ChatClient, SessionStore, RAGRetriever)
-/api/fields     → Shared (FieldStore)
-/api/auth       → Shared (UserStore)
+/api/fields     → Shared (FieldStore)           [geocode + weather on create/edit]
+/api/weather    → Shared (FieldStore + geo_context.get_weather_context)
+/api/auth       → Shared (UserStore)            [weather refresh on login]
 ```
 
 The startup hook ensures that when any router's dependency function is called for the first time, the heavy singleton it needs is already loaded (or loading in the background). The `deps.py` dependency functions are the precise integration seam: they translate FastAPI's dependency injection system into calls to the module layer.
@@ -410,6 +422,7 @@ flowchart LR
         VNIR["vnir.py\n/api/vnir-upload"]
         Chat["chat.py\n/api/chat"]
         Fields["fields.py\n/api/fields\n/api/crops\n/api/plants\n/api/events"]
+        Weather["weather.py\n/api/weather\n/api/weather/refresh"]
         Deps["deps.py\nDependency Injection\n& Singletons"]
     end
 
@@ -417,7 +430,7 @@ flowchart LR
         Mizhi["⚡ Mizhi\nEfficientNet-B0\nVNIR Pipeline"]
         Mozhi["🧠 Mozhi\nChatService\nSessionStore"]
         Yukthi["📚 Yukthi\nRAGRetriever\nChromaDB"]
-        Shared["🗄 Shared\nUserStore\nFieldStore"]
+        Shared["🗄 Shared\nUserStore\nFieldStore\ngeo_context"]
     end
 
     Browser -->|"HTTP REST"| Auth
@@ -425,12 +438,14 @@ flowchart LR
     Browser -->|"multipart/form"| VNIR
     Browser -->|"JSON"| Chat
     Browser -->|"JSON"| Fields
+    Browser -->|"JSON"| Weather
 
     Auth --> Deps
     Diagnose --> Deps
     VNIR --> Deps
     Chat --> Deps
     Fields --> Deps
+    Weather --> Deps
 
     Deps -->|"get_predictor()\nget_vnir_pipeline()"| Mizhi
     Deps -->|"chat_service_for_user()"| Mozhi

@@ -31,6 +31,7 @@ nava_core/shared/
 │   └── field_store.py   ← FieldStore: per-user farm hierarchy + event log
 └── utils/
     ├── __init__.py
+    ├── geo_context.py   ← Nominatim geocoding + Open-Meteo weather fetch
     ├── image.py         ← PIL Image ↔ base64 conversion
     ├── logging.py       ← Standardised logger factory
     └── paths.py         ← Project root + models/logs directory resolution
@@ -338,14 +339,23 @@ def field_store_for_user(user: UserRecord) -> FieldStore:
 
 ```sql
 CREATE TABLE fields (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    name           TEXT NOT NULL,
-    location       TEXT,
-    area           TEXT,
-    soil_type      TEXT,
-    shared_context TEXT,     -- auto-generated context for the LLM (hidden from UI)
-    field_notes    TEXT,     -- manually written notes (shown in UI)
-    created_at     TEXT DEFAULT CURRENT_TIMESTAMP
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    name             TEXT NOT NULL,
+    location         TEXT,
+    area             TEXT,
+    soil_type        TEXT,
+    shared_context   TEXT,     -- auto-generated context for the LLM (hidden from UI)
+    field_notes      TEXT,     -- manually written notes (shown in UI)
+    created_at       TEXT DEFAULT CURRENT_TIMESTAMP,
+    -- Geocoding (added via migration, populated by _geocode_and_fetch_weather)
+    lat              REAL,     -- WGS84 latitude from Nominatim
+    lon              REAL,     -- WGS84 longitude from Nominatim
+    -- Weather columns (added via migration, populated from Open-Meteo)
+    weather_temp         REAL,
+    weather_humidity     REAL,
+    weather_precipitation REAL,
+    weather_wind_speed   REAL,
+    weather_updated_at   TEXT
 );
 
 CREATE TABLE crops (
@@ -408,6 +418,13 @@ erDiagram
         text shared_context
         text field_notes
         text created_at
+        real lat
+        real lon
+        real weather_temp
+        real weather_humidity
+        real weather_precipitation
+        real weather_wind_speed
+        text weather_updated_at
     }
     CROPS {
         int id PK
@@ -515,7 +532,24 @@ PRIORITY RULES:
 
 The priority rules section explicitly guides the LLM to treat disease detection results as more actionable than VNIR stress signals (which are proactive and precautionary).
 
-### 6.5 Schema Migration
+### 6.5 Key FieldStore Methods
+
+| Method | Description |
+|--------|-------------|
+| `create_field(name, location, ...)` | Creates a new field row; returns the new `id` |
+| `get_field(field_id)` | Returns a full dict including all weather + coordinate columns |
+| `list_fields()` | Returns all fields with weather columns for the dashboard |
+| `update_field(field_id, ...)` | Updates name, location, area, or soil_type |
+| `delete_field(field_id)` | **Cascade delete**: removes all events, VNIR history, plants, crops, and the field row in a single transaction |
+| `set_field_coordinates(field_id, lat, lon)` | Writes Nominatim-resolved lat/lon; called once per field |
+| `update_field_weather(field_id, temp, hum, precip, wind)` | Writes all 5 weather columns + `weather_updated_at = NOW()` |
+| `auto_generate_field_context(field_id)` | Builds structured text block from live DB state for LLM injection |
+| `get_rich_crop_context(crop_id)` | Builds detailed multi-section crop context for chat |
+| `add_event(event_type, ...)` | Inserts a diagnose or VNIR event |
+| `get_vnir_ratios(plant_id)` | Returns `[r1, r2, ...]` ratio list for the timeseries analysis |
+| `update_crop_context(crop_id, notes)` | Writes new auto-notes to `crops.notes` |
+
+### 6.6 Schema Migration
 
 `_migrate_schema()` handles incremental non-destructive schema changes for existing databases:
 
@@ -530,22 +564,70 @@ def _migrate_schema(self, conn):
     field_cols = {row[1] for row in conn.execute("PRAGMA table_info(fields)")}
     if "field_notes" not in field_cols:
         conn.execute("ALTER TABLE fields ADD COLUMN field_notes TEXT")
-    
-    # Migration 3: Handle vnir_history with old TEXT plant_id column
+
+    # Migration 3+: Handle vnir_history with old TEXT plant_id column
     vh_cols = {row[1]: row[2] for row in conn.execute("PRAGMA table_info(vnir_history)")}
-    if not vh_cols:
-        # Create fresh
-        conn.execute("CREATE TABLE IF NOT EXISTS vnir_history (...)")
-    elif vh_cols.get("plant_id", "").upper() == "TEXT":
-        # Old incompatible schema — recreate (data loss acceptable, old format was broken)
-        conn.executescript("ALTER TABLE vnir_history RENAME TO vnir_history_old; CREATE TABLE vnir_history (...);")
+    ...
+
+    # Migration 4: Geocoding columns (lat, lon)
+    if "lat" not in field_cols:
+        conn.execute("ALTER TABLE fields ADD COLUMN lat REAL")
+    if "lon" not in field_cols:
+        conn.execute("ALTER TABLE fields ADD COLUMN lon REAL")
+
+    # Migration 5: Weather columns
+    for col, ctype in [
+        ("weather_temp", "REAL"), ("weather_humidity", "REAL"),
+        ("weather_precipitation", "REAL"), ("weather_wind_speed", "REAL"),
+        ("weather_updated_at", "TEXT"),
+    ]:
+        if col not in field_cols:
+            conn.execute(f"ALTER TABLE fields ADD COLUMN {col} {ctype}")
 ```
 
 This approach ensures databases created by older versions of the application are upgraded transparently the next time they are opened, without requiring a manual migration step.
 
 ---
 
-## 7. Utilities (`utils/`)
+## 7. Geo Context Utilities (`utils/geo_context.py`)
+
+`geo_context.py` is the single module responsible for all geospatial and weather operations. It has no external dependencies beyond stdlib `urllib` + `json`.
+
+### 7.1 `resolve_coordinates(location_str) → tuple[float, float] | None`
+
+Resolves a free-text location string to WGS84 (lat, lon) coordinates:
+1. **Decimal coordinate shortcut:** If the string is already `"lat,lon"` (e.g. `"10.5,76.2"`), parses directly — no API call.
+2. **Nominatim API:** `GET https://nominatim.openstreetmap.org/search?q={location}&format=json&limit=1`
+   - `User-Agent: NAVA-AG/1.0` (required by Nominatim fair-use policy)
+   - 5-second timeout
+   - Logs `[GEO]` prefixed messages at every step for traceability
+3. Returns `None` on any failure (timeout, no results, network error) — caller handles gracefully.
+
+### 7.2 `get_weather_context(lat, lon) → dict | None`
+
+Fetches current weather from Open-Meteo:
+- `GET https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m`
+- Parses the `current` object from the response
+- Returns `{"temp": float, "humidity": float, "precipitation": float, "wind_speed": float}` or `None` on failure
+- All failures are silent with `[WEATHER]` log lines
+
+### 7.3 `refresh_user_weather(field_store) → None`
+
+Batch refresh for all fields belonging to a user:
+```python
+for field in field_store.list_fields():
+    if field["lat"] is None or field["lon"] is None:
+        continue  # not yet geocoded, skip
+    wx = get_weather_context(field["lat"], field["lon"])
+    if wx:
+        field_store.update_field_weather(field["id"], **wx)
+    time.sleep(1)  # courtesy delay for Open-Meteo fair-use
+```
+Called by `auth.py`'s `_refresh_user_weather()` background task immediately after login.
+
+---
+
+## 8. Utilities (`utils/`)
 
 ### 7.1 Path Resolution (`utils/paths.py`)
 
