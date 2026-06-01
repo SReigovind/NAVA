@@ -260,7 +260,6 @@ Foliar spray in the main field @ 100-150 ppm. Repeat the spray after 15 days, if
 Blast :Magnaporthe oryzae 
 (Syn: P. grisea, Magnaporthe grisea)
 
-
 Symptoms
 The fungus attacks the crop at all stages of crop growth from seedling to late tillering and ear heading stage.
 Symptoms appear on leaves, nodes, rachis, and glumes.
@@ -274,7 +273,6 @@ Lesions on the branches of the panicles and on the spikelet pedicels are brown t
 The size and shape of the spots vary on different rice varieties.
 
 Pathogen:
-
 The mycelium is hyaline to olivaceous and septate.
 Conidia are produced in clusters on long septate, olivaceous conidiophores.
 Conidia are pyriform to ellipsoid, attached at the broader base by a hilum. Conidia are hyaline to pale olive green, usually 3 celled.
@@ -326,7 +324,6 @@ It is transmitted through seeds and infected stubbles to the next planting seaso
 The pathogen spreads through irrigation water and also through rain storms.
 
 Management:
-
 Cultural method :
 Burn the stubbles.
 Use optimum dose of fertilizers.
