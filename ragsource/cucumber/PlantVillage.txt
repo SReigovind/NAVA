@@ -355,3 +355,5 @@ Comments
 Transmit viruses such as Tomato spotted wilt virus; once acquired, the insect retains the ability to transmit the virus for the remainder of its life.
 Management
 Avoid planting next to onions, garlic or cereals where very large numbers of thrips can build up; use reflective mulches early in growing season to deter thrips; apply appropriate insecticide if thrips become problematic.
+
+---

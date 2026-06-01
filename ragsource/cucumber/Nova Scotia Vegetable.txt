@@ -1,10 +1,9 @@
-1.Downy Mildew: 
+Downy Mildew: 
 
 The signs of downy mildew include lesions on the leaves (Figure 1). Angular, vein-delimited lesions that may initially appear slightly chlorotic are typical disease symptoms on cucumbers, and pathogen sporulation is easily visible on the lower leaf surface. Under humid and moist conditions, early infection lesions on cucumbers may appear water-soaked. The bottom leaf surface may appear "dirty" due to the sporangial masses' grey to purplish coloration when they are present in large numbers. These dark sporangial masses on the underside of the leaf are unique to downy mildew of cucurbits, and the underside of the leaf should always be examined to distinguish between downy mildew of cucurbits and angular leaf spot. Lesions become more chlorotic and necrotic as the disease worsens, leaves begin to die and the plant is unable to support fruit production. It is possible that both the quality (misshaped fruit) and quantity of marketable yield will decrease.
 The pathogen was found to be resistant to the strobilurin fungicides (FRAC class 11) when it reappeared in 2004. While reports of decreased performance of particular fungicides demonstrates the need for resistance management and the development of new and unique active ingredients, newer downy mildew fungicides have been useful in containing the disease. The use of resistant cultivars and fungicide treatments should be paired with cultural practices to decrease downy mildew incidence. Increased row and plant spacing, drip watering and elevated plant beds with plastic mulch can all assist in limiting the pathogen by reducing leaf wetness, boosting airflow, and lowering the relative humidity.
 
 ---
-
 
 2.Angular Leaf Spot:
 
@@ -13,4 +12,4 @@ Small, water soaked lesions first emerge on leaves as the disease spreads (Figur
 Pseudomonas syringae pv. lachrymans is seed-borne, and infestation occurs beneath the seed coat, so the cotyledons are infected upon germination. The bacterium grows and colonizes leaf surfaces in the intercellular spaces of leaves. Raindrops, insects, human field workers and farm equipment can spread the inoculum from leaf to leaf and from plant to plant. The bacterium enters stomata and tiny abrasion wounds. The bacterium can survive for up to 2.5 years in dry leaves and overwinters in crop debris that has been infected.
 Utilizing a thorough set of control measures, angular leaf spot can be reduced. Using seed free of pathogens is the first step in primary control. The number of bacteria in the cucurbit seed can also be  reduced but not eliminated after 20 minutes of treatment with water at 50oC containing different acidic organic compounds. Repeated applications of copper sprays as a foliar protection can be beneficial in warm, humid locations where the bacterium is endemic.
 
-
+---

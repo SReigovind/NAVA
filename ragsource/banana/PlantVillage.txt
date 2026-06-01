@@ -206,3 +206,5 @@ Comments
 Coconut scale attacks a large number of hosts including coconut and other palm species, avocado, cassava, papaya, guava and sugar cane; most common in tropical regions.
 Management
 Biological control is the best way to manage scale, with lady beetles providing the most effective protection.
+
+---

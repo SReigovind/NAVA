@@ -1,4 +1,4 @@
-1. Bacterial Panicle Blight of Rice
+Bacterial Panicle Blight of Rice
 
 Bacterial panicle blight is a major disease of rice
 that tends to develop during hot, dry weather. Losses
@@ -44,3 +44,5 @@ seed-borne, rice crops planted with infested seed can
 suffer severe losses. Ask an LSU AgCenter extension
 agent in your parish for the latest information on
 control of this disease.
+
+---

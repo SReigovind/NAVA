@@ -218,3 +218,5 @@ Comments
 Galls can appear as quickly as a month prior to planting; nematodes prefer sandy soils and damage in areas of field or garden with this type of soil is most likely
 Management
 Plant resistant varieties if nematodes are known to be present in the soil ;check roots of plants mid-season or sooner if symptoms indicate nematodes; solarizing soil can reduce nematode populations in the soil and levels of inoculum of many other pathogens
+
+---

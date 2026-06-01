@@ -650,3 +650,5 @@ Comments
 Spider mites thrive in dusty conditions; water-stressed plants are more susceptible to attack.
 Management
 In the home garden, spraying plants with a strong jet of water can help reduce buildup of spider mite populations; if mites become problematic apply insecticidal soap to plants; certain chemical insecticides may actually increase mite populations by killing off natural enemies and promoting mite reproduction.
+
+---

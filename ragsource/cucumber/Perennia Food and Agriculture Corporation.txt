@@ -1,4 +1,4 @@
-1.Angular leaf spot
+Angular leaf spot
 
 Symptoms
 Angular leaf spot (Pseudomonas syringae pv.
@@ -68,5 +68,3 @@ sprays have been shown to be largely ineffective
 in managing this disease. 
 
 ---
-
-

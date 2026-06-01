@@ -65,3 +65,5 @@ Importance
 Mostly grown as a food source in Africa, cassava is the third largest source of carbohydrates in the world.[13] In recent times, cassava production has turned from subsistence to commercial production.[1]
 CMD was first described in 1894 and is now considered one of the most damaging crop viruses in the world.[13][1] Annual economic losses in East and Central Africa are estimated to be between US$1.9 billion and $2.7 billion.[1] Although cassava is also cultivated in Latin America and South East Asia, the geminiviruses infecting it are only found in Africa and the Indian sub-continent. This has been mainly attributed to the inability of B. tabaci to colonize cassava effectively in this part of the world.[1]
 The Ministry of Agriculture Food Security and Cooperatives of Tanzania recommend uprooting diseased plants once every week by pulling them out by hand. Plants should be carried away from the field and exposed to the sunlight for drying and then burned to kill the viruses.
+
+---

@@ -37,7 +37,6 @@ If infection occurs late in the season, the potential for economic yield loss is
 Management
 Planting corn products with higher levels of common rust tolerance is the best management option. General plant tolerance reduces the number and size of pustules and reduces overall severity of infection. Fungicides can effectively control common rust if initial applications are made while there are only a few pustules present per leaf. Though fungicides are commonly used in sweet corn and seed corn production, they are rarely warranted in field corn for common rust because the potential for economic damage is low. Scouting each corn field on a regular schedule can help determine if fungicide applications should be considered. If significant levels of common rust are present on the lower leaves prior to silking and the forecast is for cool and humid or wet conditions, a fungicide application may be beneficial.
 
-
 ---
 
 Northern corn leaf blight
@@ -73,3 +72,5 @@ Pathogenesis
 Spores of the fungus that causes this disease can be transported by wind long distances from infected fields. Spread within and between fields locally also relies on wind blown spores.
 E. turcicum causes disease and reduces yield in corn primarily by creating the necrotic lesions and reducing available leaf area for photosynthesis.[5] Following conidia germination, the fungus forms an appressorium, which penetrates the corn leaf cell directly using an infection hypha. Once below the cuticle, the infection hypha produces infection pegs to penetrate the epidermal cell wall. After penetration through the cell wall, the fungus produces intracellular vesicle to obtain nutrients from the cell. After approximately 48 hours after infection, necrotic spots begin to form as the epidermal cells collapse.[15]
 Fungal toxins also play an important role in disease development. Researchers have found that a small peptide called the E.t. toxin allows a non-pathogenic isolate of E. turcicum to infect corn when suspensions of conidia and the toxin were in contact with the leaves. This toxin has also been shown to inhibit root elongation in seedlings and in chlorophyll synthesis. Another toxin produced by E. turcicum, called monocerin, is a lipophilic toxin known to cause necrosis of leaf tissue.[16]
+
+---

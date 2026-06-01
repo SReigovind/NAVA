@@ -312,3 +312,5 @@ Comments
 Stem borers are generally considered to be the most damaging insect pest of rice
 Management
 Stem borers are difficult to control with insecticides as once they bore inside the stem they are protected from chemical sprays; in order for chemical control to be successful, repeated applications of appropriate insecticide must be made to the foliage; granular formulations give better control than sprays; clipping seedling prior to transplanting can successfully reduce moth numbers as eggs are laid at leaf tips; harvesting plants at ground level can remove the majority of larvae from the field; plowing or flooding the remaining stubble will kill off most of the remainder of the larvae in the field
+
+---

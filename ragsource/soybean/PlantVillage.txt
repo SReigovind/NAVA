@@ -175,3 +175,5 @@ Comments
 Disease emergence favors heavy, water saturated soil; flooded soil within 1 week of planting is most conducive to disease development
 Management
 Plant soybean varieties that are resistant to the disease - ensure variety is resistant to all races of fungus present in the field; treat seeds with an appropriate fungicide prior to planting; plant soybean in soild with good drainage
+
+---

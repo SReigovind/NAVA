@@ -27,3 +27,4 @@ onnxruntime
 chromadb
 sentence-transformers
 pymupdf
+md2pdf
