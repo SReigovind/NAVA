@@ -1,34 +1,16 @@
 Soybean
-ContentContent
-1. Description
-2. Uses
-3. Propagation
-4. References
-Diseases
-- Bacterial
-- Fungal
-Pests
-- Insects
-- Others
-See questions about Soybean
 Description
 Soybean, Glycine max, is an herbaceous annual plant in the family Fabaceae grown for its edible seeds. The soybean plant is usually an erect bush with woody stems and alternately arranged leaves. The leaves possess three individual leaflets which are oval or lance-like in shape, growing to a length of 3–10 cm (1.2–4.0 in). The soybean plant produces small white or purple flowers and curved seed pods which are 3–15 cm (1.2–6 in) in length and can contain between 1 and 5 seeds. The seeds can be a variety of colors including yellow, green, brown, black or a mottled combination. Soybean is an annual plant, surviving only one growing season and can reach heights of 0.2–1.5 m (0.7–1.4 ft). Soybean may also be referred to as soyabean or soya and originates from Northeast China.
 
 Uses
 Soybean seeds can be used to make flour and dairy substitutes such as milk, margarine and yogurt and meat substitutes such as veggie burgers. Oil can be extracted from both the seeds and pods and the by product of the extraction is used as an animal feed. The oil from the plant is used in products such as paint, linoleum and soap. Soybean is also grown as a cover crop and used as animal fodder or hay.
 
-
 Propagation
 Basic requirements Soybean is a short-day plant, requiring hot weather for optimum production. It can be grown year round in most parts of the tropics. Plants can be grown at ambient temperatures between 15 and 27°C (60–80°F) although temperature below 21°C (69.8°F) and above 32 (89.6°F) may reduce flowering. Temperatures exceeding 40°C (104°F) are detrimental to seed production. Soybeans are adapted to grow in a wide range of soils and climates but require adequate soil moisture for germination and seedling establishment. Plants are sensitive to waterlogging but are tolerant of drought conditions once established. Soybean grows best on a light, loose, well draining loam with a pH of 6.5. Propagation Soybean is propagated directly from seed. If seeds are to planted in a field where soybean has not been been grown in the 3–5 year previous, they should first be inoculated with nitrogen fixing bacteria. The seedbed should be prepared prior to planting by removing any crop residue, weeds and large stones. Tilling the soil helps to break up large clods of earth. Seeds may be sown mechanically or by hand. in tilled soils, seeds are usually planted at a depth 3.2–4.5 cm (1.25 to 1.75 in) in rows spaced 30 cm (11.8 in) apart. Alternatively, no-till planting may be used to plant seeds in the stubble of a previous crop without first cultivating the soil. With this method, seeds are drilled into the soil in rows spaced 17.8 cm (7 in) apart. No-till practices reduce soil erosion and reduces the loss of moisture in the soil. General care and maintenance Weeds are often a problem in soybean fields and can be reduced through good preparation of the seedbed and maintaining a weed-free seedbed for several weeks prior to planting. Weeds may be controlled with appropriate herbicides, where available, or through mechanical cultivation where necessary. Soybeans should be provided with irrigation at flowering and again at seed-set for maximum seed fill and optimal yield. Irrigation should be increased in sandy soils that do not retain as much moisture. Soybeans fix approximately half of the nitrogen they require for growth and the other half must be supplied from the soil or through fertilizer application. Soybean also requires an adequate supply of phosphorus and potassium and application rates should be based on the results of a soil test. Harvesting Soybeans are ready to harvest between 70 and 160 days after planting, depending on variety. Plants are ready for harvest when the leaves and stems have turned yellow and the seed pods brown to black. Soybeans for fresh use are cut while still green. Plants may be pulled by hand or cut with the use of a combine. Once cut, the seeds are removed from the pods by threshing.
 
-
-CABI Crop Protection Compendium. (2010). Glycine max (soyabean) datasheet. Available at: http://www.cabi.org/cpc/datasheet/25400. [Accessed 10 April 15]. Paid subscription required. Martin, F. W. (1998). Soybean. ECHOCommunity Technical note. Available at: http://c.ymcdn.com/sites/members.echocommunity.org/resource/collection/27A14B94-EFE8-4D8A-BB83-36A61F414E3B/Soybean.pdf. [Accessed 10 April 15]. Free to access. Nafziger, E. Soybean. In: Illinois Agronomy Handbook. Illinois College of Aces Department of Crop Sciences. Available at: http://extension.cropsciences.illinois.edu/handbook/pdfs/chapter03.pdf. [Accessed 10 April 15]. Free to access.
-
-
-Common Pests and Diseases
-Diseases
+---
+Bacterial blight (Pseudomonas syringae)
 Category : Bacterial
-Bacterial blight Pseudomonas syringae
 Symptoms
 Water-soaked spots on leaves which enlarge and become necrotic; spots may be surrounded by a zone of yellow discoloration; lesions coalesce and give plant a burned appearance; leaves that die remain attached to plant; circular, sunken, red-brown lesion may be present on pods; pod lesions may ooze during humid conditions
 Cause
@@ -38,8 +20,9 @@ Disease can be introduced by contaminated seed; bacteria overwinters in crop deb
 Management
 Plant only certified seed; plant resistant varieties; treat seeds with an appropriate antibiotic prior to planting to kill off bacteria; spray plants with an appropriate protective copper based fungicide before appearance of symptoms
 
-
-Bacterial pustule Xanthomonas campestris
+---
+Bacterial pustule (Xanthomonas campestris)
+Category : Bacterial
 Symptoms
 Tiny pale green spots with raised centers on both upper and lower leaf surfaces which develop raised pustules in lesion center; pustules usually form in lesions on lower leaf surface; mottled brown areas may develop on leaves if lesions coalesce; small red-brown spots may develop on pods of some varieties
 Cause
@@ -49,9 +32,9 @@ Disease is prevalent in soybean growing regions which experience warm temperatur
 Management
 Plant varieties of soybean that are resistant to bacterial pustule; spray plants with an appropriate protective copper based fungicide before appearance of symptoms
 
-
+---
+Rhizoctonia stem rot (Rhizoctonia solani)
 Category : Fungal
-Rhizoctonia stem rot Rhizoctonia solani
 Symptoms
 Damping-off (pre- or post-emergence death) of seedlings caused by red-brown lesions which girdle the stem; lesions or cankers may be present on the stem of older plants and cause the death of the plant mid-season
 Cause
@@ -61,8 +44,9 @@ Disease emergence favors warm, dry soil and subsequent rainfall
 Management
 Treat seeds with an appropriate fungicide prior to planting; plant less susceptible varieties of soybean; plant only in well-draining soils
 
-
-Rust Phakopsora pachyrhizi
+---
+Rust (Phakopsora pachyrhizi)
+Category : Fungal
 Symptoms
 Gray or red-brown water-soaked spots on leaves which turn are tan to dark reddish brown in color lesions may also be present on stems, petioles and pods; volcano-shaped uredinia (spore producing structures) are present within the lesions; plants drop leaves and mature prematurely
 Cause
@@ -72,8 +56,9 @@ Rust development is favored by warm temperatures and periods of high humidity
 Management
 Plant soybean varieties that are resistant to rust; applications of appropriate foliar fungicides can help to control the disease
 
-
-Sclerotinia stem rot Sclerotinia sclerotiorum
+---
+Sclerotinia stem rot (Sclerotinia sclerotiorum)
+Category : Fungal
 Symptoms
 Upper leaves of plant become wilted and die; leaves turn a gray-green color and dry out; water-soaked lesions on stem nodes which change color from tan to white; lesions may girdle the stem and infection may spread to both side branches and pods; cottony white mycelial growth occurs on all infected plant parts
 Cause
@@ -83,11 +68,9 @@ Disease emergence favors cool, wet weather; pathogen is resistant to many fungic
 Management
 Do not plant soybeans in fields where common bean, sunflowers or other susceptible crops have been grown the previous season; space plants in narrow rows; avoid excessive irrigation after plants are no longer flowering; plant soybean varieties that are less susceptible to the disease
 
-
-Pests
+---
+Armyworms (Beet armyworm, Western striped armyworm) (Spodoptera exigua / Spodoptera praefica)
 Category : Insects
-Armyworms (Beet armyworm, Western striped armyworm) Spodoptera exigua
-Spodoptera praefica
 Symptoms
 Singular, or closely grouped circular to irregularly shaped holes in foliage; heavy feeding by young larvae leads to skeletonized leaves; shallow, dry wounds on fruit; egg clusters of 50-150 eggs may be present on the leaves; egg clusters are covered in a whitish scale which gives the cluster a cottony or fuzzy appearance; young larvae are pale green to yellow in color while older larvae are generally darker green with a dark and light line running along the side of their body and a pink or yellow underside
 Cause
@@ -97,9 +80,9 @@ Insect can go through 3–5 generations a year
 Management
 Organic methods of controlling armyworms include biological control by natural enemies which parasitize the larvae and the application of Bacillus thuringiensis; there are chemicals available for commercial control but many that are available for the home garden do not provide adequate control of the larvae
 
-
-Cucumber beetles (Western striped cucumber beetle, Western spotted cucumber beetle) Acalymma vittata
-Diabrotica undecimpunctata
+---
+Cucumber beetles (Western striped cucumber beetle, Western spotted cucumber beetle) (Acalymma vittata / Diabrotica undecimpunctata)
+Category : Insects
 Symptoms
 Stunted seedling; damaged leaves, stems and/or petioles; reduced plant stand; plants may exhibit symptoms of bacterial wilt; scars on fruit caused by beetle feeding damage; adult beetles are brightly colored with either a green-yellow background and black spots or alternating black and yellow stripe
 Cause
@@ -109,8 +92,9 @@ Beetles overwinter in soil and leaf litter and emerge from soil when temperature
 Management
 Monitor new planting regularly for signs of beetle; floating row covers can be used to protect the plants from damage but will need to be removed at bloom to allow bees to pollinate plants; applications of kaolin clay can be effective for management of small beetle populations; application of appropriate insecticides may be necessary
 
-
-Mexican bean beetle Epilachna varivestis
+---
+Mexican bean beetle (Epilachna varivestis)
+Category : Insects
 Symptoms
 Irregular patches of feeding damage on underside of leaves which causes the top surface of the leaf to dry out, giving the leaves a lacy appearance; insect will also damage flowers and small pods; pods may be damaged so badly that they drop from the plant; adult insect is an orange-brown beetle with black spots; larvae are fat-bodied grubs which taper at the end and are in rows of conspicuous spines
 Cause
@@ -120,9 +104,9 @@ Beetles can decimate bean crops; beetles overwinter as adults and undergo 2-3 ge
 Management
 Some bean varieties may be less attractive hosts for the beetle, e.g. snapbeans are preferred hosts over lima beans; early varieties may escape damage form beetles beetle populations can be reduced by remove overwintering sites such as brush and leaves on the ground; handpick larvae and adults; brush eggs from leaves and destroy; apply insecticidal soap to leaf undersides if infestation is heavy
 
-
-Category : Others
-Brown spot Septoria glycines
+---
+Brown spot (Septoria glycines)
+Category : Fungal
 Symptoms
 Upper leaves have light purple discoloration and a leathery appearance and bronzing of leaves may occur; red-purple angular or irregularly shaped lesions develop on both the upper and lower leaf surfaces and may coalesce to form large necrotic patches; multiple infections can cause chlorosis and defoliation of the plants; on petioles and stems, sunken red-purple lesions may develop and upper leaves appear blighted.
 Cause
@@ -132,8 +116,9 @@ Disease emergence favors warm, wet weather which promotes sporulation of the fun
 Management
 Plow crop residue into soil after harvest; plant soybean varieties that are less suceptible to the disease; rotate crops to a non-susceptible crop for at least one year; apply an appropriate foliar fungicide to protect plants from bloom to pod fill
 
-
-Cercospora leaf blight Cercospora kikuchii
+---
+Cercospora leaf blight (Cercospora kikuchii)
+Category : Fungal
 Symptoms
 Upper leaves turning yellow; purple-red lesions are present on leaves and coalesce to give the leaves a bronzed appearance; leaves develop a leathery texture; severe infections give leaves a blighted appearance and cause them to drop from the plant
 Cause
@@ -143,8 +128,9 @@ Disease development id favored by warm temperatures and high humidity
 Management
 No soybean varieties are immune to the disease but some have more resistance than others and can give some degree of control; crop debris should be plowed into soil following harvest to reduce build up of inoculum
 
-
-Charcoal rot Macrophomina phaseolina
+---
+Charcoal rot (Macrophomina phaseolina)
+Category : Fungal
 Symptoms
 Discoloration of stem at soil line; cankers on stem may spread upwards; leaves may wilt and drop from plant; numerous small black sclerota (fungal fruiting bodies) develop in affected tissues and can be used to diagnose the disease
 Cause
@@ -154,8 +140,9 @@ Fungus had a wide host range and affects beans, tobacco, cowpea, pigeon pea and 
 Management
 Organic soil amendments such as the addition of manure or neemcake can be used to reduce levels of inoculum in the soil
 
-
-Downy mildew Peronospora manshurica
+---
+Downy mildew (Peronospora manshurica)
+Category : Fungal
 Symptoms
 Yellow or pale green spots on upper surfaces of leaves which enlarge and coalesce to form yellow patches; lesions may turn gray-brown to dark brown with a yellow margin; fuzzy tufts of gray-purple mold develop on lesions on underside of leaves; infection of pods can cause seeds to be covered in masses of white mycelia with pods showing no external symptoms
 Cause
@@ -165,8 +152,9 @@ Disease emergence favors warm temperatures and periods of high humidity
 Management
 Treat seeds with an appropriate fungicide prior to planting; plow soybean residue into soil after harvest; grow soybean varieties which are resistant to the disease where possible; rotate crop away from soybean for a one year period
 
-
-Frogeye leaf spot Cercospora sojina
+---
+Frogeye leaf spot (Cercospora sojina)
+Category : Fungal
 Symptoms
 Angular gray spots with purple to red-brown edges on leaves; brown to black fungal structures developing in the center of the spot; circular or elongated lesions where inner membrane of pod contacts the seeds;
 Cause
@@ -176,8 +164,9 @@ Disease emergence favors warm and humid conditions
 Management
 Plant high quality seed and use resistant varieties; rotate crop away from soybean for a period of 2 years; treat seeds with appropriate fungicide prior to planting; apply appropriate foliar fungicide
 
-
-Phytophthora rot Phytophthora megasperma
+---
+Phytophthora rot (Phytophthora megasperma)
+Category : Oomycete
 Symptoms
 Susceptible varieties of soybean may have water-soaked stems and yellowing leaves; yellowing occurs between leaf veins and along leaf margins; upper leaves of plant become chlorotic and wilted; tolerant soybean varieties may show stunted growth and slight yellowing
 Cause
@@ -186,5 +175,3 @@ Comments
 Disease emergence favors heavy, water saturated soil; flooded soil within 1 week of planting is most conducive to disease development
 Management
 Plant soybean varieties that are resistant to the disease - ensure variety is resistant to all races of fungus present in the field; treat seeds with an appropriate fungicide prior to planting; plant soybean in soild with good drainage
-
-

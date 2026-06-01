@@ -38,7 +38,7 @@ function RagCarousel({ chunks, chunkCount }) {
         >‹</button>
         <div className="rag-carousel-body">
           <div className="rag-carousel-header">
-            <span className="rag-carousel-source">{chunk.source}</span>
+            <span className="rag-carousel-source">{chunk.source?.replace(/\.[^.]+$/, "")}</span>
             <span className="rag-carousel-nav">{idx + 1} / {chunks.length}</span>
           </div>
           <div className="rag-carousel-section">{chunk.section}</div>

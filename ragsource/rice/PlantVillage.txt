@@ -1,16 +1,4 @@
 Rice
-ContentContent
-1. Description
-2. Uses & Benefits
-3. Varieties
-4. Propagation
-Diseases
-- Bacterial
-- Fungal
-- Viral
-Pests
-- Insects
-See questions about Rice
 Description
 There are two species of cultivated rice in the world, Oryza sativa (Asian rice) and Oryza glaberrima (African rice). Both species are annual grasses (except in the tropics, where the plant can be perennial) that are cultivated for their grain which is considered a staple food in most parts of the world.
 
@@ -23,14 +11,10 @@ Rice is grown in four ecosystems, which are broadly defined based on water regim
 Generally, African rice tends to form smaller, pear-shaped grains with red bran and olive to black seed coat and has several disadvantages compared with its Asian counterpart e.g. seed is easily scattered, the grain is difficult to mill and the crop gives a lower yield. The growing of Asian rice has therefore begun to supersede that of African rice in West Africa. Asian rice originates from China and African rice is believed to have been domesticated in areas around the Niger River in Africa.
 
 Crop Details
-
 Scientific Name: Oryza sativa
 
 Uses & Benefits
 Rice is a vital staple food for over half of the world's population, offering numerous uses and benefits. As a primary energy source, it provides essential carbohydrates, vitamins, and minerals. Rice is gluten-free, making it suitable for people with dietary restrictions, and its whole grain form, such as brown rice, supports digestive health and weight management. It is used in animal feed, cosmetics, and industrial products like rice bran oil. Economically, it supports millions of farmers and contributes to employment. Environmentally, rice farming helps maintain biodiversity and can sequester carbon, aiding in climate change mitigation.
-
-
-
 
 Varieties
 "Sindano", highly susceptible to Rice Yellow Mottle Virus (RYMV), and "Basmati 217", highly susceptible to blast, have been grown since the 1960s.
@@ -62,17 +46,14 @@ Mwangaza: Grain yield: 2-3 t/ha; resistant to RYMV and blast.
 
 Propagation
 Basic Requirements
-
 Rice thrives on land that is water saturated or even submerged during part or all of its growth. Optimal temperatures for rice growing are 20 to 37.7°C, and no growth occurs below 10ºC. The optimal pH is between 5 and 7, though rice has been grown in fields with a PH between 3 and 10. Rice will grow in altitudes ranging from 0 to 2500 m above sea level but worldwide is mostly grown on the humid coastal lowlands and deltas. Aquatic rice may require a dependable supply of fresh, slowly moving water, at a temperature of 21 to 29°C. Rain-fed rice requires an average of 800 to 2000 mm of rainfall well distributed over the growing season. If rainfall is less than 1250 mm annually, irrigation is used to make up the deficit. The crop is salt tolerant at some stages of growth; during germination but not seedling stages and has even been grown to reclaim salty soils. Terrain should be level enough to permit flooding, yet sloped enough to drain readily. The soils on which rice can grow are as varied as the climatic regime it tolerates, but ideally, it prefers a friable loam overlying heavy clay, as in many coastal and delta areas.
 
 Growing from Seed
-
 Rice is always propagated by seed, which may be either broadcast or drilled directly in the field, or the seedlings may be grown in nurseries and transplanted. Direct seeding is done in dry or puddled soil. In puddled soil, the (pre-germinated) seeds are broadcast. The water level is kept at 0-5 cm under tropical conditions, but higher in temperate areas.
 
 In dry soil, the seeds are sown after land preparation and covered lightly with soil by a tooth harrow. Germination occurs after heavy continuous rains. In upland rice cultivation the land is prepared in the dry weather and the rice is broadcast or dibbled in with the advent of the rains. Floating rice is cultivated in areas subject to deep flooding and the seed is sown either dry or wet.
 
 Seedling production
-
 The following are steps for producing healthy seedlings:
 
 Seed selection: Select plump and healthy seeds.
@@ -90,7 +71,6 @@ Sowing: Sowing 80 to 100 g/m² is normal practice. Broadcast seed uniformly. Do 
 Seedbed preparation (nursery): Plough at least 2 weeks before sowing and flooding. Puddle 1 week before sowing and prepare a raised nursery bed. Drain the nursery bed the day before sowing to stabilize the surface of the soil. If the soil covering the nursery bed is too soft, sown grains are buried in the soil resulting in a poor establishment. For 1 ha of transplanted rice, a nursery of about 350 m² is required. Irrigate a few days after sowing so that the surface is kept moist, and as the seedlings emerge keep submerged conditions with water controlled at 1 to 3 cm according to the growth of the seedling. Raise the water level to 10 cm one day before uprooting to ease the washing off of soil that sticks to roots. This will make transplanting easy.
 
 Land Preparation
-
 Preparation of land varies, even within the lowland rainfed-rice areas. Land can be prepared in the following ways:
 
 Wetland tillage: This method is common in most tropical Asian countries. It consists of land soaking, in which water is absorbed until the soil is saturated. Ploughing, which is the initial breaking and turning over of the soil to a depth of 10-20 cm, is done using a wooden or light iron plough drawn by 1-2 buffaloes or oxen, preferably when there is 7.5-10 cm of water on the land and harrowing during which big clods of soil are broken and puddled with water. Puddling is important because it reduces moisture loss by percolation, better weed control, and ease of transplanting. The low redox potential of submerged puddled soil helps to conserve water-soluble nutrients, favors the accumulation of ammonium, increases biological nitrogen fixation, and increases the availability of phosphorus, silicon, iron, and manganese.
@@ -98,19 +78,16 @@ Wetland tillage: This method is common in most tropical Asian countries. It cons
 Dryland tillage: The land is prepared in the dry weather and the rice is sown just before the rains begin. This method makes it possible to have initial crop growth from early monsoon rains. Labor requirements for seed-bed preparation, land preparation, and transplanting are reduced and soil structure is better for stand establishment of the following non-rice crop. This method has its disadvantages: weed control is a major problem; percolation losses are high, making the chances of drought stress higher; and fertilizer requirements are often higher. To hold the water on the land and maintain it at the required depth, bunding and leveling are essential. The land is divided by contour bunds into fields, the size and shape of which vary with the topography. The bunds are usually made of clay, mud, and weeds, with controlled openings for the ingress and egress of water.
 
 General Care and Maintenance
-
 Maintain adequate water levels, typically 2-5 cm, especially during the early stages of growth, to control weeds and support seedling establishment. Ensure proper drainage during the grain-filling stage to avoid waterlogging and promote healthy grain development.
 
 Apply balanced fertilizers, including nitrogen, phosphorus, and potassium, at recommended stages typically at planting, tillering, and panicle initiation. Regularly test the soil to determine nutrient needs and adjust fertilization accordingly.
 
 Harvesting
-
 Harvesting rice involves timing the harvest when about 80-90% of the grains have turned golden yellow, indicating full maturity. Harvesting can be done manually using sickles or mechanically with combine harvesters, depending on the scale of farming. Proper timing is essential to avoid grain losses due to shattering or over-drying. After cutting, the rice should be carefully threshed to separate the grains from the stalks, followed by drying to reduce moisture content, which helps prevent spoilage and ensures the rice is ready for storage or milling.
 
-Common Pests and Diseases
-Diseases
+---
+Bacterial leaf streak (Xanthomonas oryzae)
 Category : Bacterial
-Bacterial leaf streak Xanthomonas oryzae
 Symptoms
 Small, water-soaked streaks between leaf veins which are initially dark green and then turn translucent; streaks grow larger, coalesce and turn light brown in color; tiny beads of yellow colored bacterial exudate are common on the surface of the streaks; leaves turn brown and then gray-white in color before they die
 Cause
@@ -120,8 +97,9 @@ Bacteria survive on infected seed and straw; bacteria may enter the plant throug
 Management
 Control of bacterial leaf streak is dependent on the use of resistant rice varieties and on planting of treated seed
 
-
-Leaf scald Microdochium oryzae
+---
+Leaf scald (Microdochium oryzae)
+Category : Fungal
 Symptoms
 As name suggest we will see scalded appearance on leaves. The lesion is marked with different zone from alternating light tan and dark brown from leaf tips or edges. As the leaves mature the lesion is with light brown halos. Margins and leaf tips are translucent.
 Cause
@@ -131,22 +109,21 @@ The symptoms may vary depends on cultivar, growth stage and plant density. The d
 Management
 Grow resistant varieties. Treat the seeds with suitable fungicide. Apply only recommended quantity of nitrogen fertilizer in split dose.
 
-
-Rice Bacterial blight Xanthomonas oryzae pv. oryzae
+---
+Rice Bacterial blight (Xanthomonas oryzae pv. oryzae)
+Category : Bacterial
 Symptoms
 Water-soaked stripes on leaf blades; yellow or white stripes on leaf blades; leaves appear grayish in color; plants wilting and rolling up; leaves turning yellow; stunted plants; plant death; youngest leaf on plant turning yellow
-
 Cause
 Bacterium
-
 Comments
 One of the most important diseases of rice; disease found in tropical and temperate regions; greatest economic impact in Asia
-
 Management
 Bacterial blight can be effectively controlled by planting resistant rice varieties; avoid excessive nitrogen fertilization; plow stubble and straw into soil after harvest
 
+---
+Bakanae (Fusarium moniliforme)
 Category : Fungal
-Bakanae Fusarium moniliforme
 Symptoms
 Seedlings are elongated, slender and pale; seedlings are stunted and chlorotic; death of seedlings; abnormal elongation of older plants which often makes them visible as they grow taller than uninfected plants in the field; sterile plants which do not produce panicles or produce empty panicles
 Cause
@@ -156,8 +133,9 @@ Disease transmitted through infected seed; disease emergence favored by high tem
 Management
 Treating seeds with appropriate fungicides prior to planting can be very effective at controlling the disease; less susceptible rice varieties should be grown in areas where fungicide-treated seed is not available
 
-
-Brown spot Cochliobolus miyabeanus
+---
+Brown spot (Cochliobolus miyabeanus)
+Category : Fungal
 Symptoms
 Circular, brown lesions on seedling; distorted primary and/or secondary leaves on seedlings; black discoloration of roots; death of seedlings; circular or oval lesions with gray center and reddish-brown margin on older plants; death of large areas of leaves; brown or black spots on grain; reduced number of grains; reduced kernel weight
 Cause
@@ -167,7 +145,9 @@ Occurs wherever rice is grown; fungus overwinters on plant debris; disease emerg
 Management
 Ensure plants are provided with correct nutrients and avoid water stress; chemical seed treatments are effective at reducing the incidence of the disease
 
-False smut Ustilaginoidea virens
+---
+False smut (Ustilaginoidea virens)
+Category : Fungal
 Symptoms
 The pathogen infect the rice plant during flowering stage and causes chalkiness of grain. The individual grains were covered with orange fungal mass in the beginning, later turns into greenish velvet color during sporulation stage and finally into charcoal black during spore maturation stage. It infect only few grains in spikelet. Recorded disease loss up to 75% in severe incidence. It also reduces market value of rice.
 Cause
@@ -177,8 +157,9 @@ It is seed born disease and may also affect seed germination.
 Management
 Treat seeds with hot water (52 C) for 10 min. Roughing the infected plants from field and from harvested grains. Keep the rice field and surrounding clean. Use resistant varieties. Maintain humidity in field by alternate wetting and drying.
 
-
-Narrow leaf spot (Cercospora leaf spot) Cercospora oryzae
+---
+Narrow leaf spot (Cercospora leaf spot) (Cercospora oryzae)
+Category : Fungal
 Symptoms
 Short, elliptical or linear brown lesions on leaves; necrosis of leaves; blotchy pattern on leaves; premature ripening of kernels
 Cause
@@ -188,8 +169,9 @@ Disease occurs in major rice growing regions in tropical and sub-tropical Asia, 
 Management
 There are no chemical controls currently recommended for the treatment of the disease; treating seeds with hot water or appropriate fungicides prior to planting can reduce the incidence of the disease
 
-
-Rice blast Magnaporthe grisea
+---
+Rice blast (Magnaporthe grisea)
+Category : Fungal
 Symptoms
 Lesions on all parts of shoot; white to green or gray diamond-shaped lesions with dark green borders; death of leaf blades; black necrotic patches on culm; rotting panicles
 Cause
@@ -199,8 +181,9 @@ Most important disease of rice worldwide; causes most damage in areas of intense
 Management
 If disease is not endemic to the region, blast can be controlled by planting resistant rice varieties; avoid over-fertilizing crop with nitrogen as this increases the plant's susceptibility to the disease; utilize good water management to ensure plants do not suffer from drought stress; disease can be effectively controlled by the application of appropriate systemic fungicides, where available
 
-
-Sheath blight Rhizoctonia solani
+---
+Sheath blight (Rhizoctonia solani)
+Category : Fungal
 Symptoms
 Circular, oblong or elliptical, green to gray water-soaked spots on leaf sheaths; lesions with pale green or white center and purple-brown margin; lesions covering leaf sheaths and stems; poorly filled grains
 Cause
@@ -210,8 +193,9 @@ Occurs in all areas where rice is grown; second only importance to rice blast; m
 Management
 Avoid overfertilizing plants as excessive nitrogen application has been shown to increase susceptibility to the disease; applications of foliar fungicides may be required; two applications are recommended and should be timed so that the first application is made between the early internode elongation and the second application made on emerging panicles 10-14 days later
 
-
-Stem rot Magnaporthe salvinii
+---
+Stem rot (Magnaporthe salvinii)
+Category : Fungal
 Symptoms
 Symptoms generally begin to appear after the mid tillering stage; black lesions appear on outer leaf sheath at the water-line; lesions expand and begin to infect inner leaf sheaths and culm begins to rot; infections which reach the culm can leaf to lodging of plants, unfilled panicles and death of tillers
 Cause
@@ -221,9 +205,9 @@ Fungus survives in crop debris in soil after harvest; fruiting bodies are carrie
 Management
 Bury crop residue deeply in the soil after harvest; avoid excessive nitrogen fertilization; plant less susceptible rice varieties
 
-
+---
+Grassy stunt (Rice grassy stunt virus RGSV)
 Category : Viral
-Grassy stunt Rice grassy stunt virus (RGSV)
 Symptoms
 Stunted plants; short, narrow pale green or yellow leaves; mottled or striped pattern on newly unfolded leaves; irregular dark brown spots on leaves; few or no panicles produced;
 Cause
@@ -233,8 +217,9 @@ Transmitted by leaf hoppers; disease widespread in rice growing regions of South
 Management
 Several varieties of rice resistant to the leaf hopper vectors have been developed but the insects have overcome the resistance in several countries; applications of appropriate insecticides can help to reduce populations of vectors in temperate regions
 
-
-Tungro Rice tungro bacilliform virus (RTBV)
+---
+Tungro (Rice tungro bacilliform virus RTBV)
+Category : Viral
 Symptoms
 Plants are stunted with a yellow-orange discoloration; plants may have a reduced number of tillers and rust colored spots on leaves; leaves may be mottled, striped or exhibit interveinal necrosis
 Cause
@@ -244,12 +229,9 @@ Disease is the most severely damaging virus of rice in South and Southeast Asia;
 Management
 Rice varieties resistant to tungro virus have been developed and control the disease successfully; intense cultivation has led to the breakdown of the resistance by some virulent leafhopper strains; in Indonesia, the disease is successfully controlled by scheduling planting to obtain synchronous development and practicing crop rotation with resistant varieties
 
+---
+Leafhoppers & planthoppers (Nephotettix spp. / Recilia dorsalis / Nilaparvata lugens / Laodelphax striatellus / Sogatella furcifera)
 Category : Insects
-Leafhoppers & planthoppers Nephotettix spp.
-Recilia dorsalis
-Nilaparvata lugens
-Laodelphax striatellus
-Sogatella furcifera
 Symptoms
 Plants may show no symptoms of leafhopper of planthopper damage; feeding punctures can leave the plants susceptible to bacterial or fungal infections; insects transmit many rice viruses; if infestations is severe, insects may cause plant to completely dry out; adults insects are pale green or brown winged insects with piercing-sucking mouthparts
 Cause
@@ -259,8 +241,9 @@ Leaf and planthoppers transmit many rice viruses, including grassy stunt and tun
 Management
 Rotating crop for a period of one year is an effective and economical method of controlling hopper numbers; natural enemies and predators are often very successful at controlling hoppers and should be conserved by avoiding inappropriate use of insecticides which can damage their populations; planting resistant varieties is a very effective control method; chemical control with an appropriate insecticide may be necessary but should only be applied if the insects have reached an economic threshold
 
-
-Mole cricket Gryllotalpa orientalis
+---
+Mole cricket (Gryllotalpa orientalis)
+Category : Insects
 Symptoms
 The insect is very destructive because it feeds on seeds, tillers of mature plants and roots. It mainly cut the tillers at ground level and causes gap in rice field. Usually the symptoms appear in patches.
 Cause
@@ -270,8 +253,9 @@ We can see burrows of insect at sides of rice field and usually burrows will hav
 Management
 Use resistant varieties. Level the field properly and irrigate every 3-4 days after planting. Collect and kill the insects during land preparation. Avoid nurseries with raised bed to reduce cricket infestation during seedling stage. Improve biocontrol agents in field. If damage is large use food bait (commonly rice bran) mixed with insecticide and place along borders.
 
-
-Rice bug Leptocorisa oratorius F. and Leptocorisa acuta Thunberg
+---
+Rice bug (Leptocorisa oratorius F. and Leptocorisa acuta Thunberg)
+Category : Insects
 Symptoms
 The insect attacks during spikelet stage of rice crop. Both nymphs and adults suck the content out of grains from pre-flowering spikelets to soft dough stage. This leads to unfilled, empty and discolored grains.
 Cause
@@ -281,9 +265,9 @@ If the infestation is severe it may cause yield loss up to 30%.
 Management
 Keep the field and surrounding area free from weeds which serves as alternative host for insect during non cropping season. Equal distribution of fertilizers and water in rice field to encourage even crop growth. Collect and kill insects manually by using net during early morning and late after noon. Encourage biological control agents.
 
-
-Rice case worm Paraponyx stagnalis Stagnalis (Lepidoptera : Pyralidae)
-Nymphula depunctalis (Guenee)
+---
+Rice case worm (Paraponyx stagnalis Stagnalis / Nymphula depunctalis)
+Category : Insects
 Symptoms
 Case worm larvae scraps chlorophyll from leaves. Another important symptom is the larvae cuts off leaf tips and make cylindrical tubes around them. In infected field you can see cylindrical tubes attached to plants or floating on water surface.
 Cause
@@ -293,8 +277,9 @@ The damaged leaf tissue looks like ladder.
 Management
 Drain water to remove floating larvae from field. Follow proper cultivation practices like nitrogen application and spacing. Encourage biological control agents like snails, spiders, lady bird beetles, dragon flies in rice field.
 
-
-Rice gall midge Orseolia oryzae
+---
+Rice gall midge (Orseolia oryzae)
+Category : Insects
 Symptoms
 Gall midge maggot bore into bud or stalk of rice plant and feeds on internal content which leads to formation of tubular gall at the base of the tillers. This leads to elongation of leaf sheath which is commonly called as silver shoot or onion shoot. The leaves will be wilted, deformed and curled up.
 Cause
@@ -304,8 +289,9 @@ It is common during tillering stage of rice crop.
 Management
 Grow available gall midge resistant cultivars. Follow proper cultural practices like crop rotation, ploughing the ratoon crop and other alternative hosts, planting early etc. Use light traps to attract adult flies and kill them. Conserve biocontrol agents in rice field.
 
-
-Rice mealy bugs Brevennia rehi
+---
+Rice mealy bugs (Brevennia rehi)
+Category : Insects
 Symptoms
 Both adult and nymphs feed on rice plant by sucking sap. The main symptoms are stunting and wilting of plants, yellowing and curling of leaves.
 Cause
@@ -315,10 +301,9 @@ We can see white wax covered eggs, nymphs and adults on infected plants. The ins
 Management
 Augment biocontrol agents (like lady bird beetles, chloropid flies, spiders, small encyrtid wasps) in rice fields.
 
-
-Stem borers (Yellow stem borer, Striped stem borer, White stem borer, etc.) Scirpophaga incertulas
-Chilo suppressalis
-Scirpophaga innotata
+---
+Stem borers (Yellow stem borer, Striped stem borer, White stem borer, etc.) (Scirpophaga incertulas / Chilo suppressalis / Scirpophaga innotata)
+Category : Insects
 Symptoms
 Longitudinal white patches on leaf sheaths; central leaf whorl drying out and turning brown; tillers drying out without producing panicles; panicles may dry out or may produce no grain; adult insects are nocturnal moths which lay their eggs on the leaves or leaf sheaths of the rice plants; larvae are legless grubs which feed on leaf sheaths before entering the stem of the pant
 Cause
@@ -327,5 +312,3 @@ Comments
 Stem borers are generally considered to be the most damaging insect pest of rice
 Management
 Stem borers are difficult to control with insecticides as once they bore inside the stem they are protected from chemical sprays; in order for chemical control to be successful, repeated applications of appropriate insecticide must be made to the foliage; granular formulations give better control than sprays; clipping seedling prior to transplanting can successfully reduce moth numbers as eggs are laid at leaf tips; harvesting plants at ground level can remove the majority of larvae from the field; plowing or flooding the remaining stubble will kill off most of the remainder of the larvae in the field
-
-

@@ -36,80 +36,146 @@ class Chunk:
 
 # ── TXT chunking ────────────────────────────────────────────────────────────
 
-# Section headings found in PlantVillage-style documents
-_TXT_SECTION_HEADERS = re.compile(
+_COMMON_HEADERS = re.compile(
     r"^(Symptoms|Cause|Comments|Management|Description|Uses\s*&?\s*Benefits|"
     r"Varieties|Propagation|Basic\s*Requirement|Seeding|General\s*Care|"
-    r"Harvesting|References|Diseases|Pests|Category\s*:|Common\s*Pests)\s*$",
-    re.IGNORECASE,
-)
-
-# Disease/Pest entry line: e.g. "Panama disease (Fusarium wilt) Fusarium oxysporum"
-# These are lines that start a new disease/pest record.
-_ENTRY_LINE = re.compile(
-    r"^(?:Anthracnose|Black\s+sigatoka|Cigar\s+end|Cordana|Panama|Rhizome|"
-    r"Yellow\s+sigatoka|Banana\s+bacterial|Moko|Banana\s+mosaic|Bunchy\s+top|"
-    r"Banana\s+aphid|Banana\s+skipper|Banana\s+weevil|Coconut\s+scale|"
-    r"[A-Z][a-z]+\s+(?:disease|rot|wilt|blight|spot|mosaic|streak|top))",
+    r"Harvesting|References|Diseases|Pests|Category\s*:|Common\s*Pests|"
+    r"Biology|Effect\s+on\s+Crop|Mode\s+of\s+spread.*|Favourable\s+conditions.*|"
+    r"Identification.*|Nature\s+of\s+Damage.*|Life\s+history|Importance|Management.*)\s*$",
     re.IGNORECASE,
 )
 
 
 def chunk_txt(path: Path, crop: str) -> list[Chunk]:
-    """Chunk a PlantVillage-style .txt file into semantic units.
+    """Chunk a .txt file into semantic units using a dual-strategy approach.
 
-    Strategy:
-    - Each disease/pest entry (from its name line through its Management line)
-      is one chunk — preserving symptom+cause+management coherence.
-    - General agronomy sections (Description, Propagation, etc.) are each
-      one chunk (split at section headers).
+    Strategy A (Delimited): If the file contains '---' on a blank line, it's treated
+    as a structured institutional document where each block is a separate topic.
+    Strategy B (Prose): Otherwise, it's treated as unstructured prose (e.g., Wikipedia)
+    and chunked by paragraphs and heuristic headings.
     """
     text = path.read_text(encoding="utf-8", errors="replace")
     lines = text.splitlines()
-    source = path.name
+    source = path.stem
 
+    has_delimiter = any(line.strip() == "---" for line in lines)
+
+    if has_delimiter:
+        return _chunk_txt_delimited(lines, source)
+    else:
+        return _chunk_txt_prose(lines, source)
+
+
+def _chunk_txt_delimited(lines: list[str], source: str) -> list[Chunk]:
     chunks: list[Chunk] = []
     idx = 0
-    buffer: list[str] = []
-    section = "General"
-    in_disease_block = False
 
-    def _flush(label: str) -> None:
+    blocks = []
+    current_block = []
+    for line in lines:
+        if line.strip() == "---":
+            if current_block:
+                blocks.append(current_block)
+                current_block = []
+        else:
+            current_block.append(line)
+    if current_block:
+        blocks.append(current_block)
+
+    for block in blocks:
+        main_topic = "General"
+        # The first non-empty line in a block is the Main Topic
+        for i, line in enumerate(block):
+            if line.strip():
+                main_topic = line.strip()
+                block = block[i + 1:]
+                break
+
+        buffer = []
+        sub_header = "Overview"
+
+        def _flush(label: str):
+            nonlocal idx
+            content = "\n".join(buffer).strip()
+            if len(content) > 40:
+                chunks.append(Chunk(
+                    text=content,
+                    source=source,
+                    section=f"{main_topic} - {label}",
+                    chunk_index=idx,
+                ))
+                idx += 1
+
+        for line in block:
+            stripped = line.strip()
+            # Heuristic for sub-header
+            if stripped and len(stripped) < 60 and (
+                stripped.endswith(":") or _COMMON_HEADERS.match(stripped)
+            ):
+                if buffer:
+                    _flush(sub_header)
+                buffer = []
+                sub_header = stripped.rstrip(":")
+                continue
+
+            buffer.append(line)
+
+        if buffer:
+            _flush(sub_header)
+
+    return chunks
+
+
+def _chunk_txt_prose(lines: list[str], source: str) -> list[Chunk]:
+    chunks: list[Chunk] = []
+    idx = 0
+    buffer = []
+    current_header = "General"
+    part_count = 1
+
+    def _flush(label: str, part: int):
         nonlocal idx
         content = "\n".join(buffer).strip()
-        if len(content) > 40:  # skip near-empty buffers
-            chunks.append(Chunk(text=content, source=source, section=label, chunk_index=idx))
+        if len(content) > 40:
+            sec_name = f"{label} (Part {part})" if part > 1 else label
+            chunks.append(Chunk(
+                text=content,
+                source=source,
+                section=sec_name,
+                chunk_index=idx,
+            ))
             idx += 1
 
     for line in lines:
         stripped = line.strip()
 
-        # Detect a new disease/pest entry
-        if _ENTRY_LINE.match(stripped) and not stripped.startswith("#"):
-            if buffer:
-                _flush(section)
-            buffer = [stripped]
-            section = stripped
-            in_disease_block = True
-            continue
+        is_header = False
+        if stripped and len(stripped) < 60 and not stripped.endswith("."):
+            if _COMMON_HEADERS.match(stripped) or (len(stripped.split()) <= 4 and stripped[0].isupper()):
+                is_header = True
 
-        # Detect a top-level section header
-        if _TXT_SECTION_HEADERS.match(stripped):
-            if in_disease_block:
-                # Don't break disease blocks on sub-headers; accumulate
-                buffer.append(line)
-                continue
-            if buffer:
-                _flush(section)
+        if is_header and len("\n".join(buffer).strip()) > 40:
+            _flush(current_header, part_count)
             buffer = []
-            section = stripped
-            in_disease_block = False
+            current_header = stripped
+            part_count = 1
+            continue
+        elif is_header and len("\n".join(buffer).strip()) <= 40:
+            # Overwrite header if we haven't accumulated much text
+            current_header = stripped
+            buffer = []
             continue
 
         buffer.append(line)
 
+        # Soft split for very large sections on paragraph boundaries
+        if len("\n".join(buffer)) > 1200 and not stripped:
+            _flush(current_header, part_count)
+            buffer = []
+            part_count += 1
+
     if buffer:
-        _flush(section)
+        _flush(current_header, part_count)
 
     return chunks
 

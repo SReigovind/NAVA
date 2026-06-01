@@ -1,23 +1,4 @@
 Tomato
-ContentContent
-1. Description
-2. Uses & Benefits
-2.0. Varieties
-3. Varieties
-4. Propagation
-5. References
-Diseases
-- Fungal
-- Bacterial
-- Other
-- Oomycete
-- Viral
-Pests
-- Insects
-- Others
-- Nematodes
-- Mites
-See questions about Tomato
 Description
 Tomato is an herbaceous annual in the family Solanaceae grown for its edible fruit. The plant can be erect with short stems or vine-like with long, spreading stems.
 
@@ -32,14 +13,10 @@ Tomatoes are one of Africa's most widely grown vegetable crops. They are grown f
 They are a good source of vitamins as well as a cash crop for smallholders and medium-scale commercial farmers. Tomatoes used as flavor enhancers in food are always in high demand, both fresh and processed.
 
 Crop Details
-
 Scientific Name: Lycopersicon esculentum
 
 Uses & Benefits
 Tomato fruit can be eaten raw or cooked and is used in many dishes. The fruit may also be processed into juice, soup, ketchup, puree, paste or powder.
-
-
-
 
 Varieties
 Tomatoes are classified into two types based on plant habit: determinate and indeterminate. Determinate (and semi-determinate) varieties have flower clusters at the end of their stems. The determinate is shorter and bushier, whereas the semi-determinate is taller. Indeterminate varieties produce new leaves and flowers all the time and can grow very tall. Indeterminate varieties bear fruit for a longer period of time. Indeterminate varieties must be staked and pruned and require more labor.
@@ -75,9 +52,6 @@ They are typically oval or cylindrical in shape, with fewer locules than standar
 e). Cherry tomato
 
 The cherry tomato is a small round tomato that comes in red, yellow, green, and black colors. Since they're naturally sweet, they are typically eaten raw in salads.
-
-
-
 
 Propagation
 Basic Requirements
@@ -149,15 +123,9 @@ When harvesting tomatoes for seed, pick ripe fruit from only robust, disease-fre
 
 If seeds cannot be sown right away, they should be stored in a waterproof container (transparent plastic bag / clear glass bottle). Transparent materials allow sunlight in, reducing mould growth. Put some ashes in the bottom of the container to absorb moisture and keep the seeds from moulding. When storing seeds in pots or bottles, the tops should be covered with plastic film to prevent water seepage and mite infestation. Keep the seed container in a cool, dry location. Check the seeds for mould development on a regular (at least weekly) basis. If mould is found, the seeds should be dried again. Seeds can be stored for up to two years if properly dried. One kg of tomatoes produces between 1 and 4 grams of seeds.
 
-
-References
-AVRDC Publication 04-609 (2004). Tomato mosaic virus (ToMV). AVRDC. Available at: http://203.64.245.61/web_crops/tomato/ToMV.pdf. [Accessed 22 April 15]. Free to access. CABI Crop Protection Compendium. (2013). Solanum lycopersicum (tomato) datasheet. Available at: http://www.cabi.org/cpc/datasheet/31837. [Accessed 09 February 14]. Paid subscription required. Jones, J. P., Stall, R. E. & Zitter, T. A. (1991). Compendium of Tomato Diseases. American Phytopathological Society Press. Available for purchase from APS Press. Kopsell, D. (2000). Growing tomatoes. University of New Hampshire Cooperative Extension. Available at: http://extension.unh.edu/resources/files/resource000609_rep631.pdf. [Accessed 09 February 15]. Free to access Lerner, B. R. Tomatoes. Purdue University Cooperative Extension. Available at: http://www.hort.purdue.edu/ext/HO-26.PDF. [Accessed 09 February 15]. Free to access U-Scout (2014). Tomato diseases. Plant Pathology Lab, NFREC. University of Florida Cooperative Extension. Available at: http://nfrec.ifas.ufl.edu/paret/u-scout/Tomato/Tomato.html. [Accessed 09 February 15]. Free to access
-
-
-Common Pests and Diseases
-Diseases
+---
+Anthracnose (Colletotrichum coccodes)
 Category : Fungal
-Anthracnose Colletotrichum coccodes
 Symptoms
 Fruit symptoms are the most common although stem, leaves and roots can also be infected; disease causes characteristic sunken circular lesions on the fruit; the indentations on may have visible concentric brown and yellow rings; lesion centers turn tan in color as they mature and become dotted with small black fungal fruiting bodies (microsclerotia); lesions can grow very large
 Cause
@@ -167,8 +135,9 @@ Disease emergence favors warm weather; appears early in the spring
 Management
 Avoid sprinkler irrigation when fruit is ripening; rotate crops with other non-solanaceous plants
 
-
-Black mold Alternaria alternata
+---
+Black mold (Alternaria alternata)
+Category : Fungal
 Symptoms
 Disease causes the appearance of black or brown lesions on the surface of ripe fruit; lesions may be tiny flecks or may be large patches of decaying tissue; during periods of humid weather, the lesions may become covered in black, velvety spore masses.
 Cause
@@ -178,8 +147,9 @@ Disease is found wherever tomatoes are grown; ripe fruit become increasingly sus
 Management
 Cultural control methods such as avoiding wetting the foliage when watering and harvesting fruits as soon as they are ripe can help to reduce the incidence of the disease; in areas where disease is a persistent problem, chemical control may be necessary with an appropriate fungicide; fungicide is usually applied 4-6 weeks prior to the first anticipated fruit harvest.
 
-
-Early blight Alternaria solani
+---
+Early blight (Alternaria solani)
+Category : Fungal
 Symptoms
 Early blight symptoms start as oval shaped lesions with a yellow chlorotic region across the lesion; concentric leaf lesions may be seen on infected leaves; leaf tissue between veins is destroyed; severe infections can cause leaves to completely collapse; as the disease progresses leaves become severely blighted leading to reduced yield; tomato stems may become infected with the fungus leading to Alternaria stem canker; initial symptoms of of stem canker are the development of dark brown regions on the stem; stem cankers may enlarge to girdle the whole stem resulting in the death of the whole plant; brown streaks can be found in the vascular tissue above and below the canker region; fruit symptoms include small black v-shaped lesions at the shoulders of the fruit (the disease is also known black shoulder); lesions may also appear on the fruit as dark flecks with concentric ring pattern; fruit lesions can seen in the field or may develop during fruit transit to the market; the lesions may have a velvety appearance caused by sporulation of the fungus
 Cause
@@ -189,8 +159,9 @@ Disease can spread rapidly after plants have set fruit; movement of air-borne sp
 Management
 Apply appropriate fungicide at first sign of disease; destroy any volunteer solanaceous plants (tomato, potato, nightshade etc); practice crop rotation
 
-
-Fusarium wilt Fusarium oxysporum
+---
+Fusarium wilt (Fusarium oxysporum)
+Category : Fungal
 Symptoms
 Symptoms of Fusarium wilt may first appear as yellowing and wilting of leaves on one side of the leaf midrib or plant; one-sided symptoms are caused by a blockage in the vascular system supplying the symptomatic side of the plant; as the disease progresses, older leaves become necrotic and the plant begins to wilt; fruit on infected plants is smaller and yield is reduced; damage to leaves makes fruit susceptible to sunscald; stem symptoms may be mistaken for bacterial wilt but a bacterial ooze test will be negative; stem tissue becomes discolored brown
 Cause
@@ -200,8 +171,9 @@ Disease emergence favors warm, moist soil Fusarium wilt is not a major issue in 
 Management
 Plant resistant varieties; sanitize all equipment regularly; control root knot nematodes; rotate crops away from tomato for several years
 
-
-Gray mold (Botrytis blight) Botrytis cinerea
+---
+Gray mold (Botrytis blight) (Botrytis cinerea)
+Category : Fungal
 Symptoms
 Disease appears on tomato seedlings at or just below the soil line as a fuzzy gray-brown lesion which often girdles the stem, if stem is girdled all parts of the plant above the lesion begin to wilt; infected flowers and calyxes become covered in gray spores; unripe fruit turns light brown or gray in color and rots; green fruit infected by airborne spores develop circular white rings called “ghost spots”.
 Cause
@@ -211,8 +183,9 @@ Gray mold is usually associated with wounds on plants; can develop in relatively
 Management
 Liming soil to increase calcium content can help to reduce plant susceptibility to gray mold; application of appropriate fungicide prior to formation of dense canopy.
 
-
-Leaf Mold Passalora fulva
+---
+Leaf Mold (Passalora fulva)
+Category : Fungal
 Symptoms
 The older leaves exhibit pale greenish to yellow spots (without distinguishable margins) on upper surface. Whereas the lower portion of this spots exhibit green to brown velvety fungal growth. As the disease progress the spots may coalesce and appear brown. The infected leaves become wither and die but stay attached to the plant. The fungus also infects flowers and fruits. The affected flowers become black and drop off. The affected fruit intially shows smooth black irregular area on the stem end but later it becomes sunken, leathery and dry.
 Cause
@@ -222,8 +195,9 @@ The disease is favored by high relative humidity. Also a common disease in green
 Management
 Grow available resistant varieties. Avoid leaf wetting and overhead application of water. Follow proper spacing to provide good air circulation around the plants. Remove the infected plant debris and burn them. If the disease is severe scary suitable fungicide.
 
-
-Septoria leaf spot Septoria lycopersici
+---
+Septoria leaf spot (Septoria lycopersici)
+Category : Fungal
 Symptoms
 Symptoms may occur at any stage of tomato development and begin as small, water-soaked spots or circular grayish-white spots on the underside of older leaves; spots have a grayish center and a dark margin and they may colasece; fungal fruiting bodies are visible as tiny black specks in the center of spot; spots may also appear on stems, fruit calyxes, and flowers.
 Cause
@@ -233,8 +207,9 @@ Spread by water splash; fungus overwinters in plant debris.
 Management
 Ensure all tomato crop debris is removed and destroyed in Fall or plowed deep into soil; plant only disease-free material; avoid overhead irrigation; stake plants to increase air circulation through the foliage; apply appropriate fungicide if necessary.
 
-
-Target Spot Corynespora cassiicola
+---
+Target Spot (Corynespora cassiicola)
+Category : Fungal
 Symptoms
 The fungus infects all parts of plant. Infected leaves shows small, pinpoint, water soaked spots initially. As the disease progress the spots enlarge to become necrotic lesions with conspicuous concentric circles, dark margins and light brown centers. Whereas the fruits exhibit brown, slightly sunken flecks in the beginning but later the lesions become large pitted appearance.
 Cause
@@ -244,9 +219,9 @@ The pathogen infects cucumber, pawpaw , ornamental plants, some weed species etc
 Management
 Remove the plant debris and burn them. Avoid over application of nitrogen fertilizer. If the disease is severe spray suitable fungicides.
 
-
-Verticillium wilt Verticillium albo-atrum
-Verticillium dahliae
+---
+Verticillium wilt (Verticillium albo-atrum / Verticillium dahliae)
+Category : Fungi
 Symptoms
 Symptoms appear first on lower leaves and spread upwards; initial symptoms of the disease may be visible as yellow blotches on the lower leaves of the plant; a rapid yellowing of leaves follows as the disease progresses; leaf veins turn brown and brown dead spots appear on the leaves; leaves may wilt then die and drop from the plant; the disease progresses upwards through the stem causing the plant to be stunted; leaves at the top of the plant remain green; fruits develop yellow shoulders and yield is reduced; loss of leaves results in fruit being susceptible to sun scald.
 Cause
@@ -256,9 +231,9 @@ Fungi survive in crop debris in soil; disease emergence favors cool weather.
 Management
 Plant resistant varieties; sanitize all equipment on a regular basis; rotate with non-susceptible crops.
 
-
+---
+Bacterial canker (Clavibacter michiganensis)
 Category : Bacterial
-Bacterial canker Clavibacter michiganensis
 Symptoms
 Bacterial canker can affect tomato plants of any age, seedlings may be killed quickly once they become infected; initial symptoms of bacterial canker is the unilateral wilting of plants and formation of light colored streaks up and down the outside of the leaf midrib, petiole and stem; streaks on stems may break open to form cankers; mature leaves develop small necrotic spots on the upper leaf surfaces or small raised white spots on the leaves; white spots develop on fruit, usually while they are still green; spots on fruit develop a raised dark center and are known as "bird's eye spots"
 Cause
@@ -268,8 +243,9 @@ Can cause serious crop losses
 Management
 Plant only certified seed and transplants; hot water treatment of seed to remove bacteria; rotate crops with non-host plants; turn crops into soil after harvest to promote decomposition
 
-
-Bacterial speck Pseudomonas syringae
+---
+Bacterial speck (Pseudomonas syringae)
+Category : Bacterial
 Symptoms
 Dark specks appear on the leaves, often associated with a yellow halo; foliar symptoms of bacterial speck are very difficult to distinguish from bacterial spot but can be differentiated by symptoms on the fruit; lesions on fruit are much smaller than those caused by bacterial spot; lesions on fruit are raised and scaly.
 Cause
@@ -279,11 +255,9 @@ Disease emergence favors cool, moist weather.
 Management
 Do not plant in same area in successive years; use only high quality, disease-free seed and transplants; protective sprays of copper can help to reduce incidence of the disease.
 
-
-Bacterial spot Xanthomonas campestris pv. vesicatoria
-Xanthomonas euvesicatoria
-Xanthomonas perforans = [Xanthomonas axonopodis (syn. campestris) pv. vesicatoria], Xanthomonas vesicatoria
-Xanthomonas gardneri
+---
+Bacterial spot (Xanthomonas campestris pv. vesicatoria / Xanthomonas euvesicatoria / Xanthomonas perforans / Xanthomonas gardneri)
+Category : Bacterial
 Symptoms
 Bacterial spot lesions starts out as small water-soaked spots; lesions become more numerous and coalesce to form necrotic areas on the leaves giving them a blighted appearance; of leaves drop from the plant severe defoliation can occur leaving the fruit susceptible to sunscald; mature spots have a greasy appearance and may appear transparent when held up to light; centers of lesions dry up and fall out of the leaf; blighted leaves often remain attached to the plant and give it a blighted appearance; fruit infections start as a slightly raised blister; lesions may have a faint halo which eventually disappears; lesions on fruit may have a raised margin and sunken center which gives the fruit a scabby appearance.
 Cause
@@ -293,8 +267,9 @@ Bacteria survive on crop debris; disease emergence favored by warm temperatures 
 Management
 Use only certified seed and healthy transplants; remove all crop debris from planting area; do not use sprinkler irrigation, instead water from base of plant; rotate crops.
 
-
-Bacterial wilt Ralstonia solanacearum
+---
+Bacterial wilt (Ralstonia solanacearum)
+Category : Bacterial
 Symptoms
 Initial symptoms of the disease is the wilting of a few of the youngest leaves; the disease progresses rapidly in hot weather and the entire plant wilts suddenly and dies; in cooler conditions, wilting is less rapid and plant may produce roots on the stems; vascular tissue shows a brown discoloration and decaying roots; stems cut under water will ooze bacterial exudate and will confirm the symptoms are not caused by Fusarium wilt.
 Cause
@@ -304,9 +279,9 @@ Bacterial wilt can cause complete destruction of the crop under conditions suita
 Management
 Cultural practices may help to reduce incidence of the disease, rotate tomato with other, non-susceptible crops; avoid over-watering plants.
 
-
-Category : Other
+---
 Blossom-end rot
+Category : Other
 Symptoms
 Blossom end-rot is caused by a low concentration of calcium in the tomato fruit; symptoms initially appear as light tan, water-soaked areas which can then enlarge and turn black and leathery in appearance; symptoms are most often seen at the blossom end of the fruit, but may also occur on the side of the fruit; blossom-end rot may also occur internally with no visible symptoms on outside of fruit.
 Cause
@@ -316,8 +291,9 @@ Low calcium may result from competition from other ions in soil e.g. potassium; 
 Management
 Maintain soil pH at 6.5; lime soil to increase the concentration of calcium in soil and decrease competition with other ions; use mulch to reduce drought stress; avoid ammonium fertilizers as they may increase competition with calcium by increasing ammonium ions in soil, use nitrate instead; avoid over fertilizing.
 
-
+---
 Catface
+Category : Other
 Symptoms
 Catface usually occurs on the blossom end, tomato fruits are usually misshapen with large holes or corky brown scars close to the blossom end of the fruit; fruits are often flattened and may be kidney shaped; holes on the fruit extend deep inside the fruit.
 Cause
@@ -327,8 +303,9 @@ The catface deformity is possibly caused by internal or external changes that oc
 Management
 Avoid pruning tomato plants excessively; avoid excessive fertilization with nitrogen which promotes rapid vegetative growth; if growing tomatoes in a glasshouse, provide the plants with heat to prevent temperatures dropping to damaging levels, particularly at night.
 
-
+---
 Edema (Oedema)
+Category : Other
 Symptoms
 Swellings and/or blisters or calluses on leaves caused by rupturing epidermal and inner leaf cells ; deformed foliage which curls; leaf tissue may also tear as the leaf matures; symptoms are often mistaken for disease or insect damage
 Cause
@@ -338,8 +315,9 @@ Edema occurs when water is absorbed from the soil faster than it can be transpir
 Management
 Tomato plants should always be planted in well draining soil or potting media; avoid overwatering tomato plants, particularly during periods of low light and cool temperatures; if growing tomatoes in a glasshouse then anything that can be done to increase drainage and air circulation will be helpful in preventing edema; reduce humidity in the glasshouse in the morning by venting the house (heat may need to be turned up during this period depending on outdoor temperatures)
 
-
+---
 Fertilizer burn
+Category : Other
 Symptoms
 Symptoms may first appear as slowed growth and wilting; leaf tips and margins turn brown; plants have a scorched appearance.
 Cause
@@ -349,8 +327,9 @@ Fertilizer burn is usually caused by an excess of nitrogen salts in the soil whi
 Management
 Apply appropriate dose of fertilizer for the particular soil in which the plants are growing - nutrient requirements can be ascertained with a soil test; if liquid fertilizer was used, symptoms may be reversed by watering the plants heavily to leach some of the salts from the soil.
 
-
+---
 Little leaf
+Category : Other
 Symptoms
 Little leaf symptoms include interveinal chlorosis of young leaves, distortion and failure of leaves along the midrib to expand, radial cracks of fruits extending from the calyx to the blossom scar and failure of blooms to set; symptoms progress to increased leaflet distortion and more pronounced interveinal chlorosis.
 Cause
@@ -360,8 +339,9 @@ Three conditions appear to pre-dispose plants to little leaf. 1) high soil tempe
 Management
 Little leaf is usually associated with water-logged areas of fields, subsequent drying out of affected areas usually resolves the problem and subsequent plant growth is normal; controlling the soil pH may also help the problem.
 
-
+---
 Magnesium deficiency
+Category : Other
 Symptoms
 Symptoms of magnesium deficiency appear on older leaves first; initial symptoms are interveinal chlorosis of the leaves and, occasionally, a purple tinge to the leaves; as the deficiency becomes more severe, leaves may appear white with green veins; severe deficiencies may lead to reduced fruit yield.
 Cause
@@ -371,8 +351,9 @@ Magnesium deficiency is rare in field grown tomatoes but occurs more frequently 
 Management
 Magnesium deficiency can be prevented in tomato by applying dolomite lime to the soil, if an increase in soil pH is required, or through applications of a fertilizer containing magnesium.
 
-
+---
 Nitrogen deficiency
+Category : Other
 Symptoms
 Affected plants are smaller in size and grow less vigorously than healthy plants; symptoms appear on older leaves first; tomato leaves exhibit a general yellowing occasionally accompanied by purple leaf veins; plants possess thinner stems and fruit is smaller than healthy plants; fruits may be misshapen with a lighter red color than healthy plants.
 Cause
@@ -382,8 +363,9 @@ Nitrogen deficiency usually arises in tomato plantations through inadequate fert
 Management
 If detected early, symptoms of nitrogen deficiency can be treated by applying appropriate amounts of nitrogen fertilizer.
 
-
+---
 Phosphorous deficiency
+Category : Other
 Symptoms
 Growth of tomato seedlings is reduced compared with healthy plants; leaves appear darker green and may have a purple tinge; in older tomato plants, leaves grow upright and appear light green on the upper surface and purple on the lower surface; symptoms appear on older leaves first.
 Cause
@@ -393,8 +375,9 @@ Phosphorous deficiency is rare in soils that are already used for agricultural p
 Management
 Soil levels of phosphorous should be measured prior to planting to determine the appropriate application for the particular site; phosphorous should be applied to the soil prior to planting if required as applications made after the onset of tomato growth are not usually successful in preventing symptoms.
 
-
+---
 Potassium deficiency
+Category : Other
 Symptoms
 Affected plants are smaller than healhty plants with smaller fruits and reduced yields; tomato leaves exhibit "bronzing", older plant leaves turn tan and then brown at the margins; if deficiency is prolonged, leaves become necrotic at the margins and turn yellow between leaf veins.
 Cause
@@ -404,8 +387,9 @@ Potassium deficiency is usually caused by an inadequate fertilization, it is mor
 Management
 Potassium deficiency can be corrected through applications of the nutrient as a side dressing and/or through an irrigation system.
 
-
+---
 Sunscald
+Category : Other
 Symptoms
 Symptoms of sunscald are most common on green fruit; white or yellow necrotic patches develop on the sides of the fruit that are facing the sun; blisters may be white with a yellow halo; damaged areas may become flattened in appearance and papery in texture; damaged areas are often invaded by secondary pathogens and turn black.
 Cause
@@ -415,8 +399,9 @@ Sunscald is common on plants which have been moved suddenly from a shaded locati
 Management
 Healthy plants with full foliage are less susceptible to sunscald as the leaves provide fruits with shading, ensure plants are watered regularly and fertilized adequately; use shade cloth to protect the fruits from the sun; control diseases that develop to prevent defoliation which can lead to sunscald.
 
-
+---
 Water stress
+Category : Other
 Symptoms
 Leaves are green but wilting; leaves roll downwards and eventually drop from the plant; fruits may develop symptoms of Blossom-end rot (See entry).
 Cause
@@ -426,8 +411,9 @@ It is important to distinguish between plants that are temporarily wilted on hot
 Management
 Tomato plants should be watered deeply and evenly to avoid water stress; aim to keep the soil moist but not wet; allow the top of the soil to dry before watering again.
 
-
+---
 Zippering
+Category : Other
 Symptoms
 Thin brown scars extending longutudinally from the petiole to the blossom-end of the fruit; each scar has smaller scars crossing it tranversely rendering it zipper-like in appearance; holes may open on along the scarred area.
 Cause
@@ -437,9 +423,9 @@ Zipper scars on tomato fruit are most prevalent in cool weather.
 Management
 The most effective method of preventing zippering is to grow tolerant varieties; when growing tomatoes in the glasshouse, appropriate temperatures should be maintained.
 
-
+---
+Buckeye rot (Phytophthora root rot) (Phytophthora spp.)
 Category : Oomycete
-Buckeye rot (Phytophthora root rot) Phytophthora spp.
 Symptoms
 Buck eye rot of tomato initially appears as a brown spot on the fruit which enlarges over the fruit surface and forms concentric rings; the lesions may eventually cover up to half of the fruit and the flesh develops a soft rot underneath the skin; green or red fruits can be affected and disease often develops where fruit is in contact with the soil; white cottony growth may be visible in the centers of affected regions; spots enlarge and form large concentric ring shaped symptoms which are usually brown in color with sunken edges; the Phytophthora pathogen also causes root rot; young plants may exhibit a white cottony growth at crown of the plant and begin to wilt as the damage to the roots progresses; Phytophthora root rot can cause severe destruction of plant roots and cause the plants to wilt completely.
 Cause
@@ -449,8 +435,9 @@ Prolonged period of warm wet conditions favor disease occurrence; heavy soil sat
 Management
 Cultural control methods such as mulching around the plants and practicing rotation away from tomato can help to reduce losses from the disease; fungicides applied for the control of late blight also help to control the development of buckeye rot; solarizing or fumigating soil can help to reduce levels of inoculum.
 
-
-Late blight Phytophthora infestans
+---
+Late blight (Phytophthora infestans)
+Category : Oomycete
 Symptoms
 Late blight affects all aerial parts of the tomato plant; initial symptoms of the disease appear as water-soaked green to black areas on leaves which rapidly change to brown lesions; fluffy white fungal growth may appear on infected areas and leaf undersides during wet weather; as the disease progresses, foliage becomes becomes shriveled and brown and the entire plant may die; fruit lesions start as irregularly shaped water soaked regions and change to greasy spots; entire fruit may become infected and a white fuzzy growth may appear during wet weather.
 Cause
@@ -460,9 +447,9 @@ Can devastate tomato plantings.
 Management
 Plant resistant varieties; if signs of disease are present or if rainy conditions are likely or if using overhead irrigation appropriate fungicides should be applied.
 
-
+---
+Tomato mosaic virus (Tomato mosaic virus ToMV)
 Category : Viral
-Tomato mosaic virus Tomato mosaic virus (ToMV)
 Symptoms
 Symptoms can occur at any growth stage and any part of the plant can be affected; infected leaves generally exhibit a dark green mottling or mosaic; some strains of the virus can cause yellow mottling on the leaves; young leaves may be stunted or distorted; severely infected leaves may have raised green areas; fruit yields are reduced in infected plants; green fruit may have yellow blotches or necrotic spots; dark necrotic streaks may appear on the stems, petioles leaves and fruit.
 Cause
@@ -472,8 +459,9 @@ ToMV is a closely related strain of Tobacco mosaic virus (TMV), it enters fields
 Management
 Plant varieties that are resistant to the virus; heat treating seeds at 70°C (158°F) for 4 days or at 82–85°C (179.6–185°F) for 24 hours will help to eliminate any virus particles on the surface of the seeds; soaking seed for 15 min in 100 g/l of tri-sodium phosphate solution (TSP) can also eliminate virus particles - seeds should be rinsed thoroughly and laid out to dry after this treatment; if the virus is confirmed in the field, infected plants should be removed and destroyed to limit further spread; plant tomato on a 2-year rotation, avoiding susceptible crops such as peppers, eggplant, cucurbits and tobacco; disinfect all equipment when moving from infected areas of the field.
 
-
-Tomato spotted wilt Tomato spotted wilt virus (TSWV)
+---
+Tomato spotted wilt (Tomato spotted wilt virus TSWV)
+Category : Viral
 Symptoms
 Infected plants exhibit bronzing or purpling of the upper sides of young leaves and develop necrotic spots; leaf spots may resemble those caused by bacterial spot, but a bacterial ooze test will be negative; leaves may cup downwards, shoot tips may begin to die back; symptoms on ripe fruit appear as chlorotic spots and blotches, often with concentric rings; ring spot symptoms vary with different tomato cultivars; irregular ripening caused by TSWV can also show up when fruit are treated with ethylene gas; green fruit may exhibit slightly raised areas with faint concentric zonation.
 Cause
@@ -483,9 +471,9 @@ TSWV infects numerous ornamentals, vegetables, field crops and weeds; virus is v
 Management
 Control populations of western flower thrips and onion thrips
 
-
-Tomato Yellow Leaf Curl disease Tomato Yellow Leaf Curl Virus (TYLCV)
-family Geminiviridae, genus Begomovirus
+---
+Tomato Yellow Leaf Curl disease (Tomato Yellow Leaf Curl Virus TYLCV)
+Category : Viral
 Symptoms
 The infected leaves become reduced in size, curl upward, appear crumpled and show yellowing of veins and leaf margins. The internodes become shorter and whole plant appear stunted and bushy. The whole plant stand erect with only upright growth. The flowers may not develop and drop off.
 Cause
@@ -495,11 +483,9 @@ The virus is transmitted by white flies and may cause 100 % yield loss if the pl
 Management
 Grow available resistant varieties. Transplant only disease and whiteflies free seedlings. Remove the infected plants and burn them. Keep the field free from weeds. Use yellow sticky traps to monitor and control whiteflies. If the insect infestation is severe spray suitable insecticides.
 
-
-Pests
+---
+Aphids (Peach aphid, Potato aphid) (Myzus persicae / Macrosiphon euphorbiae)
 Category : Insects
-Aphids (Peach aphid, Potato aphid) Myzus persicae
-Macrosiphon euphorbiae
 Symptoms
 Small soft bodied insects on underside of leaves and/or stems of plant; usually green or yellow in color, but may be pink, brown, red or black depending on species and host plant; if aphid infestation is heavy it may cause leaves to yellow and/or be distorted, necrotic spots on leaves and/or stunted shoots; aphids secrete a sticky, sugary substance called honeydew which encourages the growth of sooty mold on the plants.
 Cause
@@ -509,8 +495,9 @@ Distinguishing features of aphids include the presence of cornicles (tubular str
 Management
 If aphid population is limited to just a few leaves or shoots then the infestation can be pruned out to provide control; check transplants for aphids before planting; use tolerant varieties if available; reflective mulches such as silver colored plastic can deter aphids from feeding on plants; sturdy plants can be sprayed with a strong jet of water to knock aphids from leaves; insecticides are generally only required to treat aphids if the infestation is very high - plants generally tolerate low and medium level infestation; insecticidal soaps or oils such as neem or canola oil are usually the best method of control; always check the labels of the products for specific usage guidelines prior to use.
 
-
-Beet armyworm Spodoptera exigua
+---
+Beet armyworm (Spodoptera exigua)
+Category : Insects
 Symptoms
 Singular, or closely grouped circular to irregularly shaped holes in foliage; heavy feeding by young larvae leads to skeletonized leaves; shallow, dry wounds on fruit; egg clusters of 50-150 eggs may be present on the leaves; egg clusters are covered in a whitish scale which gives the cluster a cottony or fuzzy appearance; young larvae are pale green to yellow in color while older larvae are generally darker green with a dark and light line running along the side of their body and a pink or yellow underside.
 Cause
@@ -520,8 +507,9 @@ Insect can go through 3-5 generations a year.
 Management
 Organic methods of controlling the beet armyworm include biological control by natural enemies which parasitize the larvae and the application of Bacillus thuringiensis; there are chemicals available for commercial control but many that are available for the home garden do not provide adequate control of the larvae.
 
-
-Colorado potato beetle Leptinotarsa decemlineata
+---
+Colorado potato beetle (Leptinotarsa decemlineata)
+Category : Insects
 Symptoms
 Feeding damage to foliage; if infestation is severe or if left untreated plants can be completely defoliated; adult insect is a black and yellow striped beetle; larvae are bright red with black heads when they first hatch and change color to pink; larvae have two rows of black spots.
 Cause
@@ -531,12 +519,9 @@ Adult beetles emerge in spring; female beetles lay eggs in batches of up to two 
 Management
 Control of Colorado potato beetle can be challenging as they have developed high levels of insecticide resistance; adults and larvae should be hand picked from plants and destroyed in soapy water; applications of Bacillus thuringiensis can be effective at controlling larvae but should be applied frequently; some insecticides, including spinosad, are still effective against adult beetles.
 
-
-Cutworms Various species including:
-Agrotis spp.
-Peridroma saucia
-Nephelodes minians
-etc.
+---
+Cutworms (Agrotis spp. / Peridroma saucia / Nephelodes minians)
+Category : Insects
 Symptoms
 Stems of young transplants or seedlings may be severed at soil line; if infection occurs later, irregular holes are eaten into the surface of fruits; larvae causing the damage are usually active at night and hide during the day in the soil at the base of the plants or in plant debris of toppled plant; larvae are 2.5–5.0 cm (1–2 in) in length; larvae may exhibit a variety of patterns and coloration but are usually dirty gray or brown to black with dark spots or lines and will curl up into a characteristic C-shape when disturbed
 Cause
@@ -546,8 +531,9 @@ Cutworms have a wide host range and attack vegetables including asparagus, bean,
 Management
 Remove all plant residue from soil after harvest or at least two weeks before planting, this is especially important if the previous crop was another host such as alfalfa, beans or a leguminous cover crop; plastic or foil collars fitted around plant stems to cover the bottom 3 inches above the soil line and extending a couple of inches into the soil can prevent larvae severing plants; hand-pick larvae after dark; spread diatomaceous earth around the base of the plants (this creates a sharp barrier that will cut the insects if they try and crawl over it); apply appropriate insecticides to infested areas of garden or field if not growing organically
 
-
-Flea beetles Epitrix spp.
+---
+Flea beetles (Epitrix spp.)
+Category : Insects
 Symptoms
 Small holes or pits in leaves that give the foliage a characteristic “shothole” appearance; young plants and seedlings are particularly susceptible; plant growth may be reduced; if damage is severe the plant may be killed; feeding damage may also occur on the fruit; the pest responsible for the damage is a small (1.5–3.0 mm) dark colored beetle which jumps when disturbed; the beetles are often shiny in appearance.
 Cause
@@ -557,9 +543,9 @@ Flea beetles may overwinter on nearby weed species, in plant debris or in the so
 Management
 In areas where flea beetles are a problem, floating row covers may have to be used prior to the emergence of the beetles to provide a physical barrier to protect young plants; plant seeds early to allow establishment before the beetles become a problem - mature plants are less susceptible to damage; trap crops may provide a measure of control - cruciferous plants are best; application of a thick layer of mulch may help prevent beetles reaching surface; application on diamotecoeus earth or oils such as neem oil are effective control methods for organic growers; application of insecticides containing carbaryl, spinosad, bifenthrin and permethrin can provide adequate control of beetles for up to a week but will need reapplied
 
-
-Hornworms (Tomato hornworm, Tobacco hornworm) Manduca quinquemaculata
-Manduca sexta
+---
+Hornworms (Tomato hornworm, Tobacco hornworm) (Manduca quinquemaculata / Manduca sexta)
+Category : Insects
 Symptoms
 Feeding damage to leaves or leaves stripped from plant; heavy infestation may result in damage to fruit appearing as large open scars; large green caterpillars may be spotted on plant; caterpillars may reach in excess of 7.5 cm (3 in) in length and possess a spike at the end of their body; most common species have 7 diagonal stripes on sides or 8 v-shaped markings on each side; single eggs may be present on leaves and measure approx 1.3 mm in diameter; eggs are in initially light green in color and turn white prior to hatching.
 Cause
@@ -569,24 +555,21 @@ Insect overwinters as pupa in soil; typically undergoes 2 generations per year; 
 Management
 Hand pick larvae from plants leaving any parasitized larvae behind to promote populations of natural enemies (these larvae can be distinguished by the presence of white, oblong-shaped cocoons on their backs); sprays of Bacillus thuringiensis are organically acceptable and highly effective.
 
-
-Leafminers Tuta absolutaLyriomyza spp.
+---
+Leafminers (Tuta absolutaLyriomyza spp.)
+Category : Insects
 Symptoms
 Thin, white, winding trails on leaves; heavy mining can result in white blotches on leaves and leaves dropping from the plant prematurely; early infestation can cause fruit yield to be reduced; adult leafminer is a small black and yellow moth which lays its eggs in the leaf; larvae hatch and feed on leaf interior. THIS IS A TEST
-
 Cause
 Insect
-
 Comments
 Origin and distribution of Tuta absoluta: This species is originated in South American countries. Later the insect spread to Spain (2006), France, Italy, Greece, Malta, Morocco, Algeria, Libya and Turkey in following years. Further the insect has been identified in Syria, Lebanon, Jordan, Iraq, Iran, Saudi Arabia, Yemen, Oman and the rest of the Gulf states. In Africa it spreads from Egypt to Sudan, South Sudan, Ethiopia, Uganda, Kenya and Tanzania (in East) and to Senegal and Nigeria through the west. (It spread through infested fruits and packaging materials) Life cycle: Mature larvae drop from leaves into soil to pupate; entire lifecycle can take as little as 2 weeks in warm weather; insect may go through 7 to 12 generations per year. Yield loss: If unchecked, insect will cause 100% yield loss. The larvae feeds on apical buds, tender new leaflets, flowers, and green fruits which make it a serious pest in tomato. Host Range: This insect also attacks other solanaceous crops like potato, eggplant, pepino and tobacco. It is also reported on many solanaceous weeds.
-
 Management
 Leafminer natural enemies normally keep populations under control; check transplants for signs of leafminer damage prior to planting; remove plants from soil immediately after harvest if making new plantings in same place or close by; keep the field free from weeds especially Solanum, Datura, Nicotiana; use pheromone traps and white sticky traps to monitor and control insect;only use insecticides when leafminer damage has been identified as unnecessary spraying will also reduce populations of their natural enemies.
 
-
-
-Loopers (Cabbage looper , Alfalfa looper) Trichoplusia ni
-Autographa californica
+---
+Loopers (Cabbage looper , Alfalfa looper) (Trichoplusia ni / Autographa californica)
+Category : Insects
 Symptoms
 Large or small holes in leaves; damage often extensive; caterpillars are pale green with a white lines running down either side of their body; caterpillars are easily distinguished by the way they arch their body when moving; eggs are laid singly, usually on the lower leaf surface close to the leaf margin, and are white or pale green in color.
 Cause
@@ -596,8 +579,9 @@ Insects overwinter as pupae in crop debris in soil; adult insect id a dark color
 Management
 Looper populations are usually held in check by natural enemies; if they do become problematic larvae can be hand picked from the plants; an organically acceptable control method is the application of Bacillus thuringiensis which effectively kills younger larvae; chemical sprays may also damage populations of natural enemies and should only be considered if sunburn of fruit is likely.
 
-
-Stinkbugs (Various) Various
+---
+Stinkbugs (Various)
+Category : Insects
 Symptoms
 Dark colored pinpricks on fruit surrounded by a lighter area that turns yellow or remains light green; stink bugs often carry pathogens in their mouthparts which can cause secondary infections and decay of fruit; adult insect is shield-shaped and brown or green in color; may have pink, red or yellow markings; eggs are drum shaped and laid in clusters on the leaves; larvae resemble the adults but are smaller.
 Cause
@@ -607,9 +591,9 @@ Several types of stink bug can cause damage to tomatoes; adult insects overwinte
 Management
 Remove weeds around crop which may act as overwintering sites for stink bugs and practice good weed management throughout the year; organically accepted control methods include the use of insecticidal soaps, kaolin clay and preservation of natural enemies; chemical treatments are not recommended for tomatoes that are to be processed for paste or canning unless secondary infections with other pathogens are a concern.
 
-
-Thrips (Western flower thrips, Onion thrips, etc.) Frankliniella occidentalis
-Thrips tabaci
+---
+Thrips (Western flower thrips, Onion thrips, etc.) (Frankliniella occidentalis / Thrips tabaci)
+Category : Insects
 Symptoms
 If population is high leaves and buds may be distorted; leaves appear silvery and are speckled with black feces; most damage occurs through the transmission of Tomato spotted wilt virus (TSWV); insect is small (1.5 mm) and slender and best viewed using a hand lens; adult thrips are pale yellow to light brown and the nymphs are smaller and lighter in color.
 Cause
@@ -619,8 +603,9 @@ Transmit Tomato spotted wilt virus (see disease entry); once acquired, the insec
 Management
 Avoid planting next to onions, garlic or cereals where very large numbers of thrips can build up; use reflective mulches early in growing season to deter thrips; apply appropriate insecticide if thrips become problematic.
 
-
-Tomato fruit worm (Corn earworm) Helicoverpa zea
+---
+Tomato fruit worm (Corn earworm) (Helicoverpa zea)
+Category : Insects
 Symptoms
 Holes in tomato fruit, including entry holes near stem end; feeding turns inside of tomato into a watery cavity filled with cast skins and frass (insect feces); damaged fruit ripens prematurely; young caterpillars are cream-white in color with a black head and black hairs; older larvae may be yellow-green to almost black in color with fine white lines along their body and black spots at the base of hairs; eggs are laid singly on both upper and lower leaf surfaces and are initially creamy white but develop a brown-red ring after 24 hours and darken prior to hatching.
 Cause
@@ -630,9 +615,9 @@ Adult insect is a pale green to tan, medium sized moth; can be one of the most d
 Management
 Early treatment of tomato fruitworms is necessary as once they enter the fruit they are protected from sprays; monitor plants for eggs and young larvae and also natural enemies that could be damaged by chemicals; Bacillus thuringiensis or Entrust SC may be applied to control insects on organically grown plants; appropriate chemical treatment may be required for control in commercial plantations.
 
-
-Category : Others
-Curly top Beet curly top virus (BCTV)
+---
+Curly top (Beet curly top virus BCTV)
+Category : Other
 Symptoms
 Young plants are usually killed by the virus; older plants are stunted and turn yellow to bronze in color with purple-tinged leaves; leave become thickened and roll upwards; leaf petioles roll downwards; green fruit turns red regardless of its age and becomes dull in color and wrinkled; plants do not recover form the disease and will not flower of produce fruit after infection.
 Cause
@@ -642,9 +627,9 @@ Virus is transmitted by beet leafhoppers; insects transmit the disease between o
 Management
 There is no resistance to Beet curly top virus in tomato so control relies on the management of the leafhopper vector; dense stands of tomato may discourage leafhoppers from visiting the plants; chemical spraying programs to protect against beet leafhoppers have been implemented in some areas of the US state of California ; in areas where the virus is a chronic problem, n areas where curly top is chronic, dense plant spacing, shading, row covers, and intercropping have been reported to reduce levels of infection.
 
-
+---
+Root knot nematode (Meloidogyne spp.)
 Category : Nematodes
-Root knot nematode Meloidogyne spp.
 Symptoms
 The characteristic symptom of root knot nematodes is the presence of galls on roots which can be up to 3.3 cm (1 in) in diameter but are usually smaller; galls cause a reduction in plant vigor; if the galls on the roots are extensive then plants may yellow and wilt, particularly in hot weather.
 Cause
@@ -654,9 +639,9 @@ Galls can appear as quickly as a month prior to planting; nematodes prefer sandy
 Management
 Plant resistant varieties if nematodes are known to be present in the soil ;check roots of plants mid-season or sooner if symptoms indicate nematodes; solarizing soil can reduce nematode populations in the soil and levels of inoculum of many other pathogens.
 
-
+---
+Spider mites (Two-spotted spider mite) (Tetranychus urticae)
 Category : Mites
-Spider mites (Two-spotted spider mite) Tetranychus urticae
 Symptoms
 Leaves stippled with yellow; leaves may appear bronzed; webbing covering leaves; mites may be visible as tiny moving dots on the webs or underside of leaves, best viewed using a hand lens; usually not spotted until there are visible symptoms on the plant; leaves turn yellow and may drop from plant.
 Cause

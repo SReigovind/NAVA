@@ -144,7 +144,7 @@ class RAGPipeline:
 
         # Embed all chunks in one batch call
         encoder = self._get_encoder()
-        texts = [c.text for c in all_chunks]
+        texts = [f"[{c.section}]\n{c.text}" for c in all_chunks]
         log.info("Embedding %d chunks...", len(texts))
         t0 = time.time()
         embeddings = encoder.encode(texts, batch_size=64, show_progress_bar=False).tolist()

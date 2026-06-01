@@ -1,24 +1,4 @@
-Maize (corn)
-ContentContent
-1. Description
-1.0. Uses & Benefits
-2. Uses & Benefits
-3. Varieties
-3.0. Propagation
-4. Propagation
-5. Physiological Diseases
-Diseases
-- Fungal
-- Bacterial
--
-- Viral
-- Oomycete
-- Other
-Pests
-- Insects
-- Nematodes
-- Mites
-See questions about Maize (corn)
+Maize (Corn)
 Description
 Maize is a staple food for almost half the population of sub-Saharan Africa and is important for its carbohydrate, proteins, iron, vitamin B, and minerals. The produce is consumed as maize meal (ugali), porridge, pastes, and beer, and can be boiled or roasted as fresh as it comes from the farm. Maize is also processed to produce oils for cooking. It is also an important crop for animal feed.
 
@@ -27,14 +7,10 @@ Smallholder farmers are the largest producers of maize in sub-Saharan Africa. Th
 In 2017, Africa produced 7.4% of the 1,135 million tonnes produced worldwide in 40 million hectares, according to data by the Food and Agriculture Organization (FAO).
 
 Crop Details
-
 Scientific Name: Zea mays
 
 Uses & Benefits
 Maize is a versatile crop with numerous uses and benefits. It serves as a staple food providing essential nutrients such as carbohydrates, fiber, vitamins, and minerals. Maize is also a key ingredient in various food products, including cornmeal, corn syrup, and cooking oil. Beyond its nutritional value, maize is used in animal feed, supporting livestock production. It is a vital raw material in industries producing biofuels, biodegradable plastics, and other industrial products.
-
-
-
 
 Varieties
 The history of maize varieties in the continent spans way back in 1500 AD when the crop was introduced in Africa and spread in every corner of the continent. Today, there are about 50 species with different texture, color, grain sizes and shapes. White and yellow maize are the most commonly cultivated, and production of seed varieties depends on the region’s soil and climatic conditions.
@@ -42,68 +18,45 @@ The history of maize varieties in the continent spans way back in 1500 AD when t
 PlantVillage recommends use of certified seeds suitable for appropriate soil and climatic conditions.
 
 Here are some of the maize varieties grown in Kenya:
-
 H614: this is a white maize variety that is popular in Kenya due to its high yield potential, good grain quality, and tolerance to diseases such as maize streak virus.
-
 H6213: a yellow maize variety is planted for its high yield potential, good grain quality, and tolerance to drought and pests such as the maize stem borer.
-
 DH01: this is a hybrid maize variety popular for its high yield potential, good drought tolerance, and resistance to diseases such as maize lethal necrosis disease.
-
 PH4: this is a yellow maize variety that is popular in Kenya due to its high yield potential, good resistance to diseases such as leaf rust, and tolerance to drought.
-
 DK8031: this hybrid maize variety is popular in Kenya for its high yield potential, good grain quality, and tolerance to diseases such as grey leaf spot.
-
 Longe 5H: this is a white maize variety grown for its high yield potential, good drought tolerance, and tolerance to diseases such as maize streak virus.
 
 The following are some of the maize varieties grown in Tanzania:
-
 Staha: for low to medium altitude (1-900 m); maturity of 110-130 days; tolerant to drought and also humid conditions
-
 Kilima, UCA (OPV): for medium to slightly high altitude (900-1700 m); maturity of 110-130 days; yield potential of 45-65 bags of 90 kg / ha
-
 Situka (OPV): for medium altitude (500-1600 m); maturity of 110-120 days; yield potential of 45-65 bags of 90 kg / ha; tolerant to low nitrogen; resistant to cob rots, grey leaf spot and maize streak virus
-
 TMV-1 (OPV): for low to medium altitude (1-900 m); maturity of 110-120 days
-
 Kito: for low to medium altitude (1-750 m); maturity of 90 days; yield potential of 22-30 bags of 90 kg / ha; drought tolerant
 
 These are some of the maize varieties grown in Uganda:
-
 Longe 4 (OPV): for low land to mid altitude areas; maturity of 100-115 days; yield potential of 40-55 bags of 90 kg / ha; tolerant to maize streak virus, rust and grey leaf spot.
-
 Longe 8 H: for mid-altitude; maturity of 120-125 days; potential yield of 88--10 bags of 90 kg / ha; excellent husk cover; tolerant to cob rots, drought and poor soil; resistant to maize streak virus, northern leaf blight and grey leaf spot; a very popular hybrid in Uganda.
-
 Longe 5 (Nalongo) (QPM Maize): for low land to mid altitude areas;  maturity of 115 days; potential yield of 40-50 bags of 90 kg / ha; quality protein maize with lysine and tryptophan amino acids; drought tolerant; resistant to maize streak virus, grey leaf spot; moderately resistant  to northern leaf blight.
 
 Propagation
 Basic Requirements
-
 Maize is a versatile crop that can grow in different varieties of soil, water, and climatic conditions. The crop has a wide range of tolerance to temperature conditions but grows well in warm regions where moisture is sufficient. The crop flourishes in regions with rainfall ranging from 1200mm to 2500mm but can adapt to regions receiving rainfall of up to 400 mm. The crop requires warm temperatures of between 15°C and 30 °C and thrives in a range of zones with altitudes ranging from 100 m to 2900 m ASL, depending on the variety.
 
 The crop is sensitive to moisture stress around tasseling time and during cob formation. Growth is favorable under a pH ranging from 5-8 with 5.5-7 being optimal because it is sensitive to salinity. 
 
 Growing from Seed
-
 The first step to getting maximum yield is ensuring you plant healthy, certified seeds. Apart from the varieties shown above, H614, H626, and H627 for attitudes ranging from 1500 to 2100 M ASL; KATUMANI, DH O2, DH O4, and Drought TEGO for attitudes ranging from 600 to 1300 M ASL; H 513, H 511, and H 516 for attitudes ranging from 800 to 1500 M ASL; and PH1, PH4 for attitudes ranging from 0 to 1200 M ASL are some of the other seed varieties planted in East Africa.
 
 The piece of land for planting maize should be prepared early, before the onset of rains, for weeds to decompose before planting. The following procedure for planting can be followed:
-
-Spray weeds with the appropriate chemicals.
-
-Plough the land and make it level with a fine tilth. Considering the size of the land, machines like tractors or ox-drawn ploughs can be used, observing the correct spacing.
-
-Mix soil with manure and biochar for efficient and improved nutrient uptake as well as stabilizing soil pH.
-
-Make holes at a spacing of 90 x 30–50 cm if soil fertility is low or 75 x 25–50 cm if soil fertility is relatively high.
-
-Place 1 or 2 seeds per hole, or alternate 1 and 2 seeds at a depth of about 4 cm if the soil is moist and about 10 cm if the soil is dry.
-
-Cover the seeds with loose soil.
+- Spray weeds with the appropriate chemicals.
+- Plough the land and make it level with a fine tilth. Considering the size of the land, machines like tractors or ox-drawn ploughs can be used, observing the correct spacing.
+- Mix soil with manure and biochar for efficient and improved nutrient uptake as well as stabilizing soil pH.
+- Make holes at a spacing of 90 x 30–50 cm if soil fertility is low or 75 x 25–50 cm if soil fertility is relatively high.
+- Place 1 or 2 seeds per hole, or alternate 1 and 2 seeds at a depth of about 4 cm if the soil is moist and about 10 cm if the soil is dry.
+- Cover the seeds with loose soil.
 
 It is important to plant maize early in the season because late planting adversely affects yield. Plant within two weeks of the onset of rainfall in the highlands and before the onset of rainfall in the lowlands to make use of the scarce rainfall.
 
 General Care and Maintenance
-
 Gapping is done to replace seeds that did not germinate after others germinated completely. Thinning is done when maize has grown to about 15 cm in height by removing weak and deformed seedlings to make space for healthy seedlings in a hole.
 
 To achieve maximum yield, fertilizer should be applied on time. Manure and biochar can also be added to soil with little or no organic matter. When planting manually, thoroughly mix soil with a teaspoonful of fertilizer into each planting hole to ensure that it doesn’t burn the seeds. Place the seeds on top of the soil and feel for softness. DAP is recommended for planting because it contains phosphorous, which helps in root development.
@@ -113,27 +66,38 @@ Maize can be top dressed with CA 2-3 weeks after planting or when it is 45 cm (1
 Remove weeds mechanically, manually, or by using herbicides to prevent them from competing with the crops for nutrients, water, and light. First weeding, if done manually, should be done three weeks after planting, depending on the intensity of weeds in the field. Herbicides can be applied in two phases: pre-emergence, which is used before the maize germinates and weeds appear, and post-emergence, which is applied after the maize and weeds germinate.
 
 Harvesting
-
 Normally, each maize stalk should yield one large ear of maize, but in ideal conditions, the stalk can yield a second, slightly smaller ear that matures slightly later than the first. Maize is ready for harvesting when the kernels within the husks are well packed and produce a milky substance when the kernel is punctured.
 
-Physiological Diseases
-Nitrogen deficiency The typical symptom of nitrogen deficiency is the plant turns pale green; a ‘V’ shaped yellow coloration on leaves. This pattern starts from leaf end to leaf collar. The symptom begin from lower to upper leaves.
+---
+Nitrogen deficiency
+Symptoms
+The typical symptom of nitrogen deficiency is the plant turns pale green; a ‘V’ shaped yellow coloration on leaves. This pattern starts from leaf end to leaf collar. The symptom begin from lower to upper leaves.
 
-Phosphorous deficiency The deficient plants are dark green and lower leaves show reddish-purple discoloration.
+---
+Phosphorous deficiency
+Symptoms
+The deficient plants are dark green and lower leaves show reddish-purple discoloration.
 
-Potassium deficiency The leaf margins turn yellow and brown which appears like firing or drying. The symptoms progress from lower leaves to upper leaves.
+---
+Potassium deficiency
+Symptoms
+The leaf margins turn yellow and brown which appears like firing or drying. The symptoms progress from lower leaves to upper leaves.
 
-Sulfur deficiency Symptom appears on younger leaves where we will see yellow color striping(interveinal chlorosis).
+---
+Sulfur deficiency
+Symptoms
+Symptom appears on younger leaves where we will see yellow color striping(interveinal chlorosis).
 
-Zinc deficiency Upper leaves shows broad bands of yellow coloration and later turn pale brown or gray necrosis(dead-spots). The symptom first appears in the middle of leaves and progress outward.
+---
+Zinc deficiency
+Symptoms
+Upper leaves shows broad bands of yellow coloration and later turn pale brown or gray necrosis(dead-spots). The symptom first appears in the middle of leaves and progress outward.
 
-Common Pests and Diseases
-Diseases
+---
+Anthracnose (Colletotrichum graminicola)
 Category : Fungal
-Anthracnose Colletotrichum graminicola
 Symptoms
 Anthracnose symptoms vary widely depending on numerous factors such as genotype, age of plant and environmental conditions.
-
 - Small oval or elongated water-soaked spots which enlarge up to 15 mm long appear on leaves
 - Lesions develop a tan center and red-brown or orange border
 - Lesions may coalesce to form large necrotic(dead) patches
@@ -142,31 +106,29 @@ Anthracnose symptoms vary widely depending on numerous factors such as genotype,
 - Top dieback and stalk rot
 Cause
 Fungus
-
 Comments
 Fungus survives the winter on crop debris. Emergence of disease is favored by high temperatures and extended periods of wet and cloudy weather - seedlings and mature plants are most susceptible to the disease.
-
 Management
 Plant hybrids resistant to anthracnose; rotating crops and plowing crop debris into soil may help reduce incidence of early season infections.
 
-Cercospora leaf spot (Gray leaf spot) Cercospora zeae-maydis
+---
+Cercospora leaf spot (Gray leaf spot) (Cercospora zeae-maydis)
+Category : Fungal
 Symptoms
 Small necrotic spots with chlorotic halos on leaves which expand to rectangular lesions 1-6 cm in length and 2-4 mm wide; as the lesions mature they turn tan in color and finally gray; lesions have sharp, parallel edges and are opaque; disease can develop quickly causing complete blighting of leaves and plant death.
-
 1. Brown Spots with yellow rings throughout the leaf during the growing period of the Cassava
 2. Lesions that are 0.15-0.2 cm in diameter
 3. Serious cases can lead to holes throughout the lesions on the leaf
-
 Cause
 Fungus
-
 Comments
 Disease emergence is favored in areas where a corn crop is followed by more corn with no rotastion; severity and incidence of disease is likely die to continuous corn culture with minimum tillage and the use of susceptible hybrids in in the midwestern corn belt of the USA; prolonged periods of foggy or cloudy weather can cause severe Cercopora epidemics.
-
 Management
 Plant corn hybrids with resistance to the disease; crop rotation and plowing debris into soil may reduce levels of inoculum in the soil but may not provide control in areas where the disease is prevalent; foliar fungicides may be economically viable for some high yeilding susceptible hybrids.
 
-Charcoal rot Macrophomina phaseolina
+---
+Charcoal rot (Macrophomina phaseolina)
+Category : Fungal
 Symptoms
 Symptoms are usually first apparent at the tasseling stage; plant stalks become shredded and pith is completely rotted with stringy strands of vascular tissue left intact; small, black fungal fruiting bodies are visible in the vascular strands and give the tissue a gray coloration; fungus grows into internodes of the stalk causing the plant to ripen early and causing the stalk to weaken; plant may break.
 Cause
@@ -176,8 +138,9 @@ Emergence of the disease is favored by warm soils with a low moisture content; f
 Management
 There are currently no available fungicides to treat the disease; avoid stressing plants by practicing good water management; rotating crops with small grains may help reduce disease incidence.
 
-
-Common rust Puccinia sorghi
+---
+Common rust (Puccinia sorghi)
+Category : Fungal
 Symptoms
 Oval or elongated cinnamon brown pustules on upper and lower surfaces of leaves; pustules rupture and release powdery red spores; pustules turn dark brown-black as they mature and release dark brown powdery spores; if infection is severe, pustules may appear on tassels and ears and leaves may begin to yellow; in partially resistant corn hybrids, symptoms appear as chlorotic or necrotic flecks on the leaves which release little or no spore.
 Cause
@@ -187,7 +150,9 @@ Disease is spread by wind-borne spores; some of the most popularly grown sweet c
 Management
 The most effective method of controlling the disease is to plant resistant hybrids; application of appropriate fungicides may provide some degree on control and reduce disease severity; fungicides are most effective when the amount of secondary inoculum is still low, generally when plants only have a few rust pustules per leaf.
 
-Common smut (Boil smut, Blister smut) Ustilago zeae
+---
+Common smut (Boil smut, Blister smut) (Ustilago zeae)
+Category : Fungal
 Symptoms
 Tumor-like galls on plant tissues which are initially green-white or silvery white in color; interior of galls darken and turn into masses of powdery dark brown or black spores (with the exception of galls on leaves which remain greenish in color); galls may reach up to 15 cm in diameter and are common on ears, tassels, shoots or midrib of leaves; galls on leaves remain small and do not burst open.
 Cause
@@ -197,13 +162,9 @@ Fungus overwinters on crop debris or in the soil and can survive for several yea
 Management
 Although many practices may be recommended for the control of common smut, the only method that is completely effective is to grow resistant corn hybrids.
 
-Downy Mildew disease Peronosclerospora sorghi (Sorghum downy mildew)
-P. maydis (Java downy mildew)
-P. philippinensis (Philippine downy mildew)
-P. sacchari (Sugarcane downy mildew)
-Scleropthora rayssiae var. zeae (Brown stripe downy mildew)
-Sclerospora graminicola (Graminicola downy mildew or green ear)
-Sclerophthora macrospora (crazy top)
+---
+Downy Mildew disease (Peronosclerospora sorghi / P. maydis / P. philippinensis / P. sacchari / Scleropthora rayssiae var. zeae / Sclerospora graminicola / Sclerophthora macrospora)
+Category : Oomycete / Fungal
 Symptoms
 Symptoms of all maize downy mildew pathogens are similar although may vary depends on cultivar, age and climate. The disease appear as early from two weeks after sowing resulting in chlorosis and stunting. In older plants the leaves shows mottling, chlorotic streaking and lesions and white striped leaves. Usually the leaves are narrower and more erect when compare to healthy plants and are covered with a white, downy growth on both surfaces.
 Cause
@@ -213,8 +174,9 @@ The disease is both air and seed born. The pathogen have several alternative hos
 Management
 Grow available resistant varieties and hybrids. Follow crop rotation with non host crops. Use suitable systemic fungicide for both seed treatment and foliar spray. Keep the fields free from weeds. Drying seeds before sowing reduces the disease incidence.
 
-
-Giberrella stalk and ear rot Giberella zeae
+---
+Giberrella stalk and ear rot (Giberella zeae)
+Category : Fungal
 Symptoms
 Plants wilting and leaves changing color from light to dull green; lower stalk turns straw yellow; internal stalk tissue breaks down; interior of stalk has a red discoloration; black fungal fruiting bodies may be visible on the stalk, often at internodes, and can be easily scraped off; if fungal infection affects the ears, it produces a red mold at the tips of the ear which spreads down; early infection may result in the ear being covered in pink mycelium which causes the corn husk to adhere to the ear.
 Cause
@@ -224,8 +186,9 @@ Fungus can enter through wounds to stalk or ear; ear rot is caused by the fungus
 Management
 Stressed plants are more susceptible to Gibberella - providing adequate fertilization and irrigation can help reduce incidence of disease; control insects, especially stem and ear borers; hybrids differ in their susceptibility to the disease and further information is required in order to develop specific control measures.
 
-
-Northern Leaf Blight Exserohilum turcicum
+---
+Northern Leaf Blight (Exserohilum turcicum)
+Category : Fungal
 Symptoms
 In the beginning we will notice elliptical gray-green lesions on leaves. As the disease process this lesions become pale gray to tan color. Later stage the lesions looks dirty due to dark gray spores particularly under lower leaf surface. The disease can be easily identified in the field due to its long, narrow lesions which are unrestricted by veins.
 Cause
@@ -235,7 +198,9 @@ The disease mainly spread through rain splash and wind.
 Management
 Follow proper tillage to reduce fungus inoculum from crop debris. Follow crop rotation with non host crop. Grow available resistant varieties. In severe case of disease incidence apply suitable fungicide.
 
-Southern corn leaf blight Bipolaris maydis
+---
+Southern corn leaf blight (Bipolaris maydis)
+Category : Fungal
 Symptoms
 Foliar symptoms vary with hybrid and different fungal isolate; lesions on leaves may be tan and elongated and run between leaf veins; lesions may have a buff or brown colored margin; another race of the fungus causes tan, spindle shaped or elliptical lesions with a water-soaked margin that turns into a yellow halo.
 Cause
@@ -245,10 +210,9 @@ Fungus overwinters in corn debris in soil; disease occurs worldwide but is emerg
 Management
 The most effective method of controlling the disease is to plant resistant hybrids; cultural control methods include plowing crop debris into soil after harvest and rotating crops.
 
-
+---
+Bacterial leaf blight/stripe (Pseudomonas rubrilineans / Acidvorax avenae subsp. avenae)
 Category : Bacterial
-Bacterial leaf blight/stripe Pseudomonas rubrilineans, syn. Pseudomonas avenae,
-Acidvorax avenae subsp. avenae
 Symptoms
 Water-soaked linear lesions on leaves as they emerge; lesions turn brown and may subsequently turn gray or white; lesions may have a red border; after the leaves are mature, lesions do not tend to extend any further; no new lesions tend to appear after tasseling; if corn variety is susceptible, mature leaves may shred after maturity.
 Cause
@@ -258,9 +222,9 @@ Bacteria can also cause disease in oats, barley, wheat, some millets and sorghum
 Management
 Resistant hybrids should be planted in areas where the disease is prevalent; plowing crop debris into soil and rotating crop may not be effective at controlling the disease due to its extensive host range.
 
-
-Bacterial Leaf Streak disease Xanthomonas vasicola pv. vasculorum
-(syn Xanthomonas campestris pv. zeae)
+---
+Bacterial Leaf Streak disease (Xanthomonas vasicola pv. vasculorum)
+Category : Bacterial
 Symptoms
 The infected leaves initially shows narrow stripes between the veins. The initial symptoms are generally confused with gray leaf spot disease. But the lesions from bacteria appear brown, orange, and/or yellow when you infected leaves are back-lit. Also in Bacterial Leaf Streak disease the lesions show slightly wavy edges when compared to the smooth, linear lesion margins of gray leaf spot.
 Cause
@@ -270,9 +234,9 @@ The bacteria causes gumming disease on sugarcane in several part of the world. F
 Management
 Use healthy and disease free seeds. Remove the infected plant debris and burn them. Follow crop rotation.
 
-
-Bacterial stalk rot/soft rot Erwinia chrysanthemi
-Erwinia carotovora
+---
+Bacterial stalk rot/soft rot (Erwinia chrysanthemi / Erwinia carotovora)
+Category : Bacterial
 Symptoms
 Plants suddenly beginning to lodge (bend to lie along the ground) midway through season; one or more internodes above soil line turning brown, water-soaked, soft and slimy; tissue has foul odor and mushy appearance;
 Cause
@@ -282,8 +246,9 @@ Disease is most commonly found in plantations which have overhead irrigation sys
 Management
 Plow all crop debris into soil in Fall; plant corn in well-draining soil to prevent waterlogged plants.
 
-
-Goss's bacterial blight Clavibacter michiganensis
+---
+Goss's bacterial blight (Clavibacter michiganensis)
+Category : Bacterial
 Symptoms
 Gray or yellow stripes with irregular margins on leaf surfaces; stripes follow leaf veins and contain characteristic dark green to black water-soaked spots; if infection occurs early then plant may become wilted or withered; it is common to find a crystalline residue on leaves caused by dried bacterial exudate.
 Cause
@@ -293,8 +258,9 @@ Disease overwinters in diseased crop debris on, or close to, the soil surface; t
 Management
 Plant resistant sweetcorn hybrids; rotate crop; plow crop debris into soil immediately after harvest.
 
-
-Holcus spot Pseudomonas syringae
+---
+Holcus spot (Pseudomonas syringae)
+Category : Bacterial
 Symptoms
 Circular or elliptical spots 2-10 mm across near the tips of lower leaves which are dark green and water soaked initially but become cream to tan before turning dry and brown; lesions may have red-brown margins; large lesions may have a yellow halo.
 Cause
@@ -304,9 +270,9 @@ Disease can occur anywhere where corn is grown but is not usually very damaging.
 Management
 Disease is usually not severe but if it does become a problem crops should be rotated and any debris should be plowed into the soil after harvest.
 
-
-Stewart’s wilt Erwinia stewartii
-syn Pantoea stewartii
+---
+Stewart’s wilt (Erwinia stewartii / Pantoea stewartii)
+Category : Bacterial
 Symptoms
 The main symptoms are appearance of water soaked lesions initially. As the disease progress the lesions become long and turn pale yellow with irregular margins running in the length. The pathogen may infect the stem and causes stunting, wilting and death of plant.
 Cause
@@ -316,9 +282,9 @@ The pathogen is mainly transmitted by maize flea beetles and to lesser extent by
 Management
 Grow available resistant varieties. Use certified healthy seeds. Remove the crop debris and burn them. Use suitable insecticide to control flea beetle.
 
-
+---
+Maize dwarf mosaic (Maize dwarf mosaic virus MDMV)
 Category : Viral
-Maize dwarf mosaic Maize dwarf mosaic virus (MDMV)
 Symptoms
 Chlorotic spots and streaks on leaves which develop into a mottled or mosaic pattern; susceptible plants may be stunted; ear formation and development cease; mosaic and mottling with no red discoloration are characteristic symptoms of the disease.
 Cause
@@ -328,8 +294,9 @@ Virus is transmitted by more than 15 different species of aphid and is passed to
 Management
 Many commercial corn hybrids are highly tolerant of the disease and no control is needed; control aphid populations on plants and remove any Johnson grass growing in the vicinity as it can act as a reservoir for the virus.
 
-
-Maize Lethal Necrosis Disease (MLND) or Corn Lethal Necrosis (CLN) Maize Chlorotic Mottle Virus (MCMoV) + Sugarcane Mosaic Virus (SCMV)/ Wheat Streak Mosaic Virus (WSMV)/Maize Dwarf Mosaic Virus (MDMV)
+---
+Maize Lethal Necrosis Disease (MLND) or Corn Lethal Necrosis (CLN) (Maize Chlorotic Mottle Virus MCMoV + Sugarcane Mosaic Virus SCMV)
+Category : Viral
 Symptoms
 The disease occurs at all stages of crop. The main symptoms includes appearance of chlorotic mottling on leaves which starts from base and extends upwards. Also the leaves shows necrosis at margins which later extends to mid rib and results in drying of entire leaf. The necrosis of young leaves in the whorl causes dead heart symptom. Other symptoms are premature plant death, shortened male inflorescences with few spikes, and/or shortened, malformed, partially filled ears.
 Cause
@@ -339,9 +306,9 @@ The virus mainly spread by vectors (maize thrips, aphids, rootworms and leaf bee
 Management
 Use healthy, disease free certified seeds. Keep the fields free from weeds. Remove the infected plants and burn them. Control vectors by treating seed and/ foliar spray with suitable insecticide. Follow crop rotation with non cereals at least for two seasons. Plant maize only in main rainy season instead of short rainy season. Grow available resistant varieties.
 
-
+---
+Pythium root rot (Pythium spp.)
 Category : Oomycete
-Pythium root rot Pythium spp.
 Symptoms
 Above-ground, plants may be yellow and stunted; roots have obvious lesions and roots are discolored; root cortex will come away when pulled gently, exposing the white stele; can also cause damping-off of seedlings.
 Cause
@@ -351,11 +318,9 @@ Fungus overwinters in soil and crop debris; disease emergence is favored by high
 Management
 Control of the disease relies on improving soil drainage or planting corn in areas where the soil is well-draining; systemic fungicides can be used to treat seed prior to planting to protect seedlings from disease.
 
-
-Pests
+---
+Aphids (Corn leaf aphid, Peach Aphid) (Rhopalosiphum maidis / Myzus persicae)
 Category : Insects
-Aphids (Corn leaf aphid, Peach Aphid) Rhopalosiphum maidis
-Myzus persicae
 Symptoms
 Heavy infestations can result in curled leaves and stunted plants; honeydew secretions promote growth of sooty mold; corn leaf aphids are blue-green in color, peach aphids are green-yellow in color; aphids may transmit viruses when feeding.
 Cause
@@ -365,8 +330,9 @@ Grassy weeds also serve as hosts for corn-leaf aphids; peach aphids have a wide 
 Management
 It is rare for aphids to reach levels that are damaging to the plant and no control is generally warranted as insecticide sprays will not prevent transmission of viruses.
 
-
-Corn earworm Helicoverpa zea
+---
+Corn earworm (Helicoverpa zea)
+Category : Insects
 Symptoms
 Feeding damage to leaves, tassel and leaf whorls; preferred feeding site is the ear and insect produces extensive excrement at the tip of the ear; younger larvae feed on silks, severing them from the plant; young caterpillars are cream-white in color with a black head and black hairs; older larvae may be yellow-green to almost black in color with fine white lines along their body and black spots at the base of hairs; eggs are laid singly on both upper and lower leaf surfaces and are initially creamy white but develop a brown-red ring after 24 hours and darken prior to hatching.
 Cause
@@ -376,9 +342,9 @@ Adult insect is a pale green to tan, medium sized moth; can be a very damaging p
 Management
 Corn earworms are most problematic on sweet corn varieties and treatment should be applied at egg hatch; monitor plants for eggs and young larvae and also natural enemies that could be damaged by chemicals; Bacillus thuringiensis or Entrust SC may be applied to control insects on organically grown plants; appropriate chemical treatment may be required for control in commercial plantations.
 
-
-Cutworms (Black cutworm, Variegated cutworm) Agrotis ipsilon
-Peridroma saucia
+---
+Cutworms (Black cutworm, Variegated cutworm) (Agrotis ipsilon / Peridroma saucia)
+Category : Insects
 Symptoms
 Stems of young transplants or seedlings may be severed at soil line; if infection occurs later, irregular holes are eaten into the surface of fruits; larvae causing the damage are usually active at night and hide during the day in the soil at the base of the plants or in plant debris of toppled plant; larvae are 2.5–5.0 cm (1–2 in) in length; larvae may exhibit a variety of patterns and coloration but will usually curl up into a C-shape when disturbed.
 Cause
@@ -388,29 +354,26 @@ Cutworms have a wide host range and attack vegetables including asparagus, bean,
 Management
 Remove all plant residue from soil after harvest or at least two weeks before planting, this is especially important if the previous crop was another host such as alfalfa, beans or a leguminous cover crop; plastic or foil collars fitted around plant stems to cover the bottom 3 inches above the soil line and extending a couple of inches into the soil can prevent larvae severing plants; hand-pick larvae after dark; spread diatomaceous earth around the base of the plants (this creates a sharp barrier that will cut the insects if they try and crawl over it); apply appropriate insecticides to infested areas of garden or field if not growing organically.
 
-
-Fall Armyworm Spodoptera frugiperda
+---
+Fall Armyworm (Spodoptera frugiperda)
+Category : Insects
 Symptoms
 Singular, or closely grouped circular to irregularly shaped holes in foliage; heavy feeding by young larvae leads to skeletonized leaves; shallow, dry wounds on fruit; egg clusters of 50-150 eggs may be present on the leaves; egg clusters are covered in a whitish scale which gives the cluster a cottony or fuzzy appearance; young larvae are pale green to yellow in color while older larvae are generally darker green with a dark and light line running along the side of their body and a pink or yellow underside.
-
 1. Leaf damage is usually characterized by ragged feeding, and moist sawdust-like frass near the funnels and upper leaves of the plant.
 2. Leaf damage is usually scattered in rows across the leaf
 3. Younger larvae usually eat tissue from one side, leaving the other side in tact. This is what creates windows in the leaf
 4. Deep feeding may may destroy maize tassels.
 5. Caterpillars enter through the side of the ear and feed on developing kernels
-
 Cause
 Insects
-
 Comments
 Insect can go through 3–5 generations a year.
-
 Management
 Organic methods of controlling the armyworm include biological control by natural enemies which parasitize the larvae and the application of Bacillus thuringiensis; there are chemicals available for commercial control but many that are available for the home garden do not provide adequate control of the larvae.
 
-
-Flea beetles Chaetocnema pulicaria
-Altica spp.
+---
+Flea beetles (Chaetocnema pulicaria / Altica spp.)
+Category : Insects
 Symptoms
 Small holes or pits in leaves that give the foliage a characteristic “shothole” appearance; young plants and seedlings are particularly susceptible; plant growth may be reduced; if damage is severe the plant may be killed; the pest responsible for the damage is a small (1.5–3.0 mm) dark colored beetle which jumps when disturbed; the beetles are often shiny in appearance.
 Cause
@@ -420,8 +383,9 @@ Flea beetles may overwinter on nearby weed species, in plant debris or in the so
 Management
 In areas where flea beetles are a problem, floating row covers may have to be used prior to the emergence of the beetles to provide a physical barrier to protect young plants; plant seeds early to allow establishment before the beetles become a problem - mature plants are less susceptible to damage; trap crops may provide a measure of control - cruciferous plants are best; application of a thick layer of mulch may help prevent beetles reaching surface; application on diamotecoeus earth or oils such as neem oil are effective control methods for organic growers; application of insecticides containing carbaryl, spinosad, bifenthrin and permethrin can provide adequate control of beetles for up to a week but will need reapplied.
 
-
-Thrips (Various spp.) Various
+---
+Thrips (Various spp.)
+Category : Insects
 Symptoms
 If population is high leaves and may be distorted and curl upwards; edges of leaves may dry up and are speckled with black feces; insects are small (1.5 mm) and slender and best viewed using a hand lens; adult thrips are pale yellow to light brown and the nymphs are smaller and lighter in color.
 Cause
@@ -431,11 +395,9 @@ May be found on corn at any time during the growing season.
 Management
 Avoid planting next to onions, garlic where very large numbers of thrips can build up; use reflective mulches early in growing season to deter thrips; apply appropriate insecticide if thrips become problematic; young plants will recover from damage and treatment is not often necessary as the thrips are beneficial for controlling mites.
 
-
+---
+Root knot nematode (Meloidogyne incognita / M. arenaria / M. javanica)
 Category : Nematodes
-Root knot nematode Meloidogyne incognita
-M. arenaria
-M. javanica
 Symptoms
 Below ground we can see galls on the roots due to female nematode feeding. Above ground the plants are stunted, yellow and patchy in growth. Severely infested plant may die before harvest.
 Cause
@@ -445,9 +407,9 @@ The galls are formed by female nematode feeding resulting in formation of giant 
 Management
 Deep summer ploughing helps in reducing nematode population. Follow crop rotation with nematode antagonistic plants. Grow resistant varieties. In severely infected field follow soil fumigation with suitable nematicide.
 
-
+---
+Spider mites (Various spp.)
 Category : Mites
-Spider mites (Various spp.) Various
 Symptoms
 Leaves stippled with yellow; leaves may appear bronzed; webbing on underside of leaves; small kernel size; mites may be visible as tiny moving dots on the webs or underside of leaves, best viewed using a hand lens; usually not spotted until there are visible symptoms on the plant; leaves turn yellow and may drop from plant;
 Cause

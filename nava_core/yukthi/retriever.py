@@ -146,8 +146,8 @@ class RAGRetriever:
         )
         source_label = "LLM" if llm_keywords else "heuristic"
 
-        # ── 1. Semantic search: 5 candidates ─────────────────────────────────
-        SEMANTIC_N = 5
+        # ── 1. Semantic search: 10 candidates ─────────────────────────────────
+        SEMANTIC_N = 10
         semantic_results = self.store.query(
             crop=crop_norm, embedding=embedding, n_results=SEMANTIC_N
         )
@@ -171,14 +171,16 @@ class RAGRetriever:
                 _add(doc, meta, dist)
                 n_semantic += 1
 
-        # ── 2. Keyword-filtered semantic: up to 8 keyword candidates ─────────
-        # Each of the 3 LLM keywords → top 2 results with where_document filter
-        # That's ~6 raw keyword candidates → deduplicated to ≤5 unique ones
-        KEYWORD_PER_TERM = max(1, round(5 / max(len(search_keywords), 1)))
+        # ── 2. Keyword-filtered semantic: up to 10 keyword candidates ─────────
+        # Each of the LLM keywords → top results with where_document filter
+        # That's ~10 raw keyword candidates → deduplicated
+        import math
+        KEYWORD_PER_TERM = math.ceil(10 / max(len(search_keywords), 1))
         n_keyword = 0
         for term in search_keywords:
+            clean_term = term.replace("_", " ")
             kw_results = self.store.query_keyword_filtered(
-                crop=crop_norm, embedding=embedding, term=term,
+                crop=crop_norm, embedding=embedding, term=clean_term,
                 n_results=KEYWORD_PER_TERM,
             )
             if not kw_results:
