@@ -1,0 +1,363 @@
+Cucumber
+ContentContent
+1. Description
+2. Uses
+3. Propagation
+4. References
+Diseases
+- Fungal
+- Bacterial
+- Other
+- Viral
+- Oomycete
+- Bacterial, Fungal
+Pests
+- Insects
+See questions about Cucumber
+Description
+Cucumber, Cucumis sativus, is a warm season, vining, annual plant in the family Cucurbitaceae grown for its edible cucumber fruit. The cucumber plant is a sprawling vine with large leaves and curling tendrils. The plant may have 4 or 5 main stems from which the tendrils branch. The leaves of the plant are arranged alternately on the vines, have 3–7 pointed lobes and are hairy. The cucumber plant produces yellow flowers that are 4 cm (1.6 in) in diameter. The cucumber fruit varies in shape but is generally a curved cylinder rounded at both ends that can reach up to 60 cm (24 in) in length 10 cm (3.9 in) in diameter. Cucumber plants are annual plants, surviving only one growing season and the vines can reach up to 5 m (16.4 ft) in length. Cucumber may also be referred to as gherkin and originates from the foothills of the Himalayas, likely in India.
+
+Uses
+Although technically a fruit, cucumbers are used as a fresh vegetable, consumed fresh in salads. Some varieties are grown specifically for pickling. Yellow varieties are generally cooked before consumption.
+
+
+Propagation
+Basic requirements Cucumbers require warm, dry conditions to develop optimally, preferring both warm days and warm nights and growing best at a temperature of 30°C (86°F). Cucumbers will yield best if grown in a fertile, well-draining soil, rich in organic matter and with a pH between 6.5 and 7.5. Cucumbers are very sensitive to cold and should be planted in full sun and provided with ample soil moisture due to their shallow root system. Cucumber varieties One of the biggest considerations when choosing a cucumber variety is whether or not it requires pollinating. Many newer cucumber varieties are gynoecious which means that they produce only, or mostly, female flowers. Some gynoecious varieties require pollinating with male flowers, in which case a proportion of the seeds in the packet will be pollinator plants which produce the male flowers. Some gynoecious varieties are parthenocarpic which means that they do not need the male plants to produce fruit. These types are recommended for growing in glasshouses as they do not require the presence of insect pollinators. Sowing seeds Direct seeding is the preferred method for sowing cucumbers as they do not transplant well. Seeds should be sown after the last frosts and when the soil has warmed to at least 15.6°C (60°F). Sow seeds 1.3–2.5 cm (0.5–1.0 in) deep, thinning to a spacing of at least 30 cm (12 in) between plants after germination. Cucumbers can also be seeded on hills or mounds of soil to encourage warm soil and better drainage. In this instance, seeds should be sown on hills in groups of 4–6 seeds, allowing 1.2 m (4 ft) between each group in all directions. After emergence, thin the seedlings to 1 or 2 plants per hill. Cucumber seeds should germinate in 4–13 days depending on the soil temperature. General care and maintenance Cucumber vines are sprawling and require plenty space to grow. Vines can be trained to grow on a trellis or fence. Providing burpless varieties with vertical support allows the fruits to hang loose and grow straight. Cucumbers also require a continuous supply of water and where drip irrigation is not being used, plants should be watered deeply once per week, providing at least an inch of water. Shallow watering or watering less frequently will reduce fruit yields. Mulches can be used to conserve soil moisture and black plastic mulch has the advantage of warming the soil. Harvesting Cucumbers should be harvested from the plant when they are still immature and green in color. Mature fruits are yellow and the flesh is often tough with woody seeds. The size of cucumbers at harvest depends on the variety of the cucumber being grown and what it is to be used for. Cucumbers for pickling are generally picked when they are less than 5 cm (2 in) long whereas burpless cucumbers for slicing should be allowed to reach approximately 4 cm (~1.5 in) in diameter. It is important to remove any fruits nearing maturity to ensure the plant remains productive. Their rapid growth means that cucumbers may need harvested every couple of days.
+
+References
+CABI Crop Protection Compendium. (2008). Cucumis sativus datasheet. Available at: http://www.cabi.org/cpc/datasheet/16967. [Accessed 19 November 14]. Paid subscription required. Coolong, T. (2010). Cucumber. University of Kentucky Cooperative Extension Service. Availabel at: http://www.uky.edu/Ag/NewCrops/introsheets/cucumber.pdf. [Accessed 19 November 14]. Free to access. Lerner, B. R. & Dana, M. N. (2001). Growing Cucumbers, Melons, Squash, Pumpkins and Gourds. Purdue University Cooperative Extension Service. Available at: http://www.hort.purdue.edu/ext/ho-8.pdf. [Accessed 19 November 14]. Free to access. Zitter, T. A., Hopkins, D. L. & Thomas, C. E. (1996). Compendium of Cucurbit diseases. American Phytopathological Society Press. Available at: http://www.apsnet.org/apsstore/shopapspress/Pages/42074.aspx. Available for purchase from APS Press.
+
+Common Pests and Diseases
+Diseases
+Category : Fungal
+Alternaria leaf blight Alternaria cucumerina
+Symptoms
+Small, yellow-brown spots with a yellow or green halo which first appear on the oldest leaves; as the disease progresses, lesions expand and become large necrotic patches, often with concentric patternation; lesions coalesce, leaves begin to curl and eventually die.
+Cause
+Fungus
+Comments
+Disease is prevalent in growing areas where temperatures are high and rainfall is frequent.
+Management
+Cucurbits should be rotated with another crop every 2 years to reduce levels of inoculum; crop debris should be removed from the field as quickly as possible after harvest or plowed deeply into the soil; applications of appropriate protective fungicides can help to slow the development of the disease; water plants from the base rather than from above to reduce periods of leaf wetness which are conducive to the development and spread of disease.
+
+
+Anthracnose Colletotrichum orbiculare
+Symptoms
+Brown roughly circular lesions with yellow edges on leaves on leaves, petioles, stems and/or fruit; lesions on resistant varieties appear tan with green edges; lesions dry out and drop out of leaves.
+Cause
+Fungus
+Comments
+Disease favors warm temperatures.
+Management
+Plant resistant varieties; use only certified seed; apply appropriate protective fungicides; rotate crops every year.
+
+Belly rot (Fruit rot, Damping-off) Rhizoctonia solani
+Symptoms
+Yellow/brown discoloration on fruit; water soaked spots on side of fruit in contact with soil; brown mold growing on rotting areas; collapse of seedlings.
+Cause
+Fungus
+Comments
+Disease favors warm, humid conditions.
+Management
+Till soil deeply prior to planting; use plastic mulch to create a barrier between fruit and soil; plant in sites with good drainage to avoid wet soils; apply appropriate protective fungicides when plants begin to vine.
+
+
+Cercospora leaf spot Cercospora citrullina
+Symptoms
+Initial symptoms of disease occur on older leaves as small spots with light to tan brown centers; as the disease progresses, the lesions enlarge to cover large areas of the leaf surface; lesions may have a dark border and be surrounded by a chlorotic area; the centers of the lesions may become brittle and crack.
+Cause
+Fungus
+Comments
+Fungus survives on plant debris; spread by wind and water splash; occurs mainly in tropical and subtropical growing regions.
+Management
+Any diseased plants should be removed and destroyed to prevent further spread; crop debris should be removed after harvest or plowed deeply into the soil to reduce inoculum.
+
+
+Downy mildew Pseudoperonospora cubensis
+Symptoms
+Fluffy purplish mildew on underside of leaves; yellow spots on the upper side of leaves.
+Cause
+Oomycete
+Comments
+Disease favors cool, humid conditions.
+Management
+Do not overcrowd plants; avoid overhead irrigation, water plants from base; apply appropriate fungicide.
+
+
+Fusarium wilt (Cucumber wilt, Foot-rot) Fusarium oxysporum
+Symptoms
+Rotting of seedling stems at soil line; brown lesions on one side of stem; discoloration of tissue inside vine.
+Cause
+Fungus
+Comments
+Disease favors warm, moist soil.
+Management
+Plant fungicide treated seed; rotate crops on 4 year rotation.
+
+
+Gummy stem blight (vine decline, GSB) Didymella bryoniae
+Symptoms
+Gray/green lesions between veins of leaves; tan or gray lesions on stems.
+Cause
+Fungus
+Comments
+Disease may be seed-borne.
+Management
+Use disease free seed; treat seeds prior to planting; rotate crops every 2 years.
+
+
+Powdery mildew Erysiphe cichoracearum
+Sphaerotheca fuliginea
+Symptoms
+The appearance of white powdery spots on the upper surfaces of leaves, stems and fruits. As the disease progress, white fungal growth covers whole leaves and stem. The infected leaves become yellow, distorted and may drop prematurely.
+Cause
+Fungus
+Comments
+The spores are carried by wind from one plant to another. The disease is favored by moderate temperature and shady conditions.
+Management
+Grow available resistant varieties. If the disease is severe, spray suitable fungicide.
+
+
+Septoria leaf spot Septoria cucurbitacearum
+Symptoms
+Initial symptoms of disease are small dark water-soaked spots on the leaves which turn beige to white in dry conditions; lesions develop thin brown borders and the centers may become brittle and crack; small white spots may erupt on the surface of infected butternut and acorn squash and pumpkin fruit.
+Cause
+Fungus
+Comments
+Pathogen can survive on crop debris for periods in excess of 1 year.
+Management
+Scout plants during cool wet conditions for any sign of spots; early application of an appropriate protective fungicide can help limit the development of the disease if spots are found' cucurbits should be rotated with other crops every 2 years to prevent the build-up of inoculum; crop debris should be removed and destroyed after harvest.
+
+
+Target leaf spot Corynespora cassiicola
+Corynespora melonis
+Symptoms
+Angular yellow spots appear on older leaves; as the disease progresses, the spots enlarge and become circular with light brown centers and dark margins; as lesions mature, they turn gray and drop out leaving holes in the leaves; if fruits become infected early in their growth then the blossom end may darken and become shriveled.
+Cause
+Fungus
+Comments
+Fungus can survive on plant debris for periods in excess of 2 years; disease emergence favored by periods of high humidity and temperature.
+Management
+Plant resistant varieties; apply appropriate protective fungicide; sanitize equipment regularly.
+
+
+Verticillium wilt Verticillium dahliae
+Symptoms
+Symptoms generally appear after fruit set; chlorotic leaves which develop necrotic areas; leaves collapsing; symptoms only on one side of vine; discoloration of vascular tissue in roots.
+Cause
+Fungus
+Comments
+Fungus can survive in soil for many years; disease emergence favored by cool or mild weather in Spring.
+Management
+Do not plant in areas where other susceptible crops have been grown previously; delay planting until temperatures are warmer.
+
+
+
+Category : Bacterial
+Angular leaf spot Pseudomonas syringae
+Symptoms
+Small water-soaked lesions on leaves which expand between leaf veins and become angular in shape; in humid conditions, lesions exude a milky substance which dries to form a white crust on or beside lesions; as the disease progresses, lesions turn tan and may have yellow/green edges; the centers of the lesions dry and may drop out leaving a hole in the leaf.
+Cause
+Bacteria, Bacterium
+Comments
+Spread through infected seed, splashing rain, insects and movement of people between plants; bacterium overwinters in crop debris and can survive for 2.5 years.
+Management
+Use disease-free seed; do not grow plants in field where cucurbits have been grown in the previous 2 years; protective copper spray may help reduce incidence of disease in warm, humid climates; plant resistant varieties.
+
+
+Bacterial leaf spot Xanthomonas campestris
+Symptoms
+Initial symptoms of the disease are the appearance of small water-soaked lesions on the undersides of the leaves which lead to the development of yellow patches on the upper leaf surface; the lesions become round and angular and may be mistaken for angular leaf spot; the centers of the lesions become thin and translucent and lesions become surrounded with a wide yellow halo.
+Cause
+Bacterium
+Comments
+Bacteria is spread via infected seeds.
+Management
+Use disease-free seed; do not grow plants in field where cucurbits have been grown in the previous 2 years; avoid overhead irrigation, water plants from the base instead to reduce the spread of bacteria.
+
+
+Bacterial wilt Erwinia tracheiphila
+Symptoms
+Individual runners or whole plant begins to wilt and rapidly die; infected runners appear dark green in color but rapidly become necrotic as the disease progresses.
+Cause
+Bacterium
+Comments
+Can result in crop losses of of 75%; spread by striped or spotted cucumber beetles; disease can be confirmed by cutting the stem and slowly pulling the two ends apart - infected plants will ooze strings of bacterial exudate.
+Management
+Control cucumber beetle populations on plants; hand pick adult beetles and destroy; soil and foliar application of appropriate insecticides may help to control populations.
+
+Category : Other
+Aster yellows Aster yellows phytoplasma
+Symptoms
+Foliage turning yellow; secondary shoots begin growing prolifically; stems take on a rigid, upright growth habit; leaves are often small in size and distorted, may appear thickened; flowers are often disfigured and possess conspicuous leafy bracts; fruits are small and pale in color.
+Cause
+Phytoplasma
+Comments
+Disease is transmitted by leafhoppers and can cause huge losses in cucurbit crops.
+Management
+Remove any infected plants from the field to reduce spread; control weeds in and around the field that may act as a reservoir for the phytoplasma; protect plants from leaf hopper vectors with row covers.
+
+
+Category : Viral
+Cucumber green mottle mosaic Cucumber green mottle mosaic virus (CGMMV)
+Symptoms
+Early symptoms on young plants include vein-clearing and the development of crumpled leaves; older plants develop bleached and/or chlorotic leaves. As the infection progresses, leaves develop mottling and become blistered and distorted. Leaf symptoms are very difficult to distinguish from other mosaic viruses of Cucurbits. Severity of symptoms varies depending on the strain of the virus.
+Cause
+Virus
+Comments
+All Cucurbit species are susceptible to the virus, some cucumber varieties have been developed which have some resistance to the disease and are available in Canada and Europe.
+Management
+As the virus is spread primarily by infected seed, only disease-free seed from a reputable supplier should be planted. Seedlings and plants infected with the virus should be removed and destroyed to prevent spread. All seedlings/plants within a 3-5 ft radius of the infected plant should also be destroyed. The virus can be spread mechanically via tools and on hands, good sanitation should be practiced at all times to prevent virus transmission - disinfect all tools and equipment between uses by dipping in a solution of bleach or using a commercially available disinfectant such as Virkon.
+
+
+Cucumber mosaic Cucumber mosaic virus (CMV)
+Symptoms
+Plants are severely stunted; foliage is covered in distinctive yellow mosaic; leaves of plant curl downwards and leaf size is smaller than normal; flowers on infected plants may be deformed with green petals; fruits become distorted and are small in size; fruit is often discolored.
+Cause
+Virus
+Comments
+Transmitted by aphids; virus has an extensive host range; virus can be mechanically transmitted via tools etc.
+Management
+Control of the virus is largely dependant on the control of the aphid vectors; reflective mulches can deter aphid feeding; aphid outbreaks can be treated with mineral oils or insecticidal soap applications; some resistant varieties are available.
+
+
+Squash mosaic Squash mosaic virus (SqMV)
+Symptoms
+Symptoms vary with variety being grown but plants can show symptoms which include green veinbanding, mottled leaves, blisters, ring spots or potruding veins at leaf margins; some squash varieties may develop leaf enations; infected plants are often stunted and fruits may be malformed with mottled skin.
+Cause
+Virus
+Comments
+Virus can be transmitted through infected seed and spread by striped cucumber beetles.
+Management
+Use only certified disease-free seed.
+
+Watermelon mosaic Watermelon mosaic virus (WMV)
+Symptoms
+Symptoms vary widely depending on species, cultivar, virus strain and environmental conditions; symptoms on leaves may include green mosaic patternation, green vein-banding, chlorotic rings and disfigured leaves.
+Cause
+Virus
+Comments
+Virus is found in almost all Cucurbit growing regions in the world; virus is spread by over 20 aphid species.
+Management
+Treatments that control populations of aphid vectors can also reduce the incidence of the virus; spraying plants with mineral oils or insecticidal soaps can help to reduce aphid numbers.
+
+
+Category : Oomycete
+Phytophthora blight Phytophthora capsici
+Symptoms
+The disease can be found in all stages and all parts of the crop. On seedlings, the pathogen causes damping off symptoms where hypocotyl exhibit watery rot or rotting of the stem near the soil line, resulting in plant death. The Mature plants exhibit crown rot symptoms. The post-emergence infection leads to wilting and death of the plant. During the growing season, vine exhibit dark olive water soaked lesion which later become brown resulting in girdling of the stem that leads to quick collapse and death of foliage (vine blight). On leaves shows necrotic spots with chlorotic to olive-green borders. As the disease progress, this spot merges and cover entire leaf. On fruits, disease can occur from fruit set to harvest and storage. The appearance of water soaked lesions on fruit, particularly near the surface which is touching the soil. Later these lesions expand, resulting in rioting. The infected fruit is covered with white mold numerous sporangia.
+Cause
+Oomycete
+Comments
+Rain and overhead irrigation helps in spreading pathogen from plant to plant.
+Management
+Use disease free seed materials. Follow crop rotation. Spray suitable fungicide.
+
+
+Pythium fruit rot (Cottony leak) Pythium spp.
+Symptoms
+The symptoms first appear in the area of fruit which is in contact with soil as small, water-soaked spots. These spots spread very fast to a large portion of fruit resulting in soft and necrotic area. If the condition is favorable, heavy growth of white fungal mass which resembles the tufts of cotton can be seen on infected area.
+Cause
+Fungus
+Comments
+The disease is favored by wet condition. The pathogen spreads via water and soil particles.
+Management
+Avoid excessive soil moisture. Mulching with suitable materials help in preventing the disease.
+
+
+Category : Bacterial, Fungal
+Scab Cladosponum cucumerinum
+Symptoms
+The leaves exhibit small water-soaked or pale green spots which later turn white to gray and become angular. A yellowish halo may surround the lesion. The damaged leaves may appear ragged due to tearing and cracking of dead tissue. Symptoms can also be seen on petiole and stem. On fruits, the appearance of small, gray, slightly sunken, oozing, gummy spots which later enlarge, and finally become distinct sunken cavities. Under favorable condition, the pathogen produces dark, olive green, velvety layer of spores on the cavities.
+Cause
+Fungus
+Comments
+The pathogen overwinters on the seed, in crop debris and in soil.
+Management
+Remove and destroy the infected leaves and plant debris. Keep the field free from weeds. Use disease free seeds. Grow available resistant varieties. Follow crop rotation. Spray with suitable fungicides.
+
+
+Pests
+Category : Insects
+Aphids (Peach aphid, Melon aphid) Myzus persicae
+Aphis gossypii
+Symptoms
+Small soft bodied insects on underside of leaves and/or stems of plant; usually green or yellow in color, but may be pink, brown, red or black depending on species and host plant; if aphid infestation is heavy it may cause leaves to yellow and/or distorted, necrotic spots on leaves and/or stunted shoots; aphids secrete a sticky, sugary substance called honeydew which encourages the growth of sooty mold on the plants.
+Cause
+Insects
+Comments
+Distinguishing features include the presence of cornicles (tubular structures) which project backwards from the body of the aphid; will generally not move very quickly when disturbed.
+Management
+If aphid population is limited to just a few leaves or shoots then the infestation can be pruned out to provide control; check transplants for aphids before planting; use tolerant varieties if available; reflective mulches such as silver colored plastic can deter aphids from feeding on plants; sturdy plants can be sprayed with a strong jet of water to knock aphids from leaves; insecticides are generally only required to treat aphids if the infestation is very high - plants generally tolerate low and medium level infestation; insecticidal soaps or oils such as neem or canola oil are usually the best method of control; always check the labels of the products for specific usage guidelines prior to use.
+
+
+Cabbage looper Trichoplusia ni
+Symptoms
+Large or small holes in leaves; damage often extensive; caterpillars are pale green with a white lines running down either side of their body; caterpillars are easily distinguished by the way they arch their body when moving; eggs are laid singly, usually on the lower leaf surface close to the leaf margin, and are white or pale green in color.
+Cause
+Insect
+Comments
+Insects overwinter as pupae in crop debris in soil; adult insect id a dark colored moth; caterpillars have a wide host range.
+Management
+Looper populations are usually held in check by natural enemies; if they do become problematic larvae can be hand-picked from the plants; an organically acceptable control method is the application of Bacillus thuringiensis which effectively kills younger larvae; chemical sprays may damage populations of natural enemies and should and should be selected carefully.
+
+
+Cucumber beetles (Western striped cucumber beetle, Western spotted cucumber beetle, Banded cucumber beetle) Acalymma vittata
+Diabrotica undecimpunctata
+Diabrotica balteata
+Symptoms
+Stunted seedling; damaged leaves, stems and/or petioles; reduced plant stand; plants may exhibit symptoms of bacterial wilt; scars on fruit caused by beetle feeding damage; adult beetles are brightly colored with either a green-yellow background and black spots or alternating black and yellow stripes.
+Cause
+Insect
+Comments
+Beetles overwinter in soil and leaf litter and emerge from soil when temperatures begin to reach and exceed 12.7°C (55°F).
+Management
+Monitor new planting regularly for signs of beetle; floating row covers can be used to protect the plants from damage but will need to be removed at bloom to allow bees to pollinate plants; applications of kaolin clay can be effective for management of small beetle populations; application of appropriate insecticides may be necessary.
+
+
+Cutworms Agrotis spp.
+Peridroma saucia
+Nephelodes minians
+and others
+Symptoms
+Stems of young transplants or seedlings may be severed at soil line; if infection occurs later, irregular holes are eaten into the surface of fruits; larvae causing the damage are usually active at night and hide during the day in the soil at the base of the plants or in plant debris of toppled plant; larvae are 2.5–5.0 cm (1–2 in) in length; larvae may exhibit a variety of patterns and coloration but will usually curl up into a C-shape when disturbed.
+Cause
+Insects
+Comments
+Cutworms have a wide host range and attack vegetables including asparagus, bean, cabbage and other crucifers, carrot, celery, corn, lettuce, pea, pepper, potato and tomato.
+Management
+Remove all plant residue from soil after harvest or at least two weeks before planting, this is especially important if the previous crop was another host such as alfalfa, beans or a leguminous cover crop; plastic or foil collars fitted around plant stems to cover the bottom 3 inches above the soil line and extending a couple of inches into the soil can prevent larvae severing plants; hand-pick larvae after dark; spread diatomaceous earth around the base of the plants (this creates a sharp barrier that will cut the insects if they try and crawl over it); apply appropriate insecticides to infested areas of garden or field if not growing organically.
+
+
+Flea beetles Epitrix spp.
+Symptoms
+Small holes or pits in leaves that give the foliage a characteristic “shothole” appearance; young plants and seedlings are particularly susceptible; plant growth may be reduced; if damage is severe the plant may be killed; the pest responsible for the damage is a small (1.5–3.0 mm) dark colored beetle which jumps when disturbed; the beetles are often shiny in appearance.
+Cause
+Insects
+Comments
+Younger plants are more susceptible to flea beetle damage than older ones; older plants can tolerate infestation; flea beetles may overwinter on nearby weed species, in plant debris or in the soil; insects may go through a second or third generation in one year.
+Management
+In areas where flea beetles are a problem, floating row covers may have to be used prior to the emergence of the beetles to provide a physical barrier to protect young plants; plant seeds early to allow establishment before the beetles become a problem - mature plants are less susceptible to damage; trap crops may provide a measure of control - cruciferous plants are best; application of a thick layer of mulch may help prevent beetles reaching surface; application on diamotecoeus earth or oils such as neem oil are effective control methods for organic growers; application of insecticides containing carbaryl, spinosad, bifenthrin and permethrin can provide adequate control of beetles for up to a week but will need reapplied.
+
+
+Stinkbugs (Various) Various
+Symptoms
+Dark colored pinpricks on fruit surrounded by a lighter area that turns yellow or remains light green; stink bugs often carry pathogens in their mouthparts which can cause secondary infections and decay of fruit; adult insect is shield-shaped and brown or green in color; may have pink, red or yellow markings; eggs are drum shaped and laid in clusters on the leaves; larvae resemble the adults but are smaller.
+Cause
+Insect
+Comments
+Adult insects overwinter under leaves, on legumes, blackberries or on certain weeds such as mustard or Russian thistle.
+Management
+Remove weeds around crop which may act as overwintering sites for stink bugs and practice good weed management throughout the year; organically accepted control methods include the use of insecticidal soaps, kaolin clay and preservation of natural enemies; chemical treatments are not recommended for tomatoes that are to be processed for paste or canning unless secondary infections with other pathogens are a concern.
+
+
+Thrips (Western flower thrips, Onion thrips, etc.) Frankliniella occidentalis
+Thrips tabaci
+Symptoms
+If population is high leaves may be distorted; leaves are covered in coarse stippling and may appear silvery; leaves speckled with black feces; insect is small (1.5 mm) and slender and best viewed using a hand lens; adult thrips are pale yellow to light brown and the nymphs are smaller and lighter in color.
+Cause
+Insect
+Comments
+Transmit viruses such as Tomato spotted wilt virus; once acquired, the insect retains the ability to transmit the virus for the remainder of its life.
+Management
+Avoid planting next to onions, garlic or cereals where very large numbers of thrips can build up; use reflective mulches early in growing season to deter thrips; apply appropriate insecticide if thrips become problematic.

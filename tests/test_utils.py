@@ -3,6 +3,17 @@ import os
 
 BASE_URL = "http://localhost:8000/api"
 
+# Valid Kerala season values (must match the frontend dropdown exactly)
+KERALA_SEASONS = [
+    "Summer / Hot Season",   # Mar–May
+    "Monsoon Season",        # Jun–Nov
+    "Winter / Cool Season",  # Dec–Feb
+]
+
+# Default season used by test helpers
+DEFAULT_SEASON = "Monsoon Season"
+
+
 def get_test_token():
     # Try login
     res = requests.post(f"{BASE_URL}/auth/login", json={"email": "test@gmail.com", "password": "123456789"})
@@ -14,6 +25,7 @@ def get_test_token():
         return res.json()["token"]
     raise Exception(f"Failed to auth: {res.text}")
 
+
 def get_or_create_field(token):
     headers = {"Authorization": f"Bearer {token}"}
     res = requests.get(f"{BASE_URL}/fields", headers=headers)
@@ -21,11 +33,17 @@ def get_or_create_field(token):
     for f in fields:
         if f["name"] == "Advanced Test Field":
             return f["id"]
-            
+
     res = requests.post(f"{BASE_URL}/fields", headers=headers, json={
-        "name": "Advanced Test Field", "location": "Test Farm", "area": "1 acre", "soil_type": "Loamy"
+        "name": "Advanced Test Field",
+        "location": "Kottayam, Kerala",
+        "area": "1 acre",
+        "soil_type": "Loamy",
     })
+    if res.status_code != 200:
+        raise Exception(f"Failed to create field: {res.text}")
     return res.json()["id"]
+
 
 def get_or_create_crop_plant(token, field_id, crop_name):
     headers = {"Authorization": f"Bearer {token}"}
@@ -36,13 +54,19 @@ def get_or_create_crop_plant(token, field_id, crop_name):
         if c["name"] == crop_name:
             crop_id = c["id"]
             break
-            
+
     if not crop_id:
         res = requests.post(f"{BASE_URL}/crops", headers=headers, json={
-            "field_id": field_id, "name": crop_name, "variety": "Standard", "season": "Summer", "stage": "Vegetative"
+            "field_id": field_id,
+            "name": crop_name,
+            "variety": "Standard",
+            "season": DEFAULT_SEASON,
+            "stage": "Vegetative",
         })
+        if res.status_code != 200:
+            raise Exception(f"Failed to create crop '{crop_name}': {res.text}")
         crop_id = res.json()["id"]
-        
+
     res = requests.get(f"{BASE_URL}/plants?crop_id={crop_id}", headers=headers)
     plants = res.json().get("plants", [])
     plant_id = None
@@ -51,11 +75,14 @@ def get_or_create_crop_plant(token, field_id, crop_name):
         if p["name"] == plant_name:
             plant_id = p["id"]
             break
-            
+
     if not plant_id:
         res = requests.post(f"{BASE_URL}/plants", headers=headers, json={
-            "field_id": field_id, "crop_id": crop_id, "name": plant_name
+            "crop_id": crop_id,
+            "name": plant_name,
         })
+        if res.status_code != 200:
+            raise Exception(f"Failed to create plant '{plant_name}': {res.text}")
         plant_id = res.json()["id"]
-        
+
     return crop_id, plant_id

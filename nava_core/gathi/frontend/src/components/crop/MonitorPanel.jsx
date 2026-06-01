@@ -17,6 +17,43 @@ const TIER_META = {
   ok:          { label: "HEALTHY",          color: "#10b981", track: "#064e3b", css: "vnir-ok"       },
 };
 
+/**
+ * Returns a message descriptor for leaf states where NIR analysis is not
+ * meaningful (no leaf found, or leaf is visibly yellow/brown).
+ * Returns null for normal GREEN leaf scans.
+ */
+function getInvalidLeafMessage(leafState, status) {
+  if (leafState === "NONE") {
+    return {
+      icon: "🔍",
+      title: "No Leaf Detected",
+      body: "The camera could not isolate a leaf in this image. The HSV colour analyser looks for green or yellow-brown regions and found neither above the minimum area threshold.",
+      tips: [
+        "Make sure the leaf fills most of the frame.",
+        "Use even, natural lighting — avoid heavy shadows or direct glare.",
+        "Avoid busy or colourful backgrounds; plain soil or sky works best.",
+        "Retake the photo closer to the leaf surface.",
+      ],
+      accent: "#6366f1",
+    };
+  }
+  if (leafState === "YELLOW_BROWN") {
+    return {
+      icon: "🍂",
+      title: "Severe Visual Stress Detected",
+      body: "The leaf appears predominantly yellow or brown. At this stage the tissue has already undergone visible degradation, and the NIR reflectance model cannot produce reliable readings. Stress monitoring values are not shown.",
+      tips: [
+        "Photograph a still-green section of the plant for NIR analysis.",
+        "Use the Disease Detection tab to identify the likely pathogen.",
+        "Consult NAVA Chat for treatment recommendations.",
+        "Consider clearing VNIR history and restarting the baseline once the plant recovers.",
+      ],
+      accent: "#f97316",
+    };
+  }
+  return null;
+}
+
 function HistorySection({ plantId, onDeleted }) {
   const [events, setEvents] = useState([]);
   const [open, setOpen] = useState(false);
@@ -218,76 +255,120 @@ export default function MonitorPanel({ fieldId, cropId }) {
         </div>
       )}
 
-      {result && meta && (
-        <div className="result-row">
-          {/* ── Col 1: All text/stats ── */}
-          <div className={`result-col vnir-status-col ${meta.css}`}>
-            <div className="vnir-severity-bar" style={{ background: `linear-gradient(90deg, ${meta.color}cc, ${meta.color}55)` }} />
+      {result && (() => {
+        const invalidMsg = getInvalidLeafMessage(result.leaf_state, result.status);
 
-            <div className="vnir-body">
-              <div className="vnir-status-tag">{meta.label}</div>
-              <div className="vnir-status-text">{result.status}</div>
-
-              {/* Raw measurements */}
-              <div className="vnir-section-title">Measurements</div>
-              <div className="vnir-metrics">
-                <div className="vnir-metric-item">
-                  <div className="vnir-metric-val">{result.ratio?.toFixed(4)}</div>
-                  <div className="vnir-metric-key">VNIR Ratio</div>
-                </div>
-                <div className="vnir-metric-item">
-                  <div className="vnir-metric-val">{result.avg_green?.toFixed(1)}</div>
-                  <div className="vnir-metric-key">Avg Green</div>
-                </div>
-                <div className="vnir-metric-item">
-                  <div className="vnir-metric-val">{result.avg_vnir?.toFixed(1)}</div>
-                  <div className="vnir-metric-key">Avg VNIR</div>
+        // ── Invalid leaf state: no-leaf or yellow/brown ──────────────────────
+        if (invalidMsg) {
+          return (
+            <div className="result-row" style={{ alignItems: "flex-start" }}>
+              {/* Message card */}
+              <div className="result-col" style={{ flex: 2, minWidth: 0 }}>
+                <div className="vnir-invalid-card" style={{ borderLeft: `4px solid ${invalidMsg.accent}` }}>
+                  <div className="vnir-invalid-header">
+                    <span className="vnir-invalid-icon">{invalidMsg.icon}</span>
+                    <span className="vnir-invalid-title" style={{ color: invalidMsg.accent }}>{invalidMsg.title}</span>
+                  </div>
+                  <p className="vnir-invalid-body">{invalidMsg.body}</p>
+                  <div className="vnir-invalid-tips-label">What to do:</div>
+                  <ul className="vnir-invalid-tips">
+                    {invalidMsg.tips.map((t, i) => <li key={i}>{t}</li>)}
+                  </ul>
                 </div>
               </div>
 
-              {result.leaf_state && (
-                <div className="vnir-leaf-state">
-                  Leaf state: <span>{result.leaf_state}</span>
+              {/* Still show HSV image so the user sees what the camera captured */}
+              {result.hsv_image_base64 ? (
+                <div className="result-col result-img-col">
+                  <div className="result-image-label">HSV Analysis</div>
+                  <img src={result.hsv_image_base64} alt="HSV" className="result-img-compact" />
+                  <div className="result-img-caption" style={{ color: invalidMsg.accent }}>
+                    {result.leaf_state === "NONE" ? "No leaf region isolated" : "Yellow/brown tissue detected"}
+                  </div>
                 </div>
-              )}
+              ) : <div className="result-col" />}
 
-              {/* Deltas vs references */}
-              {!isCal && (result.vs_baseline != null || result.vs_global != null) && (
-                <>
-                  <div className="vnir-section-title" style={{ marginTop: 12 }}>vs. Reference</div>
-                  <DeltaRow label="Baseline"   val={result.vs_baseline} />
-                  <DeltaRow label="Global avg" val={result.vs_global} />
-                  <DeltaRow label="Rolling avg" val={result.vs_rolling} />
-                  <DeltaRow label="Checkpoint"  val={result.vs_prev_checkpoint} />
-                </>
-              )}
-
-              {isCal && (
-                <div className="vnir-cal-note">
-                  Baseline building — scan at least 5 images to enable stress comparisons.
-                </div>
-              )}
+              <div className="result-col" />
             </div>
+          );
+        }
+
+        // ── Normal result: GREEN leaf with valid NIR readings ─────────────────
+        const tier = getVnirTier(result.status);
+        const meta = TIER_META[tier];
+        const isCal = tier === "calibrating";
+
+        return (
+          <div className="result-row">
+            {/* ── Col 1: All text/stats ── */}
+            <div className={`result-col vnir-status-col ${meta.css}`}>
+              <div className="vnir-severity-bar" style={{ background: `linear-gradient(90deg, ${meta.color}cc, ${meta.color}55)` }} />
+
+              <div className="vnir-body">
+                <div className="vnir-status-tag">{meta.label}</div>
+                <div className="vnir-status-text">{result.status}</div>
+
+                {/* Raw measurements */}
+                <div className="vnir-section-title">Measurements</div>
+                <div className="vnir-metrics">
+                  <div className="vnir-metric-item">
+                    <div className="vnir-metric-val">{result.ratio?.toFixed(4)}</div>
+                    <div className="vnir-metric-key">VNIR Ratio</div>
+                  </div>
+                  <div className="vnir-metric-item">
+                    <div className="vnir-metric-val">{result.avg_green?.toFixed(1)}</div>
+                    <div className="vnir-metric-key">Avg Green</div>
+                  </div>
+                  <div className="vnir-metric-item">
+                    <div className="vnir-metric-val">{result.avg_vnir?.toFixed(1)}</div>
+                    <div className="vnir-metric-key">Avg VNIR</div>
+                  </div>
+                </div>
+
+                {result.leaf_state && (
+                  <div className="vnir-leaf-state">
+                    Leaf state: <span>{result.leaf_state}</span>
+                  </div>
+                )}
+
+                {/* Deltas vs references */}
+                {!isCal && (result.vs_baseline != null || result.vs_global != null) && (
+                  <>
+                    <div className="vnir-section-title" style={{ marginTop: 12 }}>vs. Reference</div>
+                    <DeltaRow label="Baseline"   val={result.vs_baseline} />
+                    <DeltaRow label="Global avg" val={result.vs_global} />
+                    <DeltaRow label="Rolling avg" val={result.vs_rolling} />
+                    <DeltaRow label="Checkpoint"  val={result.vs_prev_checkpoint} />
+                  </>
+                )}
+
+                {isCal && (
+                  <div className="vnir-cal-note">
+                    Baseline building — scan at least 5 images to enable stress comparisons.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ── Col 2: HSV image ── */}
+            {result.hsv_image_base64 ? (
+              <div className="result-col result-img-col">
+                <div className="result-image-label">HSV Analysis</div>
+                <img src={result.hsv_image_base64} alt="HSV" className="result-img-compact" />
+              </div>
+            ) : <div className="result-col" />}
+
+            {/* ── Col 3: VNIR stress map ── */}
+            {result.vnir_image_base64 ? (
+              <div className="result-col result-img-col">
+                <div className="result-image-label">Stress Map</div>
+                <img src={result.vnir_image_base64} alt="VNIR" className="result-img-compact" />
+                <div className="result-img-caption">VNIR-derived stress index</div>
+              </div>
+            ) : <div className="result-col" />}
           </div>
-
-          {/* ── Col 2: HSV image ── */}
-          {result.hsv_image_base64 ? (
-            <div className="result-col result-img-col">
-              <div className="result-image-label">HSV Analysis</div>
-              <img src={result.hsv_image_base64} alt="HSV" className="result-img-compact" />
-            </div>
-          ) : <div className="result-col" />}
-
-          {/* ── Col 3: VNIR stress map ── */}
-          {result.vnir_image_base64 ? (
-            <div className="result-col result-img-col">
-              <div className="result-image-label">Stress Map</div>
-              <img src={result.vnir_image_base64} alt="VNIR" className="result-img-compact" />
-              <div className="result-img-caption">VNIR-derived stress index</div>
-            </div>
-          ) : <div className="result-col" />}
-        </div>
-      )}
+        );
+      })()}
 
       <HistorySection key={historyKey} plantId={plant.id} onDeleted={() => setHistoryKey(k => k + 1)} />
     </div>

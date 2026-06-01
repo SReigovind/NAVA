@@ -1,0 +1,185 @@
+Description
+    Banana, Musa paradisiaca, is a type of fruit that grows on a large herbaceous plant that is native to Southeast Asia. It is one of the world's most popular and widely grown fruit, with many varieties being cultivated for both commercial and home use. Bananas are long, curved fruits with smooth, yellow, and sometimes slightly green skin. The average length of a banana is about 7 to 9 inches, and it is about 2 to 3 inches in diameter. The skin of the banana is usually yellow when it is ripe, but it can also be green, red, or purple depending on the variety. The inside of a banana is composed of several fleshy, cream-colored segments, which are surrounded by thin, white membranes. The flesh of the banana is soft, slightly sweet, and has a slightly sticky texture. Bananas are one of the most popular and widely grown fruits in the world, with their largest production occurring in countries near the equator. They thrive in tropical and subtropical climates and are commonly grown in India, China, the Philippines, Ecuador, Brazil, Uganda, Colombia, Indonesia, Cameroon, and Honduras. However, this is not an exhaustive list, as bananas are also grown in other tropical and subtropical regions, including parts of Africa, South America, and Southeast Asia. The specific areas where bananas are grown can vary based on local growing conditions, including temperature, rainfall, soil type, and market demand.
+
+Uses & Benefits
+    Bananas are a good source of vitamins and minerals, including vitamin C, vitamin B6, and potassium, and are often used as a healthy snack or ingredient in smoothies and other foods.The fruit is the most widely used part of the plant and can be eaten fresh or cooked or processed into starch, chips, puree, beer, vinegar or dehydrated to produce dried fruit. The fruit may also be processed into flour which is used in baking, soups or beverages. The flowers of the plant may be used as a vegetable. Fresh leaves have a high protein content and can be fed to cattle. Other uses for leaves include polishing floors, lining pots or wrapping food. 
+
+Varieties of Bananas
+    There are many different varieties of bananas, ranging in size, color, flavor, and texture. Some of the most common and widely grown varieties include:
+    Cavendish: This is the most common variety of banana found in grocery stores and is known for its sweet flavor and yellow skin.
+    Plantain: Plantains are a type of banana that is larger and less sweet than Cavendish bananas. They are typically used for cooking and are a staple food in many countries in Africa, South America, and Southeast Asia.
+    Red Banana: This variety of banana is smaller and sweeter than the Cavendish and has a red or pink skin when ripe.
+    Lady Finger Banana: This variety of banana is smaller and sweeter than the Cavendish and is a popular snack in many countries.
+    Blue Java Banana: This variety of banana is also known as the "Ice Cream Banana" due to its creamy texture and sweet flavor. It has a blue-green skin when ripe.
+    Musa Basjoo: This is a hardy banana variety that is native to Southeast Asia and can grow in cold climates. It has a green skin and a sweet, slightly tart flavor.
+ 
+Propagation
+Basic Requirement
+    Bananas are a tropical crop that grow best in warm, humid conditions with abundant rainfall. The ideal temperature range for growing bananas is between 20°C and 30°C, with a preferred temperature range of 25°C to 28°C. High humidity levels are also important for supporting healthy growth and fruit production. Bananas require a minimum of 1000mm of rainfall or irrigation per year to support growth and fruit production. However, it is important to note that the specific climatic requirements may vary depending on the variety of banana being grown and local growing conditions. It is essential to work with local agriculture experts to ensure that the right climatic conditions are in place for successful banana cultivation. Bananas grow best in well-drained, fertile soils with a high organic matter content. They require good aeration and a pH of 5.5 to 7.0. They are also sensitive to soil-borne diseases and to combat this problem, old suckers can also be replaced by young ones. Bananas require regular watering, especially during the dry season, to support growth and fruit production. Over-watering or waterlogging can lead to root rot, so it is important to ensure good drainage and to avoid standing water around the plants. Drip irrigation systems are commonly used for banana cultivation to conserve water and reduce the risk of disease.
+
+Seeding
+    The crop is propagated through vegetative reproduction, meaning new plants are produced from existing plant material rather than from seeds. The most common method of propagation is through the use of "suckers" or "pups," which are shoots that grow from the base of the mother plant. The suckers are carefully removed from the mother plant and planted in a new location, where they will develop into a separate plant. When cutting sucker from the parent plant, remove all but the top 2-3 leaves. In commercial banana farming, the suckers are often treated with rooting hormones to encourage faster and more vigorous growth. Another method of propagation is through the use of "rhizome" or "corm" cuttings, which are pieces of the underground stem of the banana plant that can be used to start a new plant. This method is less common but may be used in some cases, particularly for rare or specialty varieties of bananas. Planting bananas may vary depending on the variety being grown and local growing conditions. It is important to work with local agriculture experts or PlantVillage officers to ensure the best planting and growing practices for your specific situation. Start by selecting a suitable site for growing bananas, taking into consideration factors such as soil type, drainage, and climatic conditions. Test the soil pH and fertility and amend as necessary. Dig a hole in the soil 45x45x45 cm in size and 3m x 3m apart that is large enough to accommodate the roots of the sucker. When digging, place the top black soil on the upper side of the hole and brown or subsoil on the lower side. Place the sucker in the hole, making sure the top of the roots is level with the soil surface, leaving a dome-shaped valley on the surface. Backfill the soil around the roots and water thoroughly.
+
+General Care and Maintenance
+    Apply a layer of organic mulch around the plant to conserve moisture and suppress weeds. Bananas require regular watering, especially during dry periods. Make sure the soil is consistently moist, but not waterlogged. Bananas need regular fertilization to support healthy growth and fruit production. Apply a balanced fertilizer, such as 10-10-10, at the recommended rate, according to soil test results. Prune off the older, lower leaves of the plant as they yellow to keep the plant healthy and improve air circulation.
+
+Harvesting
+    Banana harvesting is the process of collecting ripe or near-ripe bananas from the plant. The timing of the harvest is crucial, as it will determine the quality of the fruit and its intended use. To harvest bananas, one must first identify when the fruit is mature, which can be determined by observing signs such as yellowing of the fruit and leaves. Once the bananas are ready to be harvested, a sharp, clean knife should be used to cut the stem of the banana bunch from the plant. It's important to handle the bananas carefully to avoid bruising, and to gently place them in a container or on a flat surface for transport. If the bananas are harvested when they are still green, they will need to be ripened before eating by placing them in a warm, well-ventilated area until they are yellow and soft to the touch. Ripe bananas can be stored at room temperature for a few days or in the refrigerator to slow down the ripening process. The exact procedures for harvesting bananas may vary depending on the variety of banana being grown and local growing conditions. It's recommended to work with local agriculture experts, such as those from PlantVillage, to ensure the best harvesting and handling practices for your specific situation.
+
+Common Pests and Diseases
+Diseases
+
+Category : Fungal
+Anthracnose Colletotrichum musae
+    Symptoms
+    Brown spots on fruit peel; large brown to black areas; black lesions on green fruit.
+    Cause
+    Fungus
+    Comments
+    Wet conditions promote growth and spread of disease; spread by rainfall through plant or banana bunch.
+    Management
+    Commercially produced fruit should be washed and dipped in fungicide prior to shipping; protect fruit from injury; remove flower parts which can harbour fungus.
+
+Black sigatoka (Black leaf streak) Mycosphaerella fijiensis
+    Symptoms
+    Red/brown flecks or spots on underside or topside of leaves; spots with dark or yellow border and grey centre; death of leaf surface; bunch not developing
+    Cause
+    Fungus
+    Comments
+    Currently the most important disease of banana; promoted by high moisture and spores spread by wind
+    Management
+    Export plantations may require regular fungicide applications; increase plant spacing to improve air circulation and reduce humidity; remove leaves with mature spots
+
+
+Cigar end rot Verticillium fructigena
+    Symptoms
+    Tips of fingers initially begin to darken and wrinkle; tips of fingers develop a dark rot; if Verticillium fungi are present then the rot is typically dry and the tips become mummified, if Trachysphaera is present, the rotted are become covered with white spores which gives the fingers the ashen appearance characteristic of cigar end rot.
+    Cause
+    Fungus
+    Comments
+    Disease is of economic importance in Central and West Africa; it also occurs in India, Iran, South Africa, South America, the Canaries and the West Indies.
+    Management
+    Infected flowers should be removed from the plant; bunches should be bagged using perforated polyethylene; chemical control may be necessary in the case of severe infestations.
+
+Cordana leaf spot (Cordana musae)
+    Symptoms
+    Initially the lower leaves shows oval shaped yellow or pale brown spots near the leaf margins. As the disease progress, the central dead brown area of spots is covered by concentric zonation which is surrounded by a yellow halo. The individual spots may join together to form large necrotic area.
+    Cause
+    Fungus
+    Comments
+    The disease is favored by hot and humid condition. The pathogen mainly spreads by water splash and wind.
+    Management
+    Remove all the infected leaves and burn them. If the disease is severe spray copper based fungicides.
+
+Panama disease (Fusarium wilt) Fusarium oxysporum f. sp. cubense
+    Symptoms
+    The fungus infect roots and grow inside xylem vessels which in turn blocks flow of nutrients and water to plant. We can see reddish brown discoloration of vascular tissue by cut opening rhizomes and pseudostem. The above ground symptoms are yellowing of older leaves; splitting of leaf sheaths; leaves wilting and buckling; death of entire canopy.
+    Cause
+    Fungus
+    Comments
+    It is very lethal disease which mainly spreads through soil, running water and infected rhizome. It is one of the first disease of bananas to have spread globally.
+    Management
+    Use disease free planting materials; currently no effective treatment once plants are infected.
+
+Rhizome rot Erwinia carotovora (Erwinia chrysanthemi)
+    Symptoms
+    Pseudostem breaks from rhizome; rhizome will not germinate; internal tissue yellow/brown and watery
+    Cause
+    Bacteria
+    Comments
+    Bacteria live in soil and enter plant through wounds; disease encouraged by wet, humid conditions
+    Management
+    Select only high quality, disease-free rhizomes fro propagation; disinfect all tools used for propagation regularly; allow seed pieces to dry before planting
+
+Yellow sigatoka Mycosphaerella musae
+    Symptoms
+    Pale green flecks on leaves which enlarge to chlorotic streaks; streaks enlarge and turn brown with chlorotic halo; mature lesions are gray with a dark brown border; lesions coalesce and kill large areas of leaves
+    Cause
+    Fungus
+    Comments
+    Spores spread by wind, rain and irrigation water;
+    Management
+    Export plantations may require regular fungicide applications; increase plant spacing to improve air circulation and reduce humidity; remove leaves with mature spots
+
+Banana bacterial wilt (BBW) / Banana xanthomonas wilt (BXW) Xanthomonas campestris pv. musacearum (Xcm)
+    Symptoms
+    The infected plant shows yellow leaves which later turn brown and die. If infection occurs at later stage of crop, male buds exhibit dry rot and blackening . Premature uneven ripening of fruits in the bunch. The infected fruit show rusty brown discoloration in pulp. Infected parts ooze yellow bacteria after cut.
+    Cause
+    Bacteria
+    Comments
+    In Uganda locally it is called as 'kiwotoka'. The disease is mainly transmitted by insects, farm equipments, animals and infected rhizomes. BBW was first recorded in Ethiopia (1968) mainly on banana and enset. Later the disease spread to Uganda (2001) and eventually to other eastern African countries.
+    Management
+    Use disease free planting material. Roughing of infected plant and destroy them. Removing of excess male buds prevent disease spread. Disinfect the farm equipments.
+
+Moko disease Ralstonia solanacearum
+    Symptoms
+    Older leaves chlorotic, wilted and collapsing; spreads to entire canopy; collapse of pseudostem
+    Cause
+    Bacterium
+    Comments
+    Can be spread root to root or by insects or human activities such as machete pruning.
+    Management
+    Banana plantations should be regularly monitored for presence of disease; if Moko is present, male buds should be removed and all tools thoroughly disinfected; infected plants may need to be destroyed along with any neighbouring plants
+
+Banana mosaic Cucumber mosaic virus (CMV)
+    Symptoms
+    Chlorotic mottling or stripes on foliage; distorted fruit which may have chlorotic streaks or mottling; distorted leaves; leaf necrosis
+    Cause
+    Virus
+    Comments
+    Transmitted by aphids; may be transmitted through infected seed
+    Management
+    Remove susceptible host plants from around plantation; plant virus-free material
+
+Bunchy top Banana bunchy top virus (BBTV)
+    Symptoms
+    Dark green streaks in leaves; chlorotic and upturned leaf margins; leaves brittle and erect; plant has a ‘bunchy top; no bunches produced
+    Cause
+    Virus
+    Comments
+    Aphid transmitted; when infected symptoms appear after two more leaves are produced
+    Management
+    Plant less susceptible varieties; destroy infected plants to prevent spread of disease
+
+Pests
+Category : Insects
+
+Banana aphid Pentalonia nigronervosa
+    Symptoms
+    Deformed plants with curled, shriveled leaves; if infestation is severe, galls may form on leaves; colonies of aphids usually present in crown of plant at base of pseudostem or between the outer leaf sheaths; aphid is soft-bodied and red-brown to almost black in color.
+    Cause
+    Insect
+    Comments
+    Colonies are often tended by ants; populations can build rapidly during warm weather.
+    Management
+    Chemical control does not provide protection against transmission of Banana bunchy top and direct feeding damage is not usually severe enough to warrant spraying; insecticidal soaps can help control aphid populations; plants infected with bunch top should be removed and destroyed to prevent spread.
+
+Banana skipper Erionota thrax
+    Symptoms
+    Usually larvae feed on leaves. Typically the feeding involves incising and rolling up of leaves.
+    Cause
+    Insect
+    Comments
+    The insect also attacks coconut and other palm species. The pest is common in Southeast Asia and Pacific islands.
+    Management
+    Encourage and release natural enemies to check the population of skippers. Hand pick the larvae and kill them.
+
+Banana weevil Cosmopolites sordidus
+    Symptoms
+    Reduced plant growth; reduced fruit production; tunnels may be visible in corm as rounded holes up to 8 mm in diameter; plants wilting and toppling over; destruction of root system; plant death; adult insect is a hard-shelled beetle which is almost black in color; adult is commonly found between leaf sheaths; larvae are creamy-white, legless grubs with a red-brown head
+    Cause
+    Insect
+    Comments
+    Insects are nocturnal, feeding and mating only at night
+    Management
+    Plant only healthy plant material, do not plant if any tunnels are visible; hot water treatment of clean trimmed suckers can be used to kill off many eggs and grubs; applications of neem powder can reduce weevil numbers; appropriate insecticides applied at time of planting can help control weevil numbers
+
+Coconut scale Aspidiotus destructor
+    Symptoms
+    Small, flat, whitish scales, usually on undersides of leaves but may also attach to petioles, peduncles and fruit; plant tissue discolored and yellowing.
+    Cause
+    Insect
+    Comments
+    Coconut scale attacks a large number of hosts including coconut and other palm species, avocado, cassava, papaya, guava and sugar cane; most common in tropical regions.
+    Management
+    Biological control is the best way to manage scale, with lady beetles providing the most effective protection.
