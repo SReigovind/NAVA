@@ -35,19 +35,10 @@ The current model covers **34 disease classes across 7 crops**. Production scale
 - Continuous retraining pipeline: auto-ingestion of new labelled samples from field scans flagged as low-confidence
 - Multi-label classification: many plants exhibit more than one disease simultaneously; the current single-label head cannot represent this
 
----
-
-## 4. Satellite & Drone Integration
-
-VNIR estimation from RGB smartphone images is NAVA's most novel contribution. Extending this to broader spatial data would dramatically increase impact:
-
-- **Sentinel-2 integration** — pull real multispectral imagery (including actual NIR band) for field-level NDVI mapping; compare against NAVA's VNIR estimates as a calibration signal
-- **Drone survey mode** — accept top-down orthomosaic images, run VNIR estimation across the full field, generate a stress heatmap overlay
-- **Field-boundary mapping** — integrate with OpenStreetMap or farmer-drawn polygons to associate satellite stress zones with specific field records
 
 ---
 
-## 5. Multi-User Farm Collaboration
+## 4. Multi-User Farm Collaboration
 
 NAVA is currently single-user (one account = one farm). Multi-user support would enable:
 
@@ -57,7 +48,7 @@ NAVA is currently single-user (one account = one farm). Multi-user support would
 
 ---
 
-## 6. Automated Field Health Reports
+## 5. Automated Field Health Reports
 
 Generating a weekly or seasonal PDF report summarising:
 
@@ -70,7 +61,7 @@ This report could be submitted to crop insurance schemes or bank loan officers a
 
 ---
 
-## 7. Crop Insurance & Market Price Integration
+## 6. Crop Insurance & Market Price Integration
 
 - **Insurance claims** — link a disease detection event to a pre-registered insurance policy; auto-populate a claim form with the scan evidence
 - **Market price feed** — display current mandated price (MSP) and local mandi price for the detected crop at harvest stage
@@ -78,7 +69,7 @@ This report could be submitted to crop insurance schemes or bank loan officers a
 
 ---
 
-## 8. Real VNIR Ground Truth Validation
+## 7. Real VNIR Ground Truth Validation
 
 Thanal (the VNIR estimator) was trained and validated on competition data. A rigorous field validation study would:
 
@@ -88,7 +79,7 @@ Thanal (the VNIR estimator) was trained and validated on competition data. A rig
 
 ---
 
-## 9. Production Infrastructure
+## 8. Production Infrastructure
 
 For deployment beyond the MSc demo:
 
